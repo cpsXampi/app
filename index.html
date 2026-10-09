@@ -1,698 +1,1005 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#0b1020" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Sistema de Apoio & Inspeção – Motiva</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    :root {
-      --bg: #050816;
-      --bg2: #090f1f;
-      --surface: #0d1224;
-      --surface2: #111731;
-      --surface3: #171d3d;
-      --border: rgba(255,255,255,.06);
-      --border2: rgba(255,255,255,.12);
-      --border3: rgba(255,255,255,.18);
-      --accent: #ffd600;
-      --accent2: #ffe44d;
-      --accent3: #c8a800;
-      --green: #10b981;
-      --green2: #34d399;
-      --violet: #5b21ff;
-      --violet2: #7c3aed;
-      --red: #ef4444;
-      --text: #f3f4f6;
-      --text2: #d1d5db;
-      --muted: #6b7280;
-      --dim: #4b5563;
-      --dimmer: #1f2937;
-      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      --r-xs: 8px; --r-sm: 12px; --r-md: 16px; --r-lg: 20px; --r-xl: 24px; --r-2xl: 28px;
-      --safe-b: max(env(safe-area-inset-bottom, 0px), 20px);
-      --safe-t: env(safe-area-inset-top, 0px);
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Apoio Localização</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<style>
+:root{
+  --bg:#050816;
+  --bg2:#090f1f;
+  --surface:#0d1224;
+  --surface2:#111731;
+  --surface3:#171d3d;
+  --border:rgba(255,255,255,.06);
+  --border2:rgba(255,255,255,.12);
+  --border3:rgba(255,255,255,.18);
+  --accent:#ffd600;
+  --accent2:#ffe44d;
+  --accent3:#c8a800;
+  --accent-dim:rgba(255,214,0,.06);
+  --accent-glow:rgba(255,214,0,.18);
+  --green:#10b981;
+  --green2:#34d399;
+  --green3:#059669;
+  --green-dim:rgba(16,185,129,.10);
+  --violet:#5b21ff;
+  --violet2:#7c3aed;
+  --violet3:#4c1d95;
+  --violet-dim:rgba(92,33,255,.12);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,.10);
+  --warn:#f59e0b;
+  --warn-dim:rgba(245,158,11,.10);
+  --text:#f3f4f6;
+  --text2:#d1d5db;
+  --text3:#9ca3af;
+  --muted:#6b7280;
+  --dim:#4b5563;
+  --dimmer:#1f2937;
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --r-xs:8px;--r-sm:12px;--r-md:16px;--r-lg:20px;--r-xl:24px;--r-2xl:28px;
+  --safe-b:max(env(safe-area-inset-bottom,0px),20px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --ease:cubic-bezier(.4,0,.2,1);
+  --ease-bounce:cubic-bezier(.34,1.56,.64,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:radial-gradient(circle at top,rgba(92,33,255,.18),transparent 55%),var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  overflow-x:hidden;
+  min-height:100vh;
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overscroll-behavior:none;
+}
+button{
+  font-family:var(--font);cursor:pointer;border:0;background:none;color:inherit;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
+}
+button:active{opacity:.80;transform:scale(.96);transition:transform 60ms,opacity 60ms}
+input,select{font-family:var(--font);outline:none}
+img,video{display:block;max-width:100%}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:9px}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { -webkit-text-size-adjust: 100%; }
-    body {
-      background: radial-gradient(circle at top, rgba(92,33,255,.18), transparent 55%), var(--bg);
-      color: var(--text);
-      font-family: var(--font);
-      overflow-x: hidden;
-      min-height: 100vh;
-      min-height: 100dvh;
-    }
-    button, input, select {
-      font-family: var(--font);
-    }
-    button {
-      cursor: pointer;
-      border: none;
-      background: none;
-      color: inherit;
-    }
-    a { color: inherit; text-decoration: none; }
-    .shell {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 16px 16px calc(32px + var(--safe-b));
-    }
+.hdr{
+  position:sticky;top:0;z-index:50;
+  border-bottom:1px solid var(--border2);
+  background:rgba(5,10,24,.92);
+  backdrop-filter:blur(28px) saturate(1.4);
+  -webkit-backdrop-filter:blur(28px) saturate(1.4);
+  padding:0 16px;padding-top:var(--safe-t);
+}
+.hdr-in{
+  max-width:680px;margin:0 auto;
+  display:flex;align-items:center;gap:12px;height:58px;
+}
+.hdr-title{flex:1;min-width:0}
+.hdr-title h1{
+  font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.hdr-title p{
+  font-size:10px;color:var(--muted);font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;
+}
+.hdr-badge{
+  width:36px;height:36px;border-radius:var(--r-xs);
+  background:var(--violet-dim);color:var(--violet2);
+  display:grid;place-items:center;flex-shrink:0;
+}
+.hdr-badge svg{width:18px;height:18px}
 
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
-      border: 1px solid var(--border2);
-      border-radius: var(--r-lg);
-      background: linear-gradient(135deg, rgba(15,23,42,.88), rgba(17,24,39,.96));
-      padding: 14px 16px;
-      box-shadow: 0 10px 32px rgba(15,23,42,.9);
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-    .brand-mark {
-      width: 44px; height: 44px; border-radius: 12px;
-      display: grid; place-items: center;
-      background: linear-gradient(135deg, var(--violet), var(--violet2));
-      box-shadow: 0 12px 28px rgba(15,23,42,.9);
-    }
-    .brand-mark svg { width: 22px; height: 22px; }
-    .brand-copy {
-      min-width: 0;
-    }
-    .eyebrow {
-      font-size: 9px;
-      font-weight: 900;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--green2);
-    }
-    .brand-title {
-      font-size: clamp(20px, 5vw, 28px);
-      font-weight: 900;
-      letter-spacing: -.03em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(16,185,129,.35);
-      background: rgba(6,78,59,.55);
-      padding: 7px 12px;
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: var(--green2);
-    }
-    .status-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 10px rgba(16,185,129,.7);
-      animation: blink 1.6s infinite;
-    }
-    @keyframes blink { 50% { opacity: .35; } }
+.wrap{
+  max-width:680px;margin:0 auto;
+  padding:16px;padding-bottom:var(--safe-b);
+  display:flex;flex-direction:column;gap:16px;
+}
 
-    .hero {
-      border-radius: var(--r-xl);
-      border: 1px solid rgba(16,185,129,.28);
-      background: linear-gradient(155deg, #065f46 0%, #022c22 55%, #020617 100%);
-      padding: clamp(24px, 5vw, 40px) 20px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 16px 50px rgba(6,95,70,.40);
-      margin-bottom: 12px;
-    }
-    .hero::before {
-      content: "";
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at 30% 25%, rgba(16,185,129,.18), transparent 55%);
-      pointer-events: none;
-    }
-    .hero-label {
-      position: relative;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .25em;
-      color: rgba(220,252,231,.7);
-      text-transform: uppercase;
-    }
-    .hero-value {
-      position: relative;
-      margin-top: 8px;
-      font-size: clamp(42px, 13vw, 64px);
-      line-height: 1.04;
-      font-weight: 900;
-      letter-spacing: -.05em;
-      background: linear-gradient(180deg, #fff 25%, #6ee7b7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero-sub {
-      position: relative;
-      margin-top: 8px;
-      font-size: 10px;
-      font-weight: 600;
-      color: rgba(220,252,231,.56);
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
+.section-block{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  background:rgba(13,18,36,0.65);
+  border:1px solid var(--border2);
+  border-radius:var(--r-xl);
+  padding:16px;
+  backdrop-filter:blur(12px);
+}
+.section-header{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  color:var(--accent);
+  padding-bottom:4px;
+  border-bottom:1px solid var(--border);
+}
+.section-header.proximity-title{
+  color:var(--green2);
+}
+.section-header svg{width:16px;height:16px}
 
-    .gps-box {
-      margin-bottom: 12px;
-      border-radius: var(--r-sm);
-      border: 1px solid rgba(16,185,129,.40);
-      background: rgba(16,185,129,.08);
-      color: #d1fae5;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      text-align: center;
-      min-height: 46px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .gps-box.bad { border-color: rgba(148,163,184,.35); background: rgba(15,23,42,.9); color: #e5e7eb; }
-    .gps-box.warn { border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.08); color: #fef3c7; }
+.km-hero{
+  border-radius:var(--r-lg);
+  border:1px solid rgba(16,185,129,.28);
+  background:linear-gradient(155deg,#065f46 0%,#022c22 55%,#020617 100%);
+  text-align:center;
+  padding:16px 20px;
+  position:relative;overflow:hidden;
+  box-shadow:0 12px 35px rgba(6,95,70,.35);
+}
+.km-hero::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 25%,rgba(16,185,129,.18),transparent 55%);
+  pointer-events:none;
+}
+.km-label{
+  font-size:10px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.25em;color:rgba(220,252,231,.65);position:relative;
+}
+.km-value{
+  font-size:clamp(34px,10vw,48px);font-weight:900;
+  line-height:1.05;letter-spacing:-.04em;margin-top:2px;
+  font-variant-numeric:tabular-nums;position:relative;
+  background:linear-gradient(180deg,#fff 25%,#6ee7b7);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.km-sub{
+  font-size:10px;font-weight:600;color:rgba(220,252,231,.5);
+  margin-top:4px;position:relative;
+}
 
-    .card {
-      border-radius: var(--r-lg);
-      border: 1px solid var(--border);
-      background: linear-gradient(145deg, rgba(15,23,42,.95), rgba(17,24,39,.9));
-      padding: 18px;
-      margin-bottom: 12px;
-      position: relative;
-      overflow: hidden;
-    }
-    .card.accent {
-      border-color: rgba(92,33,255,.45);
-      background: linear-gradient(145deg, rgba(92,33,255,.12), rgba(15,23,42,.96));
-    }
-    .card-label {
-      font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .2em; color: var(--green2);
-      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
-    }
-    .card-label::before {
-      content: ""; width: 3px; height: 11px; border-radius: 2px; background: var(--green2);
-    }
+.gps{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:42px;border-radius:var(--r-sm);
+  border:1px solid;padding:0 14px;
+  font-size:11px;font-weight:800;letter-spacing:.06em;
+  text-align:center;transition:all .15s var(--ease);
+}
+.gps svg{width:14px;height:14px;flex-shrink:0}
+.gps.bad{border-color:rgba(148,163,184,.35);background:rgba(15,23,42,.9);color:#e5e7eb}
+.gps.ok{border-color:rgba(16,185,129,.45);background:var(--green-dim);color:#d1fae5}
+.gps.warn{border-color:rgba(245,158,11,.35);background:var(--warn-dim);color:#fef3c7}
 
-    .search-row {
-      display: flex; gap: 8px; margin-bottom: 10px;
-    }
-    .search-wrap {
-      flex: 1; position: relative; min-width: 0;
-    }
-    .search-wrap svg {
-      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
-      width: 15px; height: 15px; color: var(--dim); pointer-events: none;
-    }
-    .search-input {
-      width: 100%; border-radius: var(--r-sm);
-      border: 1px solid var(--border3);
-      background: rgba(15,23,42,.9);
-      color: #fff;
-      padding: 13px 14px 13px 38px;
-      font-size: 13px; font-weight: 800; text-transform: uppercase;
-    }
-    .search-input::placeholder { color: var(--dim); }
-    .btn-icon {
-      width: 46px; height: 46px; border-radius: var(--r-sm); display: grid; place-items: center; flex-shrink: 0;
-      transition: all .15s ease;
-    }
-    .btn-icon.go {
-      background: linear-gradient(135deg, var(--violet), var(--violet2));
-      color: #fff;
-      box-shadow: 0 3px 16px rgba(79,70,229,.60);
-    }
-    .btn-icon.clr {
-      background: rgba(15,23,42,.9); border: 1px solid var(--border2); color: var(--muted);
-    }
-    .btn-icon svg { width: 17px; height: 17px; }
-    .search-msg {
-      display: none; margin-top: 10px;
-      font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--warn);
-      align-items: center; gap: 6px;
-    }
-    .search-msg.show { display: flex; }
+.card{
+  border-radius:var(--r-lg);
+  border:1px solid var(--border);
+  background:linear-gradient(145deg,rgba(15,23,42,.95),rgba(17,24,39,.9));
+  padding:14px;position:relative;overflow:hidden;
+}
+.card-accent{
+  border-color:rgba(92,33,255,.35);
+  background:linear-gradient(145deg,rgba(92,33,255,.08),rgba(15,23,42,.95));
+}
+.card-label{
+  font-size:10px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.2em;color:var(--text2);
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.card-label::before{
+  content:"";width:3px;height:10px;border-radius:2px;background:var(--violet2);
+}
 
-    .target-lock {
-      display: none;
-      border-radius: var(--r-lg);
-      border: 2px solid var(--green);
-      background: linear-gradient(145deg, rgba(16,185,129,.18), rgba(15,23,42,.95));
-      padding: 18px;
-      text-align: center;
-      margin-bottom: 12px;
-    }
-    .target-lock.on { display: block; }
-    .target-lock h2 { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; }
-    .target-lock p { margin-top: 6px; font-size: 11px; font-weight: 700; opacity: .85; }
+.search-row{display:flex;gap:8px}
+.search-wrap{flex:1;min-width:0;position:relative}
+.search-wrap svg{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  width:15px;height:15px;color:var(--dim);pointer-events:none;
+}
+.search-input{
+  width:100%;border-radius:var(--r-sm);
+  border:1px solid var(--border3);
+  background:rgba(15,23,42,.9);
+  padding:12px 14px 12px 38px;
+  font-size:13px;font-weight:800;text-transform:uppercase;color:#fff;
+  transition:all .15s var(--ease);
+}
+.search-input::placeholder{color:var(--dim);font-weight:700}
+.search-input:focus{
+  border-color:var(--violet2);
+  box-shadow:0 0 0 3px rgba(92,33,255,.35);
+}
+.btn-icon{
+  width:44px;height:44px;border-radius:var(--r-sm);
+  display:grid;place-items:center;flex-shrink:0;
+  transition:all .1s var(--ease);
+}
+.btn-icon:active{transform:scale(.9)}
+.btn-icon.go{
+  background:linear-gradient(135deg,var(--violet),var(--violet2));
+  color:#fff;
+  box-shadow:0 3px 14px rgba(79,70,229,.50);
+}
+.btn-icon.clr{
+  border:1px solid var(--border2);
+  background:rgba(15,23,42,.9);
+  color:var(--muted);
+}
+.btn-icon svg{width:16px;height:16px}
+.search-msg{
+  margin-top:8px;font-size:11px;font-weight:800;
+  text-transform:uppercase;color:var(--warn);
+  display:flex;align-items:center;gap:6px;
+}
+.search-msg svg{width:13px;height:13px}
 
-    .post {
-      border-radius: var(--r-lg);
-      overflow: hidden;
-      border: 1px solid var(--border2);
-      background: linear-gradient(145deg, rgba(15,23,42,.96), rgba(17,24,39,.95));
-      margin-bottom: 12px;
-    }
-    .post.near {
-      border-color: rgba(92,33,255,.48);
-      background: linear-gradient(145deg, rgba(92,33,255,.16), rgba(17,24,39,.96));
-    }
-    .post-top {
-      display: flex; align-items: flex-start; gap: 12px; padding: 14px;
-    }
-    .post-chk { margin-top: 2px; width: 18px; height: 18px; accent-color: var(--violet2); }
-    .post-info { flex: 1; min-width: 0; }
-    .post-id { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; }
-    .post-id span { color: var(--accent); }
-    .post-dist, .post-km, .post-coords {
-      font-size: 10px; margin-top: 3px; font-weight: 700; text-transform: uppercase; color: var(--muted);
-    }
-    .post-km { color: var(--green2); }
-    .post-pin {
-      width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
-      background: rgba(255,214,0,.06); color: var(--accent);
-      flex-shrink: 0;
-    }
-    .post-map-container { padding: 0 14px 14px; }
-    .btn-toggle-map {
-      width: 100%; height: 36px; border-radius: var(--r-xs); border: 1px solid var(--border2);
-      background: rgba(15,23,42,.95); color: var(--text2); font-size: 10px; font-weight: 900;
-      text-transform: uppercase; letter-spacing: .06em; display: flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .post-map {
-      width: 100%; height: 136px; border: 0; margin-top: 10px; border-radius: var(--r-xs); display: block;
-      filter: grayscale(12%) contrast(1.06);
-    }
-    .post-wa-btn {
-      width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; flex-shrink: 0;
-      background: rgba(16,185,129,.15); border: 1px solid rgba(16,185,129,.35); color: var(--green2);
-    }
-    .post-wa-btn svg { width: 16px; height: 16px; }
+.target-lock{
+  display:none;border-radius:var(--r-lg);
+  border:2px solid var(--green);
+  background:linear-gradient(145deg,rgba(16,185,129,.18),rgba(15,23,42,.95));
+  padding:16px;text-align:center;position:relative;overflow:hidden;
+}
+.target-lock.on{
+  display:block;
+  animation:lockIn .3s var(--ease-bounce),lockPulse 2.5s infinite;
+}
+@keyframes lockIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes lockPulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.25)}50%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}
+.target-lock h2{
+  font-size:13px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.06em;position:relative;
+}
+.target-lock p{
+  font-size:11px;font-weight:700;margin-top:4px;opacity:.85;position:relative;
+}
 
-    .ctrl-send {
-      width: 100%; min-height: 48px; border-radius: var(--r-sm); color: #fff;
-      background: linear-gradient(135deg, var(--green), var(--green2));
-      font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .07em;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      box-shadow: 0 3px 18px rgba(16,185,129,.40);
-      margin-top: 10px;
-    }
-    .ctrl-row {
-      display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px;
-    }
-    .ctrl-label {
-      font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .08em;
-    }
-    .ctrl-select {
-      border-radius: var(--r-xs); border: 1px solid var(--border2); background: var(--surface); color: #fff;
-      padding: 8px 30px 8px 10px; font-size: 12px; font-weight: 800;
-      appearance: none; -webkit-appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 8px center;
-    }
+.post{
+  border-radius:var(--r-lg);overflow:hidden;
+  border:1px solid var(--border2);
+  background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(17,24,39,.95));
+  transition:all .15s var(--ease);
+}
+.post.near{
+  border-color:rgba(16,185,129,.5);
+  background:linear-gradient(145deg,rgba(16,185,129,.12),rgba(17,24,39,.96));
+  box-shadow:0 6px 24px rgba(15,23,42,.85);
+}
+.post.searched{
+  border-color:rgba(92,33,255,.48);
+  background:linear-gradient(145deg,rgba(92,33,255,.14),rgba(17,24,39,.96));
+}
+.post-top{display:flex;align-items:flex-start;gap:12px;padding:14px}
+.post-chk{margin-top:2px;width:18px;height:18px;accent-color:var(--violet2);flex-shrink:0}
+.post-id{
+  font-size:12px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.post-id span{color:var(--accent)}
+.post-dist{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  color:var(--muted);margin-top:3px;
+}
+.post-muni{
+  font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text3);margin-top:3px;opacity:.9;
+}
+.post-coords{
+  font-size:10px;color:var(--dim);font-weight:600;margin-top:2px;
+}
+.post-pin{
+  flex-shrink:0;width:30px;height:30px;border-radius:9px;
+  background:var(--accent-dim);color:var(--accent);
+  display:grid;place-items:center;
+}
+.post-pin svg{width:15px;height:15px}
 
-    .toast {
-      position: fixed; bottom: calc(18px + var(--safe-b)); left: 50%; transform: translateX(-50%) translateY(16px);
-      background: var(--surface); border: 1px solid var(--border2); border-radius: var(--r-sm); padding: 12px 20px;
-      font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; z-index: 99999;
-      opacity: 0; pointer-events: none; transition: all .2s ease;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .toast.ok { color: var(--green2); border-color: rgba(16,185,129,.45); }
-    .toast.err { color: #fecaca; border-color: rgba(239,68,68,.45); }
+.post-wa-btn{
+  width:34px;height:34px;border-radius:9px;
+  background:rgba(16,185,129,.15);
+  border:1px solid rgba(16,185,129,.35);
+  color:var(--green2);
+  display:grid;place-items:center;flex-shrink:0;
+  transition:all .1s var(--ease);
+}
+.post-wa-btn:active{transform:scale(.9);background:rgba(16,185,129,.3)}
+.post-wa-btn svg{width:16px;height:16px}
 
-    @media (min-width: 900px) {
-      .shell { max-width: 820px; }
-    }
-  </style>
+.post-map-container{padding:0 14px 14px 14px;}
+.post-map{
+  height:150px;width:100%;border:0;
+  filter:grayscale(10%) contrast(1.06);
+  border-radius:var(--r-xs);
+  box-shadow:inset 0 0 10px rgba(0,0,0,.5);
+}
+
+.ctrl-send{
+  width:100%;min-height:46px;border-radius:var(--r-sm);
+  background:linear-gradient(135deg,var(--green),var(--green3));
+  color:#fff;font-size:12px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.07em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .1s var(--ease);
+  box-shadow:0 3px 18px rgba(16,185,129,.40);
+}
+.ctrl-send:disabled{
+  background:linear-gradient(135deg,var(--dimmer),var(--dim));
+  color:var(--dim);cursor:not-allowed;box-shadow:none;
+}
+.ctrl-send:active:not(:disabled){transform:scale(.98)}
+.ctrl-send svg{width:16px;height:16px}
+.ctrl-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;margin-top:10px;
+}
+.ctrl-label{
+  font-size:10px;font-weight:800;text-transform:uppercase;
+  color:var(--muted);display:flex;align-items:center;gap:8px;
+}
+.ctrl-select{
+  border-radius:var(--r-xs);border:1px solid var(--border2);
+  background:var(--surface);color:#fff;
+  padding:7px 28px 7px 10px;font-size:12px;font-weight:800;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;
+}
+.ctrl-chk{width:18px;height:18px;accent-color:var(--accent)}
+
+.skel{
+  height:120px;border-radius:var(--r-lg);
+  background:linear-gradient(110deg,var(--surface) 30%,var(--surface2) 50%,var(--surface) 70%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite linear;
+}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+
+.toast{
+  position:fixed;bottom:calc(18px + var(--safe-b));left:50%;
+  transform:translateX(-50%) translateY(16px);
+  border-radius:var(--r-sm);border:1px solid var(--border2);
+  background:var(--surface);
+  padding:12px 20px;font-size:11px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.04em;
+  box-shadow:shadow-lg;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  z-index:99998;opacity:0;transition:all .2s var(--ease);
+  pointer-events:none;display:flex;align-items:center;gap:8px;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast svg{width:14px;height:14px;flex-shrink:0}
+.toast.ok{border-color:rgba(16,185,129,.45);color:var(--green2)}
+.toast.ok svg{color:var(--green)}
+.toast.err{border-color:rgba(239,68,68,.45);color:#fecaca}
+.toast.err svg{color:var(--red)}
+</style>
 </head>
 <body>
-  <div class="shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="m9 12 2 2 4-4"/>
-          </svg>
-        </div>
-        <div class="brand-copy">
-          <div class="eyebrow">MOTIVA · APOIO TÉCNICO</div>
-          <div class="brand-title">Sistema de Apoio &amp; Inspeção</div>
-        </div>
-      </div>
-      <div class="status-pill"><span class="status-dot"></span> Online</div>
-    </header>
 
-    <section class="hero">
-      <div class="hero-label">KM atual</div>
-      <div class="hero-value" id="kmValue">0,00</div>
-      <div class="hero-sub" id="kmSub">Rodovia principal</div>
-    </section>
-
-    <div class="gps-box ok" id="gpsStatus">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true">
-        <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-        <path d="M12 7v5l3 3"/>
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="hdr-title">
+      <h1>Apoio Localização</h1>
+      <p>Pesquisa & Proximidade GPS</p>
+    </div>
+    <span class="hdr-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
       </svg>
-      <span>GPS ativo</span>
+    </span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="section-block">
+    <div class="section-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      Seção de Pesquisa (ID ou KM)
     </div>
 
-    <section class="card accent">
-      <div class="card-label">Pesquisa</div>
+    <div class="card card-accent">
+      <p class="card-label">Pesquisa ID-NX (8 dígitos)</p>
       <div class="search-row">
         <div class="search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="6"></circle>
-            <path d="m16 16 5 5"></path>
+          <input class="search-input" id="inputId" placeholder="EX: 12345678" autocomplete="off" spellcheck="false" inputmode="numeric" maxlength="8" pattern="\d*" onkeydown="if(event.key==='Enter')searchId()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
           </svg>
-          <input id="searchInput" class="search-input" type="text" placeholder="Buscar poste / endereço" />
         </div>
-        <button id="searchBtn" class="btn-icon go" aria-label="Buscar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="6"></circle>
-            <path d="m16 16 5 5"></path>
+        <button class="btn-icon go" onclick="searchId()" aria-label="Buscar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
           </svg>
         </button>
-        <button id="clearBtn" class="btn-icon clr" aria-label="Limpar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M3 6h18"></path>
-            <path d="M8 6V4h8v2"></path>
-            <path d="M19 6l-1 14H6L5 6"></path>
-            <path d="M10 11v5"></path>
-            <path d="M14 11v5"></path>
+        <button class="btn-icon clr" onclick="clearId()" aria-label="Limpar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18M6 6l12 12"/>
           </svg>
         </button>
       </div>
-      <div id="searchMsg" class="search-msg" aria-live="polite">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M12 8v4"></path>
-          <path d="M12 16h.01"></path>
-        </svg>
-        <span id="searchMsgText">Mensagem</span>
-      </div>
-    </section>
-
-    <div id="targetLock" class="target-lock">
-      <h2>Alvo localizado</h2>
-      <p id="targetLockText">GPS e foco registrados com sucesso.</p>
+      <div id="searchMsg" class="search-msg" style="display:none"></div>
+      <div id="searchResult" style="display:none;margin-top:12px"></div>
     </div>
 
-    <div id="postList"></div>
-
-    <section class="card">
-      <div class="card-label">Ações</div>
-      <button id="sendSelectedBtn" class="ctrl-send" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
-          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8A8.5 8.5 0 0 1 12.5 20a8.38 8.38 0 0 1-3.8-.9L3 21l1.1-5.7A8.38 8.38 0 0 1 3.2 11.5a8.5 8.5 0 0 1 4.7-8.1A8.38 8.38 0 0 1 21 11.5Z"></path>
-          <path d="M8.5 8.5c.2-.4.4-.4.6-.4h.3c.2 0 .4 0 .6.4.3.7.5 1.3.1 1.5l-.2.2c-.2.2-.2.3-.1.6.3.7 1.3 1.7 2.1 2.2.4.2.6.2.8 0l.5-.4c.2-.2.4-.2.7-.1.4.2 1 .5 1.2.7.3.3.3.6.1.9-.3.6-.8 1.2-1.4 1.5-.4.2-.9.2-1.4.1-.9-.2-2.8-1.2-4.6-3.1-1.8-2-2.8-4.1-3-5.1-.1-.4.1-.7.4-.9.3-.2.5-.4.8-.4h.5Z"></path>
-        </svg>
-        Enviar selecionados
-      </button>
-      <div class="ctrl-row">
-        <label class="ctrl-label" for="rangeSelect">Filtro</label>
-        <select id="rangeSelect" class="ctrl-select">
-          <option value="5">Até 5 km</option>
-          <option value="10">Até 10 km</option>
-          <option value="20">Até 20 km</option>
-          <option value="50">Até 50 km</option>
-          <option value="100">Até 100 km</option>
-        </select>
+    <div class="card card-accent">
+      <p class="card-label">Pesquisa por KM (10 mais próximos)</p>
+      <div class="search-row">
+        <div class="search-wrap">
+          <input class="search-input" id="inputKm" placeholder="EX: 115 ou 115.5" autocomplete="off" spellcheck="false" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" onkeydown="if(event.key==='Enter')searchKm()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <button class="btn-icon go" onclick="searchKm()" aria-label="Buscar KM"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
+        <button class="btn-icon clr" onclick="clearKm()" aria-label="Limpar KM"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
-    </section>
+      <div id="searchKmMsg" class="search-msg" style="display:none"></div>
+      <div id="searchKmResult" style="display:none;margin-top:12px"></div>
+    </div>
   </div>
 
-  <div id="toast" class="toast" aria-live="polite"></div>
+  <div class="section-block" style="border-color: rgba(16,185,129,0.3);">
+    <div class="section-header proximity-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      Seção de Proximidade & GPS Atual
+    </div>
 
-  <script>
-    const FREE_API = {
-      mapEmbed(lat, lon, zoom = 15) {
-        const minLat = lat - 0.004;
-        const maxLat = lat + 0.004;
-        const minLon = lon - 0.006;
-        const maxLon = lon + 0.006;
-        return `https://www.openstreetmap.org/export/embed.html?bbox=${minLon}%2C${minLat}%2C${maxLon}%2C${maxLat}&layer=mapnik&marker=${lat}%2C${lon}`;
-      },
-      async geocode(query) {
-        const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(query)}`;
-        const r = await fetch(url, { headers: { 'Accept-Language': 'pt-BR' } });
-        return r.json();
-      },
-      async reverseGeocode(lat, lon) {
-        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
-        const r = await fetch(url, { headers: { 'Accept-Language': 'pt-BR' } });
-        return r.json();
-      },
-      async weather(lat, lon) {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto&forecast_days=1`;
-        const r = await fetch(url);
-        return r.json();
+    <div id="targetLock" class="target-lock">
+      <h2>📍 Você está no poste!</h2>
+      <p id="targetLockSub">ID ALVO: --- | DISTÂNCIA &lt; 5M</p>
+    </div>
+
+    <div class="km-hero">
+      <p class="km-label">KM aproximado atual</p>
+      <p class="km-value" id="kmVal">—</p>
+      <p class="km-sub" id="kmSource"></p>
+    </div>
+
+    <div id="gpsStatus" class="gps bad">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+      </svg>
+      GPS · BUSCANDO SINAL
+    </div>
+
+    <div class="card">
+      <button id="btnSend" class="ctrl-send" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+        </svg>
+        Enviar lista WhatsApp
+      </button>
+      <div class="ctrl-row">
+        <label class="ctrl-label">
+          Proximidade
+          <select class="ctrl-select" id="qty">
+            <option value="1">1</option>
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <label class="ctrl-label">
+          <input type="checkbox" class="ctrl-chk" id="chkMaps" checked> Maps
+        </label>
+      </div>
+    </div>
+
+    <div id="postList" style="display:flex;flex-direction:column;gap:12px">
+      <div class="skel"></div><div class="skel"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<script>
+const ACC_G=15,ACC_Y=35;
+const norm=s=>String(s||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9_ ]+/g,' ').replace(/\s+/g,' ');
+const parsePt=v=>{const s=String(v??'').trim();return/,\d+$/.test(s)?Number(s.replace(/\./g,'').replace(',','.')):Number(s)};
+const hav=(a,b,c,d)=>{const p=Math.PI/180,x=.5-Math.cos((c-a)*p)/2+Math.cos(a*p)*Math.cos(c*p)*(1-Math.cos((d-b)*p))/2;return 12742000*Math.asin(Math.sqrt(x))};
+const range=(dist,acc=0)=>{const d=Math.round(dist),e=Number.isFinite(acc)?Math.round(acc):0;return`${Math.max(0,d-e)}M A ${d+e}M`};
+const fmtAcc=a=>!Number.isFinite(a)?'—':`±${Math.round(a)}M`;
+const nowBR=()=>new Date().toLocaleString('pt-BR').toUpperCase();
+function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(norm(c));if(i>=0)return i}return-1}
+function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
+
+const municipioCache = new Map();
+
+async function fetchJson(url, headers = {}) {
+  const res = await fetch(url, {
+    headers: {
+      Accept: 'application/json',
+      'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
+      ...headers
+    }
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function normalizeMunicipio(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  const cleaned = raw.replace(/\s*[-–—].*$/, '').trim();
+  return cleaned || raw;
+}
+
+async function resolveMunicipio(lat, lon) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return 'Município não disponível';
+  const key = `${Number(lat).toFixed(5)},${Number(lon).toFixed(5)}`;
+  if (municipioCache.has(key)) return municipioCache.get(key);
+
+  const providers = [
+    async () => {
+      const data = await fetchJson(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=pt`);
+      return normalizeMunicipio(data?.locality || data?.city || data?.principalSubdivision || data?.countryName || '');
+    },
+    async () => {
+      const data = await fetchJson(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=10&addressdetails=1&accept-language=pt-BR`);
+      return normalizeMunicipio(data?.address?.municipality || data?.address?.city || data?.address?.town || data?.address?.village || data?.address?.county || data?.address?.state || '');
+    },
+    async () => {
+      const data = await fetchJson(`https://geocode.maps.co/reverse?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`);
+      return normalizeMunicipio(data?.address?.city || data?.address?.town || data?.address?.municipality || data?.address?.county || data?.address?.state || data?.address?.road || '');
+    }
+  ];
+
+  for (const provider of providers) {
+    try {
+      const nome = await provider();
+      if (nome) {
+        municipioCache.set(key, nome);
+        return nome;
       }
-    };
+    } catch (e) {}
+  }
 
-    const state = {
-      km: 0,
-      pos: { lat: -29.759, lon: -53.370 },
-      posts: [
-        { id: 'P-001', lat: -29.76240, lon: -53.36090, km: 1.2 },
-        { id: 'P-002', lat: -29.77050, lon: -53.35410, km: 3.4 },
-        { id: 'P-003', lat: -29.77770, lon: -53.34220, km: 5.6 },
-        { id: 'P-004', lat: -29.78530, lon: -53.33880, km: 8.1 },
-        { id: 'P-005', lat: -29.79090, lon: -53.33110, km: 10.5 },
-        { id: 'P-006', lat: -29.79620, lon: -53.32390, km: 13.7 },
-        { id: 'P-007', lat: -29.80350, lon: -53.34040, km: 18.9 }
-      ]
-    };
+  const fallback = 'Município não disponível';
+  municipioCache.set(key, fallback);
+  return fallback;
+}
 
-    const kmValue = document.getElementById('kmValue');
-    const kmSub = document.getElementById('kmSub');
-    const gpsStatus = document.getElementById('gpsStatus');
-    const postList = document.getElementById('postList');
-    const toast = document.getElementById('toast');
-    const searchInput = document.getElementById('searchInput');
-    const searchMsg = document.getElementById('searchMsg');
-    const searchMsgText = document.getElementById('searchMsgText');
-    const targetLock = document.getElementById('targetLock');
-    const targetLockText = document.getElementById('targetLockText');
-
-    function setKm(value) {
-      state.km = value;
-      kmValue.textContent = Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      kmSub.textContent = `Rodovia principal · ${Number(value).toFixed(2).replace('.', ',')} km`;
+function hydrateMunicipioTargets() {
+  document.querySelectorAll('[data-muni-lat]').forEach(async (el) => {
+    const lat = Number(el.dataset.muniLat);
+    const lon = Number(el.dataset.muniLon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      el.textContent = 'Município: não disponível';
+      return;
     }
 
-    function showToast(message, type = 'ok') {
-      toast.className = `toast ${type} show`;
-      toast.textContent = message;
-      clearTimeout(showToast.timeoutId);
-      showToast.timeoutId = setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2200);
+    const key = `${Number(lat).toFixed(5)},${Number(lon).toFixed(5)}`;
+    if (municipioCache.has(key)) {
+      el.textContent = `Município: ${municipioCache.get(key)}`;
+      return;
     }
 
-    function haversine(aLat, aLon, bLat, bLon) {
-      const toRad = deg => deg * Math.PI / 180;
-      const dLat = toRad(bLat - aLat);
-      const dLon = toRad(bLon - aLon);
-      const lat1 = toRad(aLat);
-      const lat2 = toRad(bLat);
-      const h = Math.sin(dLat/2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon/2) ** 2;
-      return 2 * 6371 * Math.asin(Math.sqrt(h));
+    const nome = await resolveMunicipio(lat, lon);
+    el.textContent = `Município: ${nome}`;
+  });
+}
+
+let posts=[],kmDB=[],pos=null,searchItem=null,searchKmItems=[],renderedKey='',apoioInit=false;
+let curSpeed=0;
+
+let _tt=null;
+function showToast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  const icons={
+    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>',
+    err:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
+  };
+  el.className='toast '+type;
+  el.innerHTML=(icons[type]||'')+msg;
+  clearTimeout(_tt);
+  requestAnimationFrame(()=>{el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),3000)});
+}
+
+function gpsBadge(el,p,err){
+  const a=p?.acc;let cls='bad',txt;
+  if(err)txt=err;
+  else if(!a)txt='GPS · BUSCANDO SINAL';
+  else if(a<=ACC_G){cls='ok';txt=`GPS · ALTA PRECISÃO ${fmtAcc(a)}`}
+  else if(a<=ACC_Y){cls='warn';txt=`GPS · PRECISÃO MÉDIA ${fmtAcc(a)}`}
+  else txt=`GPS · Sinal Fraco ${fmtAcc(a)}`;
+  el.className='gps '+cls;
+  el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>${txt}`;
+}
+
+async function loadPosts(){
+  try{
+    let r=await fetch('dados.csv?v='+Date.now(),{cache:'no-store'}).catch(()=>null);
+    if(!r?.ok)r=await fetch('Dados_Completos_Grupo_2_all.csv?v='+Date.now(),{cache:'no-store'});
+    if(!r?.ok)return;
+    let t=await r.text();
+    if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
+    const lines=t.split(/\r?\n/).filter(l=>l.trim());
+    const h=lines.shift().split(';');
+    const iId=findCol(h,['id do nox','idnox','id']),iLat=findCol(h,['latitude','lat']),iLon=findCol(h,['longitude','lon','long']);
+    posts=lines.map(l=>{
+      const r=l.split(';');
+      return {
+        id:String(r[iId]||'').trim().toUpperCase(),
+        lat:parsePt(r[iLat]),
+        lon:parsePt(r[iLon])
+      };
+    }).filter(p=>p.id&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
+    renderApoio();
+  }catch(e){}
+}
+
+async function loadKm(){
+  try{
+    let r=await fetch('SNVBR116SPRJ.csv?v='+Date.now(),{cache:'no-store'});
+    if(!r?.ok)return;
+    let t=await r.text();
+    if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
+    const lines=t.split(/\r?\n/).filter(l=>l.trim());
+    const h=lines.shift().split(';');
+    const iKm=findCol(h,['km']),iLat=findCol(h,['lat','latitude']),iLon=findCol(h,['lon','long','longitude']);
+    kmDB=lines.map(l=>{
+      const r=l.split(';');
+      return {km:parsePt(r[iKm]),lat:parsePt(r[iLat]),lon:parsePt(r[iLon])};
+    }).filter(p=>Number.isFinite(p.km)&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
+    updateKm();
+    renderApoio();
+  }catch(e){}
+}
+
+function nearestKm(){
+  if(!pos||!kmDB.length)return null;
+  let best=null,bd=Infinity;
+  for(const p of kmDB){
+    const d=hav(pos.lat,pos.lon,p.lat,p.lon);
+    if(d<bd){bd=d;best=p}
+  }
+  return best;
+}
+
+async function updateKm(){
+  const b=nearestKm();
+  if(b){
+    const v=(Math.round(b.km*100)/100).toFixed(2).replace('.',',');
+    document.getElementById('kmVal').textContent=v;
+    const s=document.getElementById('kmSource');
+    if(s){
+      const mun = pos ? await resolveMunicipio(pos.lat, pos.lon) : 'Município não disponível';
+      s.textContent = `Referência: ${kmDB.length} pontos • ${mun}`;
     }
+  }
+}
 
-    function formatDistance(km) {
-      return `${Number(km).toFixed(2).replace('.', ',')} km`;
+function findPostExactKm(post){
+  if(!kmDB.length)return '---';
+  let best=null, bd=Infinity;
+  for(const pt of kmDB){
+    const d=hav(post.lat, post.lon, pt.lat, pt.lon);
+    if(d<bd){bd=d;best=pt;}
+  }
+  return best ? (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') : '---';
+}
+
+function initApoio(){
+  if(apoioInit)return;
+  apoioInit=true;
+  loadPosts();
+  loadKm();
+  if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
+    pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
+    curSpeed=p.coords.speed?Math.round(p.coords.speed*3.6):0;
+    gpsBadge(document.getElementById('gpsStatus'),pos);
+    renderApoio();
+    updateKm();
+    updateSearchDist();
+    updateSearchKmDist();
+  },null,{enableHighAccuracy:true,maximumAge:0,timeout:10000});
+}
+
+function searchId(){
+  const raw=document.getElementById('inputId').value.trim();
+  const msg=document.getElementById('searchMsg'),
+        res=document.getElementById('searchResult');
+
+  if(!raw || raw.length !== 8 || !/^\d{8}$/.test(raw)){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID DEVE TER EXATAMENTE 8 DÍGITOS.';
+    searchItem=null;res.style.display='none';checkLock();vibrate(50);return;
+  }
+  if(!posts.length){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando dados, tente novamente...';
+    return;
+  }
+  const found=posts.find(p=>p.id===raw);
+  if(!found){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID "${raw}" NÃO ENCONTRADO.`;
+    searchItem=null;res.style.display='none';checkLock();vibrate(50);return;
+  }
+  searchItem=found;
+  msg.style.display='none';
+  renderSearch();
+  showToast('Poste encontrado: '+found.id);
+  vibrate([10,50,10]);
+}
+
+function clearId(){
+  document.getElementById('inputId').value='';
+  document.getElementById('searchMsg').style.display='none';
+  document.getElementById('searchResult').style.display='none';
+  searchItem=null;
+  checkLock();
+}
+
+function updateSearchDist(){
+  if(!searchItem||!pos)return;
+  const el=document.getElementById('srch-dist');
+  const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
+  if(el)el.textContent='Distância: '+range(dist,pos.acc);
+  checkLock();
+}
+
+function renderSearch(){
+  if(!searchItem)return;
+  const res=document.getElementById('searchResult');
+  let dt='Aguardando GPS...';
+  if(pos){
+    const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
+    dt='Distância: '+range(dist,pos.acc);
+    checkLock();
+  }
+  const exactKm = findPostExactKm(searchItem);
+  res.style.display='block';
+  res.innerHTML=`<div class="post searched">
+    <div class="post-top">
+      <div class="post-info">
+        <p class="post-id">OS / ID: <span>${searchItem.id}</span></p>
+        <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
+        <p class="post-dist" id="srch-dist">${dt}</p>
+        <p class="post-muni" data-muni-lat="${searchItem.lat}" data-muni-lon="${searchItem.lon}">Município: carregando...</p>
+        <p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p>
+      </div>
+      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})" title="Enviar este item por WhatsApp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="post-map-container">
+      <iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+    </div>
+  </div>`;
+  hydrateMunicipioTargets();
+}
+
+function searchKm(){
+  const rawVal=document.getElementById('inputKm').value;
+  const targetKm=parsePt(rawVal);
+  const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
+  
+  if(isNaN(targetKm)){clearKm();return}
+  if(!posts.length || !kmDB.length){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando bases de dados...';
+    return;
+  }
+
+  const kmMin=Math.min(...kmDB.map(pt=>pt.km));
+  const kmMax=Math.max(...kmDB.map(pt=>pt.km));
+  if(targetKm < kmMin || targetKm > kmMax){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} FORA DO INTERVALO CADASTRADO.`;
+    searchKmItems=[];res.style.display='none';
+    return;
+  }
+  
+  let filteredKmDB = kmDB;
+  const isInteger = Number.isInteger(targetKm) || targetKm === Math.floor(targetKm);
+  
+  if (isInteger) {
+    filteredKmDB = kmDB.filter(pt => pt.km >= targetKm && pt.km < targetKm + 1);
+  } else {
+    filteredKmDB = kmDB.filter(pt => pt.km >= targetKm);
+  }
+
+  let bestKmPt=null, minKmDiff=Infinity;
+  for(const pt of filteredKmDB){
+    const diff=Math.abs(pt.km - targetKm);
+    if(diff<minKmDiff){minKmDiff=diff;bestKmPt=pt;}
+  }
+
+  if(!bestKmPt){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} NÃO ENCONTRADO.`;
+    searchKmItems=[];res.style.display='none';
+    return;
+  }
+
+  const sortedPosts = posts.map(p => ({
+    ...p,
+    d: hav(bestKmPt.lat, bestKmPt.lon, p.lat, p.lon)
+  })).sort((a, b) => a.d - b.d).slice(0, 10);
+
+  if(!sortedPosts.length){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Nenhum poste próximo ao KM ${rawVal}.`;
+    searchKmItems=[];res.style.display='none';
+    return;
+  }
+
+  searchKmItems = sortedPosts;
+  msg.style.display='none';
+  renderSearchKm();
+  showToast('10 postes mais próximos do KM '+rawVal);
+  vibrate([10,50,10]);
+}
+
+function clearKm(){
+  document.getElementById('inputKm').value='';
+  document.getElementById('searchKmMsg').style.display='none';
+  document.getElementById('searchKmResult').style.display='none';
+  searchKmItems=[];
+}
+
+function updateSearchKmDist(){
+  if(!searchKmItems.length||!pos)return;
+  searchKmItems.forEach((item, idx)=>{
+    const el=document.getElementById('srch-km-dist-'+idx);
+    if(el)el.textContent='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
+  });
+}
+
+function renderSearchKm(){
+  if(!searchKmItems.length)return;
+  const res=document.getElementById('searchKmResult');
+  res.style.display='block';
+  
+  let htmlContent = '<div style="display:flex;flex-direction:column;gap:12px">';
+  searchKmItems.forEach((item, idx)=>{
+    let dt='Aguardando GPS...';
+    if(pos){
+      dt='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
     }
-
-    function renderPosts() {
-      const selectedLimit = Number(document.getElementById('rangeSelect').value) || 10;
-      const items = state.posts
-        .map(post => ({ ...post, distKm: haversine(state.pos.lat, state.pos.lon, post.lat, post.lon) }))
-        .sort((a, b) => a.distKm - b.distKm)
-        .filter(item => item.distKm <= selectedLimit);
-
-      if (!items.length) {
-        postList.innerHTML = '<div class="card"><div class="card-label">Resultado</div><p style="color:var(--muted);font-size:12px;">Nenhum poste encontrado no filtro atual.</p></div>';
-        return;
-      }
-
-      postList.innerHTML = items.map((post, index) => `
-        <article class="post ${index === 0 ? 'near' : ''}">
-          <div class="post-top">
-            <input class="post-chk" type="checkbox" checked />
-            <div class="post-info">
-              <p class="post-id">Poste: <span>${post.id}</span></p>
-              <p class="post-dist">Distância: ${formatDistance(post.distKm)}</p>
-              <p class="post-coords">Coordenadas: ${post.lat.toFixed(6)}, ${post.lon.toFixed(6)}</p>
-              <p class="post-km">KM: ${Number(post.km).toFixed(2).replace('.', ',')}</p>
-            </div>
-            <button class="post-wa-btn" type="button" data-id="${post.id}" data-lat="${post.lat}" data-lon="${post.lon}" data-km="${post.km}" aria-label="Enviar por WhatsApp">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8A8.5 8.5 0 0 1 12.5 20a8.38 8.38 0 0 1-3.8-.9L3 21l1.1-5.7A8.38 8.38 0 0 1 3.2 11.5a8.5 8.5 0 0 1 4.7-8.1A8.38 8.38 0 0 1 21 11.5Z"></path>
-                <path d="M8.5 8.5c.2-.4.4-.4.6-.4h.3c.2 0 .4 0 .6.4.3.7.5 1.3.1 1.5l-.2.2c-.2.2-.2.3-.1.6.3.7 1.3 1.7 2.1 2.2.4.2.6.2.8 0l.5-.4c.2-.2.4-.2.7-.1.4.2 1 .5 1.2.7.3.3.3.6.1.9-.3.6-.8 1.2-1.4 1.5-.4.2-.9.2-1.4.1-.9-.2-2.8-1.2-4.6-3.1-1.8-2-2.8-4.1-3-5.1-.1-.4.1-.7.4-.9.3-.2.5-.4.8-.4h.5Z"></path>
-              </svg>
-            </button>
+    const exactKm = findPostExactKm(item);
+    htmlContent += `
+      <div class="post searched">
+        <div class="post-top">
+          <div class="post-info">
+            <p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p>
+            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
+            <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
+            <p class="post-muni" data-muni-lat="${item.lat}" data-muni-lon="${item.lon}">Município: carregando...</p>
+            <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
           </div>
-          <div class="post-map-container">
-            <button class="btn-toggle-map" type="button" data-lat="${post.lat}" data-lon="${post.lon}">Mostrar mapa</button>
-          </div>
-        </article>
-      `).join('');
+          <button class="post-wa-btn" onclick="sendSingleWhatsApp('${item.id}', ${item.lat}, ${item.lon})" title="Enviar este item por WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5"/>
+            </svg>
+          </button>
+        </div>
+        <div class="post-map-container">
+          <iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+        </div>
+      </div>`;
+  });
+  htmlContent += '</div>';
+  res.innerHTML = htmlContent;
+  hydrateMunicipioTargets();
+}
 
-      document.querySelectorAll('.post-wa-btn').forEach(button => {
-        button.addEventListener('click', () => sendSingleWhatsApp(button.dataset.id, Number(button.dataset.lat), Number(button.dataset.lon), Number(button.dataset.km)));
-      });
+function checkLock(){
+  const b=document.getElementById('targetLock');
+  if(!searchItem||!pos){b.classList.remove('on');return}
+  const d=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
+  if(d<=(5+(pos.acc||10))){
+    b.classList.add('on');
+    document.getElementById('targetLockSub').textContent=`ID ALVO: ${searchItem.id} · DISTÂNCIA EST. ~${Math.round(d)}M`;
+    vibrate([30,100,30]);
+  }else{
+    b.classList.remove('on');
+  }
+}
 
-      document.querySelectorAll('.btn-toggle-map').forEach(button => {
-        button.addEventListener('click', () => {
-          const lat = Number(button.dataset.lat);
-          const lon = Number(button.dataset.lon);
-          const map = button.parentElement.querySelector('iframe');
-          if (map) {
-            map.remove();
-            button.textContent = 'Mostrar mapa';
-            return;
-          }
-          const iframe = document.createElement('iframe');
-          iframe.className = 'post-map';
-          iframe.loading = 'lazy';
-          iframe.referrerPolicy = 'no-referrer-when-downgrade';
-          iframe.src = FREE_API.mapEmbed(lat, lon, 15);
-          button.parentElement.appendChild(iframe);
-          button.textContent = 'Ocultar mapa';
-        });
-      });
-    }
+function sendSingleWhatsApp(id, lat, lon) {
+  let tx = `📍 *LOCALIZAÇÃO DE POSTE*\n`;
+  tx += `Data/Hora: ${nowBR()}\n\n`;
+  tx += `*ID:* ${id}\n`;
+  tx += `Coordenadas: ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}\n`;
+  tx += `🗺️ https://maps.google.com/?q=${Number(lat).toFixed(6)},${Number(lon).toFixed(6)}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(tx), '_blank', 'noopener');
+  showToast(`Poste ${id} enviado para o WhatsApp`);
+}
 
-    function setGpsStatus(text, mode = 'ok') {
-      gpsStatus.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/><path d="M12 7v5l3 3"/></svg><span>${text}</span>`;
-      gpsStatus.className = `gps-box ${mode}`;
-    }
+function renderApoio(){
+  if(!pos||!posts.length)return;
+  if(searchItem)updateSearchDist();
+  if(searchKmItems.length)updateSearchKmDist();
 
-    function sendSingleWhatsApp(id, lat, lon, km) {
-      const text = `📍 RELEVO DE LOCALIZAÇÃO\n\nData/Hora: ${new Date().toLocaleString('pt-BR')}\nID: ${id}\nKM aprox.: ${Number(km).toFixed(2).replace('.', ',')}\nCoordenadas: ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}\nMapa: https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=15/${lat}/${lon}\n`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
-      showToast(`Poste ${id} enviado`, 'ok');
-    }
+  const qty=Number(document.getElementById('qty').value||10);
+  const items=posts.map(p=>{
+    const d=hav(pos.lat,pos.lon,p.lat,p.lon);
+    return {id:p.id,lat:p.lat,lon:p.lon,d};
+  }).sort((a,b)=>a.d-b.d).slice(0,qty);
 
-    document.getElementById('rangeSelect').addEventListener('change', renderPosts);
+  const key=items.map(i=>i.id).join(',');
+  const list=document.getElementById('postList');
 
-    document.getElementById('sendSelectedBtn').addEventListener('click', () => {
-      const checked = [...document.querySelectorAll('.post-chk:checked')].map(el => el.closest('.post'));
-      if (!checked.length) {
-        showToast('Nenhum poste selecionado', 'err');
-        return;
-      }
-      checked.forEach(card => {
-        const id = card.querySelector('.post-id span')?.textContent || 'POSTE';
-        const lat = Number(card.querySelector('.post-coords').textContent.replace(/.*: /, '').split(',')[0]);
-        const lon = Number(card.querySelector('.post-coords').textContent.replace(/.*: /, '').split(',')[1]);
-        const km = Number(card.querySelector('.post-km').textContent.replace(/.*: /, '').replace(',', '.'));
-        sendSingleWhatsApp(id, lat, lon, km);
-      });
+  if(key===renderedKey){
+    items.forEach((o,i)=>{
+      const el=document.getElementById('dist-'+i);
+      const kmEl=document.getElementById('km-exato-'+i);
+      if(el)el.textContent='Distância: '+range(o.d,pos.acc);
+      if(kmEl && kmDB.length)kmEl.textContent='KM Exato: '+findPostExactKm(o);
     });
+    document.getElementById('btnSend').disabled=false;
+    return;
+  }
 
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') handleSearch();
-    });
+  renderedKey=key;
+  const fragment = document.createDocumentFragment();
 
-    document.getElementById('searchBtn').addEventListener('click', handleSearch);
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      searchInput.value = '';
-      searchMsg.classList.remove('show');
-      targetLock.classList.remove('on');
-      renderPosts();
-    });
+  items.forEach((o,i)=>{
+    const exactKm = findPostExactKm(o);
+    const div=document.createElement('div');
+    div.className='post'+(i===0?' near':'');
+    div.innerHTML=`<div class="post-top">
+      <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
+      <div class="post-info">
+        <p class="post-id">Poste: <span>${o.id}</span></p>
+        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
+        <p class="post-dist" id="dist-${i}">Distância: ${range(o.d,pos.acc)}</p>
+        <p class="post-muni" data-muni-lat="${o.lat}" data-muni-lon="${o.lon}">Município: carregando...</p>
+      </div>
+      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar este item por WhatsApp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="post-map-container">
+      <iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+    </div>`;
+    fragment.appendChild(div);
+  });
 
-    async function handleSearch() {
-      const term = searchInput.value.trim();
-      if (!term) {
-        searchMsgText.textContent = 'Digite algo para buscar';
-        searchMsg.classList.add('show');
-        return;
-      }
-      try {
-        const results = await FREE_API.geocode(term);
-        if (!results.length) {
-          searchMsgText.textContent = 'Nenhum resultado encontrado';
-          searchMsg.classList.add('show');
-          return;
-        }
-        const item = results[0];
-        const lat = Number(item.lat);
-        const lon = Number(item.lon);
+  list.innerHTML='';
+  list.appendChild(fragment);
+  hydrateMunicipioTargets();
+  document.getElementById('btnSend').disabled=false;
+}
 
-        targetLock.classList.add('on');
-        targetLockText.textContent = `${item.display_name}`;
-        searchMsg.classList.remove('show');
-        setGpsStatus('Local encontrado', 'ok');
-        state.pos = { lat, lon };
-        setKm(haversine(state.pos.lat, state.pos.lon, state.posts[0].lat, state.posts[0].lon));
-        renderPosts();
-        showToast('Busca concluída', 'ok');
-      } catch (error) {
-        searchMsgText.textContent = 'Erro na busca por endereço';
-        searchMsg.classList.add('show');
-        showToast('Erro ao buscar', 'err');
-      }
-    }
+document.getElementById('btnSend').onclick=()=>{
+  if(!pos)return;
+  const chks=document.querySelectorAll('.post-chk:checked');
+  let items=[];
+  if(chks.length){
+    chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
+  }else{
+    const qty=Number(document.getElementById('qty').value||10);
+    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
+  }
+  let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
+  items.forEach((o,i)=>{
+    const exactKm = findPostExactKm(o);
+    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactKm})\n`;
+    if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`;
+  });
+  window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
+  showToast(`${items.length} postes enviados`);
+  vibrate(15);
+};
 
-    function getUserLocation() {
-      if (!navigator.geolocation) {
-        setGpsStatus('GPS indisponível', 'warn');
-        return;
-      }
+document.getElementById('qty').onchange=()=>{renderedKey='';renderApoio()};
 
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        state.pos = { lat, lon };
-        setGpsStatus('GPS ativo', 'ok');
-        try {
-          const addr = await FREE_API.reverseGeocode(lat, lon);
-          const label = addr?.address ? `${addr.address.city || addr.address.town || addr.address.village || 'Local'} • ${addr.address.state || ''}`.trim() : 'Localização atual';
-          kmSub.textContent = label;
-        } catch (e) {}
-        setKm(Math.min(...state.posts.map(p => haversine(lat, lon, p.lat, p.lon))));
-        renderPosts();
-      }, () => {
-        setGpsStatus('GPS sem permissão', 'warn');
-      }, { enableHighAccuracy: true, timeout: 20000 });
-    }
-
-    function init() {
-      setKm(0);
-      renderPosts();
-      getUserLocation();
-      setTimeout(() => {
-        setGpsStatus('GPS ativo', 'ok');
-      }, 500);
-    }
-
-    init();
-  </script>
+window.addEventListener('DOMContentLoaded', () => {
+  initApoio();
+});
+</script>
 </body>
 </html>
