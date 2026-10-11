@@ -430,7 +430,18 @@ img,video{display:block;max-width:100%}
     <div class="tools-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Ferramentas</div>
     <button class="tools-close" onclick="toggleTools()" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
   </div>
-  <div class="tools-grid" id="toolsGrid"></div>
+  <div class="tool-section">
+    <div class="tool-section-title">GPS & Navegação</div>
+    <div class="tools-grid" id="gpsToolsGrid"></div>
+  </div>
+  <div class="tool-section">
+    <div class="tool-section-title">Busca & Filtros</div>
+    <div class="tools-grid" id="searchToolsGrid"></div>
+  </div>
+  <div class="tool-section">
+    <div class="tool-section-title">Exportar & Dados</div>
+    <div class="tools-grid" id="exportToolsGrid"></div>
+  </div>
   <div class="tool-section">
     <div class="tool-section-title">Sistema</div>
     <div class="tools-grid" id="sysToolsGrid"></div>
@@ -560,7 +571,7 @@ async function fetchMunicipio(lat,lon){
   const key=`${lat.toFixed(5)},${lon.toFixed(5)}`;
   if(municipioCache.has(key))return municipioCache.get(key);
   try{
-    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1&accept-language=pt-BR`);
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1&accept-language=pt-BR`,{headers:{'User-Agent':'ApoioLocalizacao/1.0'}});
     if(!r.ok)throw 0;
     const d=await r.json();
     const m=d.address?.municipality||d.address?.city||d.address?.town||d.address?.village||d.address?.county||d.address?.state_district||'—';
@@ -600,10 +611,11 @@ function gpsBadge(el,p,err){
 }
 
 async function loadPosts(){
+  document.getElementById('hdrSub').textContent='Carregando postes...';
   try{
     let r=await fetch('dados.csv?v='+Date.now(),{cache:'no-store'}).catch(()=>null);
     if(!r?.ok)r=await fetch('Dados_Completos_Grupo_2_all.csv?v='+Date.now(),{cache:'no-store'});
-    if(!r?.ok)return;
+    if(!r?.ok){document.getElementById('hdrSub').textContent='Erro ao carregar postes';return}
     let t=await r.text();
     if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
     const lines=t.split(/\r?\n/).filter(l=>l.trim());
@@ -618,10 +630,11 @@ async function loadPosts(){
       };
     }).filter(p=>p.id&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
     renderApoio();
-  }catch(e){}
+  }catch(e){document.getElementById('hdrSub').textContent='Erro ao carregar postes'}
 }
 
 async function loadKm(){
+  document.getElementById('hdrSub').textContent='Carregando KMs...';
   try{
     const files = [
       {file: 'BR116_SP.csv', br: 'BR116/SP'},
@@ -645,7 +658,8 @@ async function loadKm(){
     kmDB = allKm;
     updateKm();
     renderApoio();
-  }catch(e){}
+    if(posts.length){const brs=[...new Set(kmDB.map(k=>k.br))];document.getElementById('hdrSub').textContent=`${posts.length} postes · ${kmDB.length} KMs (${brs.join(', ')})`}
+  }catch(e){document.getElementById('hdrSub').textContent='Erro ao carregar KMs'}
 }
 
 function nearestKm(){
@@ -691,23 +705,28 @@ function initApoio(){
     updateKm();
     updateSearchDist();
     updateSearchKmDist();
-  },null,{enableHighAccuracy:true,maximumAge:0,timeout:10000});
+  },e=>{gpsBadge(document.getElementById('gpsStatus'),null,'GPS · '+e.message)},{enableHighAccuracy:true,maximumAge:0,timeout:10000});
 }
 
 function searchId(){
-  const term=norm(document.getElementById('inputId').value),
+  const raw=document.getElementById('inputId').value.trim().toUpperCase(),
         msg=document.getElementById('searchMsg'),
         res=document.getElementById('searchResult');
-  if(!term){clearId();return}
+  if(!raw){clearId();return}
+  if(!/^\d{8}$/.test(raw)){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID deve ter exatamente 8 dígitos.';
+    vibrate(50);return;
+  }
   if(!posts.length){
     msg.style.display='flex';
     msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando dados, tente novamente...';
     return;
   }
-  const found=posts.find(p=>norm(p.id)===term||norm(p.id).includes(term));
+  const found=posts.find(p=>p.id===raw);
   if(!found){
     msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID "${term}" NÃO ENCONTRADO.`;
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID "${raw}" NÃO ENCONTRADO.`;
     searchItem=null;res.style.display='none';checkLock();vibrate(50);return;
   }
   searchItem=found;
@@ -872,7 +891,7 @@ function updateSearchKmDist(){
   if(!searchKmItems.length||!pos)return;
   searchKmItems.forEach((item, idx)=>{
     const el=document.getElementById('srch-km-dist-'+idx);
-    if(el)el.textContent='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
+    if(el)el.innerHTML=`distância do seu gps atual até o ponto: ${range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc).toLowerCase()}`;
   });
 }
 
@@ -897,4 +916,190 @@ function renderSearchKm(){
           <div class="post-info">
             <p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p>
             <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
-            <p class="post-muni loading" 
+            <p class="post-muni loading" id="srch-km-muni-${idx}">município: carregando...</p>
+            ${dt}
+            <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
+          </div>
+          <span class="post-pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        </div>
+        <div class="post-map-container">
+          <iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+        </div>
+      </div>`;
+  });
+  htmlContent += '</div>';
+  res.innerHTML = htmlContent;
+  if(pos)searchKmItems.forEach((item, idx)=>fetchMunicipio(item.lat,item.lon).then(m=>{const el=document.getElementById('srch-km-muni-'+idx);if(el){el.classList.remove('loading');el.textContent='município: '+m}}));
+}
+
+function checkLock(){
+  const b=document.getElementById('targetLock');
+  if(!searchItem||!pos){b.classList.remove('on');return}
+  const d=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
+  if(d<=(5+(pos.acc||10))){
+    b.classList.add('on');
+    document.getElementById('targetLockSub').textContent=`ID ALVO: ${searchItem.id} · DISTÂNCIA EST. ~${Math.round(d)}M`;
+    vibrate([30,100,30]);
+  }else{
+    b.classList.remove('on');
+  }
+}
+
+function sendSingleWhatsApp(id, lat, lon) {
+  const post=posts.find(p=>p.id===id);
+  const km=post?findPostExactKm(post):'—';
+  let tx = `📍 *LOCALIZAÇÃO DE POSTE*\n`;
+  tx += `Data/Hora: ${nowBR()}\n\n`;
+  tx += `*ID:* ${id}\n`;
+  tx += `KM Exato: ${km}\n`;
+  tx += `Coordenadas: ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}\n`;
+  tx += `🗺️ https://maps.google.com/?q=${Number(lat).toFixed(6)},${Number(lon).toFixed(6)}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(tx), '_blank', 'noopener');
+  showToast(`Poste ${id} enviado`);
+}
+
+function renderApoio(){
+  if(!pos||!posts.length)return;
+  if(searchItem)updateSearchDist();
+  if(searchKmItems.length)updateSearchKmDist();
+
+  const qty=Number(document.getElementById('qty').value||10);
+  const items=posts.map(p=>{
+    const d=hav(pos.lat,pos.lon,p.lat,p.lon);
+    return {id:p.id,lat:p.lat,lon:p.lon,d};
+  }).sort((a,b)=>a.d-b.d).slice(0,qty);
+
+  const key=items.map(i=>i.id).join(',');
+  const list=document.getElementById('postList');
+
+  if(key===renderedKey){
+    items.forEach((o,i)=>{
+      const el=document.getElementById('dist-'+i);
+      const kmEl=document.getElementById('km-exato-'+i);
+      if(el)el.innerHTML=`<span class="post-dist gps-dist">distância do seu gps atual até o ponto: ${range(o.d,pos.acc).toLowerCase()}</span>`;
+      if(kmEl && kmDB.length)kmEl.textContent='KM Exato: '+findPostExactKm(o);
+    });
+    document.getElementById('btnSend').disabled=false;
+    return;
+  }
+
+  renderedKey=key;
+  const fragment = document.createDocumentFragment();
+
+  items.forEach((o,i)=>{
+    const exactKm = findPostExactKm(o);
+    const div=document.createElement('div');
+    div.className='post'+(i===0?' near':'');
+    div.innerHTML=`<div class="post-top">
+      <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
+      <div class="post-info">
+        <p class="post-id">Poste: <span>${o.id}</span></p>
+        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
+        <p class="post-muni loading" id="muni-${i}">município: carregando...</p>
+        <span class="post-dist gps-dist" id="dist-${i}">distância do seu gps atual até o ponto: ${range(o.d,pos.acc).toLowerCase()}</span>
+      </div>
+      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar este item por WhatsApp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="post-map-container">
+      <iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+    </div>`;
+    fragment.appendChild(div);
+  });
+
+  list.innerHTML='';
+  list.appendChild(fragment);
+  document.getElementById('btnSend').disabled=false;
+  items.forEach((o,i)=>fetchMunicipio(o.lat,o.lon).then(m=>{const el=document.getElementById('muni-'+i);if(el){el.classList.remove('loading');el.textContent='município: '+m}}));
+}
+
+document.getElementById('btnSend').onclick=()=>{
+  if(!pos)return;
+  const chks=document.querySelectorAll('.post-chk:checked');
+  let items=[];
+  if(chks.length){
+    chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
+  }else{
+    const qty=Number(document.getElementById('qty').value||10);
+    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
+  }
+  let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
+  items.forEach((o,i)=>{
+    const exactKm = findPostExactKm(o);
+    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactKm})\n`;
+    if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`;
+  });
+  window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
+  showToast(`${items.length} postes enviados`);
+  vibrate(15);
+};
+
+document.getElementById('qty').onchange=()=>{renderedKey='';renderApoio()};
+
+function toggleTools(){document.getElementById('toolsPanel').classList.toggle('open')}
+
+const TOOLS=[
+  {id:'copyGps',label:'Copiar GPS Atual',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');navigator.clipboard.writeText(`${pos.lat.toFixed(6)},${pos.lon.toFixed(6)}`);showToast('Coordenadas copiadas')}},
+  {id:'openMaps',label:'Abrir no Google Maps',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');window.open(`https://maps.google.com/?q=${pos.lat.toFixed(6)},${pos.lon.toFixed(6)}&t=k&z=19`,'_blank')}},
+  {id:'openWaze',label:'Abrir no Waze',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');window.open(`https://waze.com/ul?ll=${pos.lat.toFixed(6)},${pos.lon.toFixed(6)}&navigate=yes`,'_blank')}},
+  {id:'shareLoc',label:'Compartilhar Localização',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51 15.42 19.68"/><path d="M15.41 6.51 8.59 12.68"/></svg>',fn:async()=>{if(!pos)return showToast('GPS não disponível','err');const txt=`📍 Minha localização: https://maps.google.com/?q=${pos.lat.toFixed(6)},${pos.lon.toFixed(6)}`;if(navigator.share)await navigator.share({title:'Localização',text:txt});else{navigator.clipboard.writeText(txt);showToast('Link copiado')}}},
+  {id:'measureDist',label:'Medir Distância',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M12 3v18"/><path d="M3 12h18"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');const dest=prompt('Latitude,Longitude do destino:');if(!dest)return;const [lat,lon]=dest.split(',').map(Number);if(isNaN(lat)||isNaN(lon))return showToast('Formato inválido','err');const d=hav(pos.lat,pos.lon,lat,lon);showToast(`Distância: ${range(d,pos.acc)}`)}},
+  {id:'bearing',label:'Rumo/Bearing',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');const dest=prompt('Latitude,Longitude do destino:');if(!dest)return;const [lat,lon]=dest.split(',').map(Number);if(isNaN(lat)||isNaN(lon))return showToast('Formato inválido','err');const brg=calcBearing(pos.lat,pos.lon,lat,lon);showToast(`Rumo: ${formatBearing(brg)} (${brg.toFixed(1)}°)`)}},
+  {id:'nearestPost',label:'Poste Mais Próximo',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>',fn:()=>{if(!pos||!posts.length)return showToast('Sem dados','err');const near=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d)[0];showToast(`Mais próximo: ${near.id} (${range(near.d,pos.acc)})`)}},
+  {id:'stats',label:'Estatísticas',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',fn:()=>{if(!pos||!posts.length)return showToast('Sem dados','err');const items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d);const near=items[0];const far=items[items.length-1];const avg=items.reduce((s,i)=>s+i.d,0)/items.length;showToast(`Total: ${posts.length} | Mais próximo: ${near.id} (${Math.round(near.d)}m) | Mais longe: ${far.id} (${Math.round(far.d)}m) | Média: ${Math.round(avg)}m`)}}
+];
+
+const EXTRA_TOOLS=[
+  {id:'searchById',label:'Buscar ID Específico',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',fn:()=>{const id=prompt('Digite o ID (8 dígitos):');if(!id)return;searchItem=posts.find(p=>p.id===id.trim().toUpperCase());if(searchItem){renderSearch();showToast('Encontrado: '+searchItem.id)}else showToast('Não encontrado','err')}},
+  {id:'searchByKm',label:'Buscar por KM',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',fn:()=>{const km=prompt('Digite o KM:');if(!km)return;document.getElementById('inputKm').value=km;searchKm()}},
+  {id:'filterBr',label:'Filtrar por BR',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',fn:()=>{const br=prompt('BR116/SP ou BR116/RJ:');if(!br)return;const filtered=posts.filter(p=>{const km=findPostExactKm(p);return km.includes(br)});showToast(`${filtered.length} postes na ${br}`)}},
+  {id:'exportAll',label:'Exportar Todos (CSV)',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',fn:()=>{if(!posts.length)return showToast('Sem dados','err');let csv='ID,Latitude,Longitude\n';posts.forEach(p=>csv+=`${p.id},${p.lat.toFixed(6)},${p.lon.toFixed(6)}\n`);const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`todos_postes_${Date.now()}.csv`;a.click();showToast(`${posts.length} postes exportados`)}}
+];
+
+const MORE_TOOLS=[
+  {id:'radiusSearch',label:'Buscar por Raio',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');const r=prompt('Raio em metros:');if(!r)return;const rad=Number(r);const found=posts.filter(p=>hav(pos.lat,pos.lon,p.lat,p.lon)<=rad);showToast(`${found.length} postes dentro de ${rad}m`)}},
+  {id:'nearestKm',label:'KM Referência Mais Próximo',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',fn:()=>{if(!pos||!kmDB.length)return showToast('Sem dados','err');const near=kmDB.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d)[0];showToast(`KM ref: ${near.br} KM ${near.km.toFixed(3)} (${range(near.d,pos.acc)})`)}},
+  {id:'speed',label:'Velocidade Atual',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',fn:()=>{showToast(`Velocidade: ${curSpeed} km/h`)}},
+  {id:'copyKm',label:'Copiar KM Atual',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',fn:()=>{const kmVal=document.getElementById('kmVal').textContent;if(kmVal==='—')return showToast('KM não disponível','err');navigator.clipboard.writeText(kmVal);showToast('KM copiado')}},
+  {id:'saveLoc',label:'Salvar Localização',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');const name=prompt('Nome do local:');if(!name)return;const saved=JSON.parse(localStorage.getItem('savedLocs')||'[]');saved.push({name,lat:pos.lat,lon:pos.lon,time:Date.now()});localStorage.setItem('savedLocs',JSON.stringify(saved));showToast('Local salvo')}},
+  {id:'loadLocs',label:'Locais Salvos',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',fn:()=>{const saved=JSON.parse(localStorage.getItem('savedLocs')||'[]');if(!saved.length)return showToast('Nenhum local salvo','err');const list=saved.map((s,i)=>`${i+1}. ${s.name}: ${s.lat.toFixed(6)},${s.lon.toFixed(6)}`).join('\n');alert('Locais salvos:\n'+list)}},
+  {id:'clearLocs',label:'Limpar Locais Salvos',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',fn:()=>{localStorage.removeItem('savedLocs');showToast('Locais salvos limpos')}},
+  {id:'compass',label:'Bússola (Rumo Norte)',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');showToast('Use dispositivo com bússola para rumo real')}},
+  {id:'altitude',label:'Altitude Aproximada',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H7"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${pos.lat},${pos.lon}`).then(r=>r.json()).then(d=>{if(d.results)showToast(`Altitude: ~${Math.round(d.results[0].elevation)}m`);else showToast('Não disponível','err')}).catch(()=>showToast('Erro ao consultar','err'))}},
+  {id:'sunTimes',label:'Nascer/Pôr do Sol',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');fetch(`https://api.sunrise-sunset.org/json?lat=${pos.lat}&lng=${pos.lon}&formatted=0`).then(r=>r.json()).then(d=>{if(d.results){const rise=new Date(d.results.sunrise).toLocaleTimeString('pt-BR');const set=new Date(d.results.sunset).toLocaleTimeString('pt-BR');showToast(`Nascer: ${rise} | Pôr: ${set}`)}else showToast('Não disponível','err')}).catch(()=>showToast('Erro ao consultar','err'))}},
+  {id:'weather',label:'Clima Atual',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>',fn:()=>{if(!pos)return showToast('GPS não disponível','err');showToast('Use app de clima para detalhes')}},
+  {id:'distanceKm',label:'Distância entre KMs',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M12 3v18"/><path d="M3 12h18"/></svg>',fn:()=>{const km1=prompt('KM inicial:');if(!km1)return;const km2=prompt('KM final:');if(!km2)return;const d=Math.abs(parsePt(km2)-parsePt(km1))*1000;showToast(`Distância: ~${d.toLocaleString('pt-BR')}m`)}},
+  {id:'convertCoord',label:'Converter Coordenadas',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6"/></svg>',fn:()=>{const coord=prompt('Lat,Long (decimal):');if(!coord)return;const [lat,lon]=coord.split(',').map(Number);if(isNaN(lat)||isNaN(lon))return showToast('Inválido','err');const toDMS=deg=>{const d=Math.floor(Math.abs(deg));const m=Math.floor((Math.abs(deg)-d)*60);const s=((Math.abs(deg)-d-m/60)*3600).toFixed(2);return `${d}°${m}'${s}"${deg>=0?'':'S'}`};showToast(`Lat: ${toDMS(lat)} Lon: ${toDMS(lon)}`)}}
+];
+
+const SYS_TOOLS=[
+  {id:'reloadData',label:'Recarregar Dados',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6"/><path d="M1 20v-6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',fn:()=>{posts=[];kmDB=[];renderedKey='';loadPosts();loadKm();showToast('Recarregando dados...')}},
+  {id:'clearCache',label:'Limpar Cache Municípios',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',fn:()=>{municipioCache.clear();showToast('Cache limpo')}},
+  {id:'exportCsv',label:'Exportar Postes Próximos (CSV)',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',fn:()=>{if(!pos||!posts.length)return showToast('Sem dados','err');const qty=Number(document.getElementById('qty').value||10);const items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty);let csv='ID,Latitude,Longitude,Distancia_m,KM_Exato\n';items.forEach(o=>{const km=findPostExactKm(o);csv+=`${o.id},${o.lat.toFixed(6)},${o.lon.toFixed(6)},${Math.round(o.d)},${km}\n`});const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`postes_proximos_${Date.now()}.csv`;a.click();showToast(`${items.length} postes exportados`)}}
+];
+
+function buildToolsGrid(){
+  const gpsTools=[...TOOLS.filter(t=>['copyGps','openMaps','openWaze','shareLoc','measureDist','bearing'].includes(t.id)),...MORE_TOOLS.filter(t=>['compass','altitude','sunTimes','weather'].includes(t.id))];
+  const searchTools=[...TOOLS.filter(t=>['nearestPost','stats'].includes(t.id)),...EXTRA_TOOLS,...MORE_TOOLS.filter(t=>['radiusSearch','distanceKm','convertCoord','nearestKm','speed'].includes(t.id))];
+  const exportTools=[...TOOLS.filter(t=>['copyKm','saveLoc','loadLocs','clearLocs'].includes(t.id)),...MORE_TOOLS.filter(t=>['exportAll'].includes(t.id))];
+  
+  document.getElementById('gpsToolsGrid').innerHTML=gpsTools.map(t=>`<button class="tool-btn" onclick="(TOOLS.find(x=>x.id==='${t.id}')||MORE_TOOLS.find(x=>x.id==='${t.id}')).fn()">${t.icon}<span>${t.label}</span></button>`).join('');
+  document.getElementById('searchToolsGrid').innerHTML=searchTools.map(t=>`<button class="tool-btn" onclick="(TOOLS.find(x=>x.id==='${t.id}')||EXTRA_TOOLS.find(x=>x.id==='${t.id}')||MORE_TOOLS.find(x=>x.id==='${t.id}')).fn()">${t.icon}<span>${t.label}</span></button>`).join('');
+  document.getElementById('exportToolsGrid').innerHTML=exportTools.map(t=>`<button class="tool-btn" onclick="(TOOLS.find(x=>x.id==='${t.id}')||MORE_TOOLS.find(x=>x.id==='${t.id}')).fn()">${t.icon}<span>${t.label}</span></button>`).join('');
+  document.getElementById('sysToolsGrid').innerHTML=SYS_TOOLS.map(t=>`<button class="tool-btn" onclick="SYS_TOOLS.find(x=>x.id==='${t.id}').fn()">${t.icon}<span>${t.label}</span></button>`).join('');
+}
+
+function calcBearing(lat1,lon1,lat2,lon2){const dLon=(lon2-lon1)*Math.PI/180;lat1*=Math.PI/180;lat2*=Math.PI/180;const y=Math.sin(dLon)*Math.cos(lat2);const x=Math.cos(lat1)*Math.sin(lat2)-Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);let brng=Math.atan2(y,x)*180/Math.PI;return (brng+360)%360}
+
+function formatBearing(deg){const dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];return dirs[Math.round(deg/22.5)%16]}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initApoio();
+  buildToolsGrid();
+});
+</script>
+</body>
+</html>
