@@ -39,26 +39,10 @@ img,video{display:block;max-width:100%}
 .hdr-title p{font-size:10px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .hdr-badge{width:36px;height:36px;border-radius:var(--r-xs);background:var(--violet-dim);color:var(--violet2);display:grid;place-items:center;flex-shrink:0}
 .hdr-badge svg{width:18px;height:18px}
-.hdr-route{display:flex;align-items:center;gap:8px;background:rgba(15,23,42,.90);border:1px solid var(--border2);border-radius:999px;padding:7px 9px 7px 12px;font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--green2);text-transform:uppercase;white-space:nowrap}
-.hdr-route button{background:var(--violet-dim);border:1px solid rgba(124,58,237,.35);color:var(--text);border-radius:999px;padding:5px 8px;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+/* Header mostra todas as BRs ativas */
+.hdr-route{display:flex;align-items:center;gap:8px;background:rgba(15,23,42,.90);border:1px solid var(--border2);border-radius:999px;padding:7px 12px;font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--green2);text-transform:uppercase;white-space:nowrap}
 
 .wrap{max-width:680px;margin:0 auto;padding:16px;padding-bottom:var(--safe-b);display:flex;flex-direction:column;gap:16px}
-
-.route-screen{max-width:680px;margin:0 auto;padding:16px;padding-bottom:var(--safe-b);display:flex;flex-direction:column;gap:16px}
-.route-hero{background:linear-gradient(140deg,rgba(92,33,255,.18),rgba(13,18,36,.8));border:1px solid var(--border2);border-radius:var(--r-xl);padding:20px 18px;text-align:center}
-.route-hero h2{font-size:20px;font-weight:900;letter-spacing:-.04em}
-.route-hero p{margin-top:8px;color:var(--text2);font-size:12px;line-height:1.5}
-.route-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.route-btn{width:100%;min-height:120px;border-radius:var(--r-lg);border:1px solid var(--border2);background:linear-gradient(145deg,rgba(15,23,42,.95),rgba(17,24,39,.9));padding:16px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.01);transition:all .15s var(--ease)}
-.route-btn:hover{transform:translateY(-1px);border-color:var(--border3)}
-.route-btn .route-code{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
-.route-btn .route-state{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
-.route-btn .route-flag{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;font-weight:900;font-size:16px;box-shadow:0 6px 18px rgba(16,185,129,.25)}
-.route-btn[data-route="BR101_SP"] .route-flag,.route-btn[data-route="BR101_RJ"] .route-flag{background:linear-gradient(135deg,#f59e0b,#b45309)}
-.route-btn[data-route="BR116_RJ"] .route-flag{background:linear-gradient(135deg,#8b5cf6,#4c1d95)}
-.route-btn[data-route="BR116_SP"] .route-flag{background:linear-gradient(135deg,#0ea5e9,#0369a1)}
-
-.app-shell{display:none}
 
 .section-block{display:flex;flex-direction:column;gap:12px;background:rgba(13,18,36,0.65);border:1px solid var(--border2);border-radius:var(--r-xl);padding:16px;backdrop-filter:blur(12px)}
 .section-header{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);padding-bottom:4px;border-bottom:1px solid var(--border)}
@@ -96,6 +80,9 @@ img,video{display:block;max-width:100%}
 .search-msg{margin-top:8px;font-size:11px;font-weight:800;text-transform:uppercase;color:var(--warn);display:flex;align-items:center;gap:6px}
 .search-msg svg{width:13px;height:13px}
 
+/* Badge indicando qual BR o poste pertence */
+.br-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(92,33,255,.18);border:1px solid rgba(124,58,237,.45);border-radius:999px;padding:3px 10px;font-size:9px;font-weight:900;letter-spacing:.12em;color:#c4b5fd;text-transform:uppercase;margin-top:4px}
+
 .target-lock{display:none;border-radius:var(--r-lg);border:2px solid var(--green);background:linear-gradient(145deg,rgba(16,185,129,.18),rgba(15,23,42,.95));padding:16px;text-align:center;position:relative;overflow:hidden}
 .target-lock.on{display:block;animation:lockIn .3s var(--ease-bounce),lockPulse 2.5s infinite}
 @keyframes lockIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
@@ -128,8 +115,17 @@ img,video{display:block;max-width:100%}
 .ctrl-select{border-radius:var(--r-xs);border:1px solid var(--border2);background:var(--surface);color:#fff;padding:7px 28px 7px 10px;font-size:12px;font-weight:800;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
 .ctrl-chk{width:18px;height:18px;accent-color:var(--accent)}
 
+/* Loading skeleton */
 .skel{height:120px;border-radius:var(--r-lg);background:linear-gradient(110deg,var(--surface) 30%,var(--surface2) 50%,var(--surface) 70%);background-size:200% 100%;animation:shimmer 1.5s infinite linear}
 @keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+
+/* Loading overlay para inicialização */
+.loading-overlay{position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s var(--ease)}
+.loading-overlay.hide{opacity:0;pointer-events:none}
+.loading-spinner{width:44px;height:44px;border:3px solid var(--border2);border-top-color:var(--violet2);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;color:var(--muted)}
+.loading-detail{font-size:10px;font-weight:700;color:var(--dim);margin-top:-8px}
 
 .toast{position:fixed;bottom:calc(18px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(16px);border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);padding:12px 20px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;box-shadow:shadow-lg;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:99998;opacity:0;transition:all .2s var(--ease);pointer-events:none;display:flex;align-items:center;gap:8px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -142,15 +138,21 @@ img,video{display:block;max-width:100%}
 </head>
 <body>
 
+<!-- Overlay de carregamento inicial -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <p class="loading-text">Carregando Rodovias</p>
+  <p class="loading-detail" id="loadingDetail">Aguarde...</p>
+</div>
+
 <header class="hdr">
   <div class="hdr-in">
     <div class="hdr-title">
       <h1>Apoio Localização</h1>
-      <p>Pesquisa & Proximidade GPS</p>
+      <p>Pesquisa & Proximidade GPS — Todas as Rodovias</p>
     </div>
-    <div class="hdr-route">
-      <span id="headerRouteLabel">SELECIONE</span>
-      <button id="routeChangeBtn" type="button">Trocar</button>
+    <div class="hdr-route" id="headerRouteLabel">
+      ● TODAS AS BRs
     </div>
     <span class="hdr-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -160,63 +162,98 @@ img,video{display:block;max-width:100%}
   </div>
 </header>
 
-<div id="routeScreen" class="route-screen">
-  <div class="route-hero">
-    <h2>Escolha a rodovia</h2>
-    <p>Os dados e pesquisas ficam restritos à rodovia selecionada para evitar confusão entre KM de arquivos diferentes.</p>
-  </div>
-  <div class="route-grid">
-    <button class="route-btn" type="button" data-route="BR116_SP"><span class="route-flag">116</span><span class="route-code">BR116 SP</span><span class="route-state">São Paulo</span></button>
-    <button class="route-btn" type="button" data-route="BR116_RJ"><span class="route-flag">116</span><span class="route-code">BR116 RJ</span><span class="route-state">Rio de Janeiro</span></button>
-    <button class="route-btn" type="button" data-route="BR101_SP"><span class="route-flag">101</span><span class="route-code">BR101 SP</span><span class="route-state">São Paulo</span></button>
-    <button class="route-btn" type="button" data-route="BR101_RJ"><span class="route-flag">101</span><span class="route-code">BR101 RJ</span><span class="route-state">Rio de Janeiro</span></button>
-  </div>
-</div>
+<div id="appScreen" class="wrap">
+  <div class="section-block">
+    <div class="section-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      Seção de Pesquisa (ID ou KM)
+    </div>
 
-<div id="appScreen" class="app-shell">
-  <div class="wrap">
-    <div class="section-block">
-      <div class="section-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Seção de Pesquisa (ID ou KM)</div>
-      <div class="card card-accent">
-        <p class="card-label">Pesquisa ID-NX (8 dígitos)</p>
-        <div class="search-row">
-          <div class="search-wrap">
-            <input class="search-input" id="inputId" placeholder="EX: 12345678" autocomplete="off" spellcheck="false" inputmode="numeric" maxlength="8" pattern="\d*" onkeydown="if(event.key==='Enter')searchId()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          </div>
-          <button class="btn-icon go" onclick="searchId()" aria-label="Buscar"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-          <button class="btn-icon clr" onclick="clearId()" aria-label="Limpar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <!-- Pesquisa por ID -->
+    <div class="card card-accent">
+      <p class="card-label">Pesquisa ID-NX (8 dígitos) — Todas as Rodovias</p>
+      <div class="search-row">
+        <div class="search-wrap">
+          <input class="search-input" id="inputId" placeholder="EX: 12345678"
+            autocomplete="off" spellcheck="false" inputmode="numeric"
+            maxlength="8" pattern="\d*"
+            onkeydown="if(event.key==='Enter')searchId()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
-        <div id="searchMsg" class="search-msg" style="display:none"></div>
-        <div id="searchResult" style="display:none;margin-top:12px"></div>
+        <button class="btn-icon go" onclick="searchId()" aria-label="Buscar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <button class="btn-icon clr" onclick="clearId()" aria-label="Limpar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
       </div>
-      <div class="card card-accent">
-        <p class="card-label">Pesquisa por KM (mais próximos da rodovia)</p>
-        <div class="search-row">
-          <div class="search-wrap">
-            <input class="search-input" id="inputKm" placeholder="EX: 115 ou 115.5" autocomplete="off" spellcheck="false" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" onkeydown="if(event.key==='Enter')searchKm()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          </div>
-          <button class="btn-icon go" onclick="searchKm()" aria-label="Buscar KM"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
-          <button class="btn-icon clr" onclick="clearKm()" aria-label="Limpar KM"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <div id="searchMsg" class="search-msg" style="display:none"></div>
+      <div id="searchResult" style="display:none;margin-top:12px"></div>
+    </div>
+
+    <!-- Pesquisa por KM -->
+    <div class="card card-accent">
+      <p class="card-label">Pesquisa por KM (mais próximos) — Todas as Rodovias</p>
+      <div class="search-row">
+        <div class="search-wrap">
+          <input class="search-input" id="inputKm" placeholder="EX: 115 ou 115.5"
+            autocomplete="off" spellcheck="false" inputmode="decimal"
+            pattern="[0-9]*[.,]?[0-9]*"
+            onkeydown="if(event.key==='Enter')searchKm()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         </div>
-        <div id="searchKmMsg" class="search-msg" style="display:none"></div>
-        <div id="searchKmResult" style="display:none;margin-top:12px"></div>
+        <button class="btn-icon go" onclick="searchKm()" aria-label="Buscar KM">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </button>
+        <button class="btn-icon clr" onclick="clearKm()" aria-label="Limpar KM">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="searchKmMsg" class="search-msg" style="display:none"></div>
+      <div id="searchKmResult" style="display:none;margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- Seção GPS / Proximidade -->
+  <div class="section-block" style="border-color:rgba(16,185,129,0.3);">
+    <div class="section-header proximity-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      Seção de Proximidade & GPS Atual
+    </div>
+    <div id="targetLock" class="target-lock">
+      <h2>&#128205; Você está no poste!</h2>
+      <p id="targetLockSub">ID ALVO: --- | DISTÂNCIA &lt; 5M</p>
+    </div>
+    <div class="km-hero">
+      <p class="km-label">KM aproximado atual</p>
+      <p class="km-value" id="kmVal">—</p>
+      <p class="km-sub" id="kmSource"></p>
+    </div>
+    <div id="gpsStatus" class="gps bad">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+      GPS · BUSCANDO SINAL
+    </div>
+    <div class="card">
+      <button id="btnSend" class="ctrl-send" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        Enviar lista WhatsApp
+      </button>
+      <div class="ctrl-row">
+        <label class="ctrl-label">Proximidade
+          <select class="ctrl-select" id="qty">
+            <option value="1">1</option>
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <label class="ctrl-label"><input type="checkbox" class="ctrl-chk" id="chkMaps" checked> Maps</label>
       </div>
     </div>
-    <div class="section-block" style="border-color: rgba(16,185,129,0.3);">
-      <div class="section-header proximity-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Seção de Proximidade & GPS Atual</div>
-      <div id="targetLock" class="target-lock"><h2>📍 Você está no poste!</h2><p id="targetLockSub">ID ALVO: --- | DISTÂNCIA &lt; 5M</p></div>
-      <div class="km-hero"><p class="km-label">KM aproximado atual</p><p class="km-value" id="kmVal">—</p><p class="km-sub" id="kmSource"></p></div>
-      <div id="gpsStatus" class="gps bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>GPS · BUSCANDO SINAL</div>
-      <div class="card">
-        <button id="btnSend" class="ctrl-send" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>Enviar lista WhatsApp</button>
-        <div class="ctrl-row">
-          <label class="ctrl-label">Proximidade<select class="ctrl-select" id="qty"><option value="1">1</option><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option><option value="50">50</option><option value="100">100</option></select></label>
-          <label class="ctrl-label"><input type="checkbox" class="ctrl-chk" id="chkMaps" checked> Maps</label>
-        </div>
-      </div>
-      <div id="postList" style="display:flex;flex-direction:column;gap:12px"><div class="skel"></div><div class="skel"></div></div>
+    <div id="postList" style="display:flex;flex-direction:column;gap:12px">
+      <div class="skel"></div><div class="skel"></div>
     </div>
   </div>
 </div>
@@ -224,70 +261,434 @@ img,video{display:block;max-width:100%}
 <div class="toast" id="toast" aria-live="polite"></div>
 
 <script>
-const ACC_G=15,ACC_Y=35;
-const ROUTE_FILES={BR116_SP:'BR116_SP.csv',BR116_RJ:'BR116_RJ.csv',BR101_SP:'BR101_SP.csv',BR101_RJ:'BR101_RJ.csv'};
-const ROUTE_LABELS={BR116_SP:'BR116 / SP',BR116_RJ:'BR116 / RJ',BR101_SP:'BR101 / SP',BR101_RJ:'BR101 / RJ'};
+// ─── Constantes ───────────────────────────────────────────────────────────────
+const ACC_G=15, ACC_Y=35;
 
-const norm=s=>String(s||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9_ ]+/g,' ').replace(/\s+/g,' ');
-const parsePt=v=>{const s=String(v??'').trim();return/,\d+$/.test(s)?Number(s.replace(/\./g,'').replace(',','.')):Number(s)};
-const hav=(a,b,c,d)=>{const p=Math.PI/180,x=.5-Math.cos((c-a)*p)/2+Math.cos(a*p)*Math.cos(c*p)*(1-Math.cos((d-b)*p))/2;return 12742000*Math.asin(Math.sqrt(x))};
-const range=(dist,acc=0)=>{const d=Math.round(dist),e=Number.isFinite(acc)?Math.round(acc):0;return`${Math.max(0,d-e)}M A ${d+e}M`};
+// Todas as rodovias: cada entry tem chave, arquivo CSV e rótulo legível
+const ALL_ROUTES=[
+  {key:'BR116_SP', file:'BR116_SP.csv', label:'BR116 / SP'},
+  {key:'BR116_RJ', file:'BR116_RJ.csv', label:'BR116 / RJ'},
+  {key:'BR101_SP', file:'BR101_SP.csv', label:'BR101 / SP'},
+  {key:'BR101_RJ', file:'BR101_RJ.csv', label:'BR101 / RJ'}
+];
+
+// ─── Utilitários ──────────────────────────────────────────────────────────────
+const norm=s=>String(s||'').trim().toUpperCase().normalize('NFD')
+  .replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9_ ]+/g,' ').replace(/\s+/g,' ');
+const parsePt=v=>{const s=String(v??'').trim();
+  return /,\d+$/.test(s)?Number(s.replace(/\./g,'').replace(',','.')):Number(s)};
+const hav=(a,b,c,d)=>{
+  const p=Math.PI/180,x=.5-Math.cos((c-a)*p)/2+Math.cos(a*p)*Math.cos(c*p)*(1-Math.cos((d-b)*p))/2;
+  return 12742000*Math.asin(Math.sqrt(x))};
+const range=(dist,acc=0)=>{const d=Math.round(dist),e=Number.isFinite(acc)?Math.round(acc):0;
+  return `${Math.max(0,d-e)}M A ${d+e}M`};
 const fmtAcc=a=>!Number.isFinite(a)?'—':`±${Math.round(a)}M`;
 const nowBR=()=>new Date().toLocaleString('pt-BR').toUpperCase();
 function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(norm(c));if(i>=0)return i}return-1}
 function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
 
+// ─── Geocodificação reversa ───────────────────────────────────────────────────
 const municipioCache=new Map();
-async function fetchJson(url,headers={}){const res=await fetch(url,{headers:{Accept:'application/json','Accept-Language':'pt-BR,pt;q=0.9,en;q=0.8',...headers}});if(!res.ok)throw new Error(`HTTP ${res.status}`);return res.json()}
-function normalizeMunicipio(value){const raw=String(value||'').trim();if(!raw)return'';const cleaned=raw.replace(/\s*[-–—].*$/,'').trim();return cleaned||raw}
-async function resolveMunicipio(lat,lon){if(!Number.isFinite(lat)||!Number.isFinite(lon))return'Município não disponível';const key=`${Number(lat).toFixed(5)},${Number(lon).toFixed(5)}`;if(municipioCache.has(key))return municipioCache.get(key);const providers=[async()=>{const data=await fetchJson(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=pt`);return normalizeMunicipio(data?.locality||data?.city||data?.principalSubdivision||data?.countryName||'')},async()=>{const data=await fetchJson(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=10&addressdetails=1&accept-language=pt-BR`);return normalizeMunicipio(data?.address?.municipality||data?.address?.city||data?.address?.town||data?.address?.village||data?.address?.county||data?.address?.state||'')},async()=>{const data=await fetchJson(`https://geocode.maps.co/reverse?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`);return normalizeMunicipio(data?.address?.city||data?.address?.town||data?.address?.municipality||data?.address?.county||data?.address?.state||data?.address?.road||'')}];for(const provider of providers){try{const nome=await provider();if(nome){municipioCache.set(key,nome);return nome}}catch(e){}}const fallback='Município não disponível';municipioCache.set(key,fallback);return fallback}
-function hydrateMunicipioTargets(){document.querySelectorAll('[data-muni-lat]').forEach(async el=>{const lat=Number(el.dataset.muniLat);const lon=Number(el.dataset.muniLon);if(!Number.isFinite(lat)||!Number.isFinite(lon)){el.textContent='Município: não disponível';return}const key=`${Number(lat).toFixed(5)},${Number(lon).toFixed(5)}`;if(municipioCache.has(key)){el.textContent=`Município: ${municipioCache.get(key)}`;return}const nome=await resolveMunicipio(lat,lon);el.textContent=`Município: ${nome}`})}
+async function fetchJson(url,headers={}){
+  const res=await fetch(url,{headers:{Accept:'application/json',
+    'Accept-Language':'pt-BR,pt;q=0.9,en;q=0.8',...headers}});
+  if(!res.ok)throw new Error(`HTTP ${res.status}`);return res.json()}
+function normalizeMunicipio(value){
+  const raw=String(value||'').trim();if(!raw)return'';
+  return raw.replace(/\s*[-–—].*$/,'').trim()||raw}
+async function resolveMunicipio(lat,lon){
+  if(!Number.isFinite(lat)||!Number.isFinite(lon))return'Município não disponível';
+  const key=`${Number(lat).toFixed(5)},${Number(lon).toFixed(5)}`;
+  if(municipioCache.has(key))return municipioCache.get(key);
+  const providers=[
+    async()=>{const d=await fetchJson(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=pt`);
+      return normalizeMunicipio(d?.locality||d?.city||d?.principalSubdivision||'')},
+    async()=>{const d=await fetchJson(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1&accept-language=pt-BR`);
+      return normalizeMunicipio(d?.address?.municipality||d?.address?.city||d?.address?.town||d?.address?.village||d?.address?.county||'')}
+  ];
+  for(const p of providers){try{const n=await p();if(n){municipioCache.set(key,n);return n}}catch{}}
+  const fb='Município não disponível';municipioCache.set(key,fb);return fb}
+function hydrateMunicipioTargets(){
+  document.querySelectorAll('[data-muni-lat]').forEach(async el=>{
+    const lat=Number(el.dataset.muniLat),lon=Number(el.dataset.muniLon);
+    if(!Number.isFinite(lat)||!Number.isFinite(lon)){el.textContent='Município: não disponível';return}
+    const key=`${Number(lat).toFixed(5)},${Number(lon).toFixed(5)}`;
+    if(municipioCache.has(key)){el.textContent=`Município: ${municipioCache.get(key)}`;return}
+    el.textContent=`Município: ${await resolveMunicipio(lat,lon)}`})}
 
-let posts=[],kmDB=[],pos=null,searchItem=null,searchKmItems=[],renderedKey='',apoioInit=false,currentRouteKey='',curSpeed=0,_tt=null;
+// ─── Estado Global ────────────────────────────────────────────────────────────
+// allPosts: Array de {id, lat, lon, routeKey, routeLabel}
+// allKmDB:  Array de {km, lat, lon, routeKey, routeLabel}
+let allPosts=[], allKmDB=[], pos=null;
+let searchItem=null;        // resultado da busca por ID
+let searchKmItems=[];       // resultados da busca por KM
+let renderedKey='';         // cache para evitar re-render da lista GPS
+let _tt=null;
 
-function showToast(msg,type='ok'){const el=document.getElementById('toast');const icons={ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>',err:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'};el.className='toast '+type;el.innerHTML=(icons[type]||'')+msg;clearTimeout(_tt);requestAnimationFrame(()=>{el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),3000)})}
-function gpsBadge(el,p,err){const a=p?.acc;let cls='bad',txt;if(err)txt=err;else if(!a)txt='GPS · BUSCANDO SINAL';else if(a<=ACC_G){cls='ok';txt=`GPS · ALTA PRECISÃO ${fmtAcc(a)}`}else if(a<=ACC_Y){cls='warn';txt=`GPS · PRECISÃO MÉDIA ${fmtAcc(a)}`}else txt=`GPS · Sinal Fraco ${fmtAcc(a)}`;el.className='gps '+cls;el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>${txt}`}
-function showRouteScreen(){document.getElementById('routeScreen').style.display='flex';document.getElementById('appScreen').style.display='none';document.getElementById('headerRouteLabel').textContent='SELECIONE'}
-function showAppScreen(){document.getElementById('routeScreen').style.display='none';document.getElementById('appScreen').style.display='block'}
-async function fetchCsvText(fileName){const url=`${fileName}?v=${Date.now()}`;const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);let text=await res.text();if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);return text}
-function parseCsvRows(text){const lines=text.split(/\r?\n/).filter(line=>line.trim());if(!lines.length)return{header:[],rows:[]};const header=lines.shift().split(';').map(col=>String(col||'').trim());const rows=lines.map(line=>line.split(';'));return{header,rows}}
-function buildPostsFromCsv(fileName){return fetchCsvText(fileName).then(text=>{const{header,rows}=parseCsvRows(text);const iId=findCol(header,['id do nox','idnox','id','poste','poste_id']);const iLat=findCol(header,['latitude','lat']);const iLon=findCol(header,['longitude','lon','long']);if(iId<0||iLat<0||iLon<0)return[];return rows.map(r=>{const id=String(r[iId]||'').trim().toUpperCase();const lat=parsePt(r[iLat]);const lon=parsePt(r[iLon]);return{id,lat,lon}}).filter(p=>p.id&&Number.isFinite(p.lat)&&Number.isFinite(p.lon))}).catch(()=>[])}
-function buildKmFromCsv(fileName){return fetchCsvText(fileName).then(text=>{const{header,rows}=parseCsvRows(text);const iKm=findCol(header,['km','kilometro','quilometro','km_1']);const iLat=findCol(header,['latitude','lat']);const iLon=findCol(header,['longitude','lon','long']);if(iKm<0||iLat<0||iLon<0)return[];return rows.map(r=>{const km=parsePt(r[iKm]);const lat=parsePt(r[iLat]);const lon=parsePt(r[iLon]);return{km,lat,lon}}).filter(p=>Number.isFinite(p.km)&&Number.isFinite(p.lat)&&Number.isFinite(p.lon))}).catch(()=>[])}
+// ─── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  const icons={
+    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>',
+    err:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
+  };
+  el.className='toast '+type;el.innerHTML=(icons[type]||'')+msg;
+  clearTimeout(_tt);
+  requestAnimationFrame(()=>{el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),3200)})}
 
-async function loadSelectedRoute(routeKey){if(!ROUTE_FILES[routeKey]){showRouteScreen();return}currentRouteKey=routeKey;document.getElementById('headerRouteLabel').textContent=ROUTE_LABELS[routeKey];showAppScreen();posts=[];kmDB=[];searchItem=null;searchKmItems=[];renderedKey='';document.getElementById('postList').innerHTML='<div class="skel"></div><div class="skel"></div>';document.getElementById('searchMsg').style.display='none';document.getElementById('searchResult').style.display='none';document.getElementById('searchKmMsg').style.display='none';document.getElementById('searchKmResult').style.display='none';document.getElementById('targetLock').classList.remove('on');const fileName=ROUTE_FILES[routeKey];const[routePosts,routeKm]=await Promise.all([buildPostsFromCsv(fileName),buildKmFromCsv(fileName)]);if(routePosts.length)posts=routePosts;if(routeKm.length)kmDB=routeKm;if(!posts.length){await loadPostsFallback()}if(!kmDB.length){const fallbackKm=await buildKmFromCsv('SNVBR116SPRJ.csv').catch(()=>[]);if(fallbackKm.length)kmDB=fallbackKm}document.getElementById('btnSend').disabled=!posts.length;renderApoio();if(kmDB.length)updateKm();if(!posts.length&&!kmDB.length){showToast('Arquivo não encontrado para a rodovia selecionada','err')}else{showToast(`Rodovia ${ROUTE_LABELS[routeKey]} ativa`)}}
+// ─── GPS Badge ────────────────────────────────────────────────────────────────
+function gpsBadge(el,p,err){
+  const a=p?.acc;let cls='bad',txt;
+  if(err)txt=err;
+  else if(!a)txt='GPS · BUSCANDO SINAL';
+  else if(a<=ACC_G){cls='ok';txt=`GPS · ALTA PRECISÃO ${fmtAcc(a)}`}
+  else if(a<=ACC_Y){cls='warn';txt=`GPS · PRECISÃO MÉDIA ${fmtAcc(a)}`}
+  else txt=`GPS · Sinal Fraco ${fmtAcc(a)}`;
+  el.className='gps '+cls;
+  el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>${txt}`}
 
-async function loadPostsFallback(){try{let r=await fetch('dados.csv?v='+Date.now(),{cache:'no-store'}).catch(()=>null);if(!r?.ok)r=await fetch('Dados_Completos_Grupo_2_all.csv?v='+Date.now(),{cache:'no-store'});if(!r?.ok)return;let t=await r.text();if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);const lines=t.split(/\r?\n/).filter(l=>l.trim());if(!lines.length)return;const h=lines.shift().split(';');const iId=findCol(h,['id do nox','idnox','id']),iLat=findCol(h,['latitude','lat']),iLon=findCol(h,['longitude','lon','long']);posts=lines.map(l=>{const r=l.split(';');return{id:String(r[iId]||'').trim().toUpperCase(),lat:parsePt(r[iLat]),lon:parsePt(r[iLon])}}).filter(p=>p.id&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));renderApoio()}catch(e){}}
+// ─── Parsers CSV ──────────────────────────────────────────────────────────────
+async function fetchCsvText(fileName){
+  const res=await fetch(`${fileName}?v=${Date.now()}`,{cache:'no-store'});
+  if(!res.ok)throw new Error(`HTTP ${res.status}`);
+  let t=await res.text();
+  if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);return t}
+function parseCsvRows(text){
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  if(!lines.length)return{header:[],rows:[]};
+  const header=lines.shift().split(';').map(c=>String(c||'').trim());
+  return{header,rows:lines.map(l=>l.split(';'))}}
 
-function nearestKm(){if(!pos||!kmDB.length)return null;let best=null,bd=Infinity;for(const p of kmDB){const d=hav(pos.lat,pos.lon,p.lat,p.lon);if(d<bd){bd=d;best=p}}return best}
-async function updateKm(){const b=nearestKm();if(b){const v=(Math.round(b.km*100)/100).toFixed(2).replace('.',',');document.getElementById('kmVal').textContent=v;const s=document.getElementById('kmSource');if(s){const mun=pos?await resolveMunicipio(pos.lat,pos.lon):'Município não disponível';s.textContent=`Referência: ${kmDB.length} pontos • ${mun} • ${ROUTE_LABELS[currentRouteKey]||'Rodovia'}`}}else{document.getElementById('kmVal').textContent='—';document.getElementById('kmSource').textContent='Sem KM disponível para esta rodovia'}}
-function findPostExactKm(post){if(!kmDB.length)return'---';let best=null,bd=Infinity;for(const pt of kmDB){const d=hav(post.lat,post.lon,pt.lat,pt.lon);if(d<bd){bd=d;best=pt}}return best?(Math.round(best.km*1000)/1000).toFixed(3).replace('.',','):'---'}
+async function loadRouteData(route){
+  // Carrega postes e KM de um arquivo CSV de uma rodovia
+  try{
+    const text=await fetchCsvText(route.file);
+    const{header,rows}=parseCsvRows(text);
+    const iId=findCol(header,['id do nox','idnox','id','poste','poste_id']);
+    const iKm=findCol(header,['km','kilometro','quilometro','km_1']);
+    const iLat=findCol(header,['latitude','lat']);
+    const iLon=findCol(header,['longitude','lon','long']);
+    const posts=[], kmDB=[];
+    for(const r of rows){
+      const lat=parsePt(r[iLat]),lon=parsePt(r[iLon]);
+      if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
+      if(iId>=0){
+        const id=String(r[iId]||'').trim().toUpperCase();
+        if(id)posts.push({id,lat,lon,routeKey:route.key,routeLabel:route.label})}
+      if(iKm>=0){
+        const km=parsePt(r[iKm]);
+        if(Number.isFinite(km))kmDB.push({km,lat,lon,routeKey:route.key,routeLabel:route.label})}}
+    return{posts,kmDB,ok:posts.length>0||kmDB.length>0}
+  }catch{return{posts:[],kmDB:[],ok:false}}}
 
-function initApoio(){if(apoioInit)return;apoioInit=true;if('geolocation'in navigator){navigator.geolocation.watchPosition(p=>{pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};curSpeed=p.coords.speed?Math.round(p.coords.speed*3.6):0;gpsBadge(document.getElementById('gpsStatus'),pos);renderApoio();updateKm();updateSearchDist();updateSearchKmDist()},null,{enableHighAccuracy:true,maximumAge:0,timeout:10000})}showRouteScreen()}
+// ─── Inicialização: carrega TODAS as rodovias ─────────────────────────────────
+async function initApp(){
+  const detailEl=document.getElementById('loadingDetail');
+  const loaded=[];
+  for(const route of ALL_ROUTES){
+    if(detailEl)detailEl.textContent=`Carregando ${route.label}…`;
+    const{posts,kmDB,ok}=await loadRouteData(route);
+    if(ok)loaded.push(route.label);
+    allPosts.push(...posts);
+    allKmDB.push(...kmDB);}
+  // Esconde overlay
+  const overlay=document.getElementById('loadingOverlay');
+  if(overlay)overlay.classList.add('hide');
+  // Atualiza header
+  document.getElementById('headerRouteLabel').textContent=
+    loaded.length?`● ${loaded.length} BRs`:'● AGUARDANDO';
+  document.getElementById('btnSend').disabled=!allPosts.length;
+  if(loaded.length)showToast(`${loaded.length} rodovia(s) carregada(s)`,'ok');
+  else showToast('Nenhum CSV encontrado — verifique os arquivos','err');
+  // Inicia GPS
+  startGPS()}
 
-function searchId(){const raw=document.getElementById('inputId').value.trim();const msg=document.getElementById('searchMsg'),res=document.getElementById('searchResult');if(!raw||raw.length!==8||!/^\d{8}$/.test(raw)){msg.style.display='flex';msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID DEVE TER EXATAMENTE 8 DÍGITOS.';searchItem=null;res.style.display='none';checkLock();vibrate(50);return}if(!posts.length){msg.style.display='flex';msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando dados da rodovia, tente novamente...';return}const found=posts.find(p=>p.id===raw);if(!found){msg.style.display='flex';msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID "${raw}" NÃO ENCONTRADO NA RODOVIA ${ROUTE_LABELS[currentRouteKey]||''}.`;searchItem=null;res.style.display='none';checkLock();vibrate(50);return}searchItem=found;msg.style.display='none';renderSearch();showToast('Poste encontrado: '+found.id);vibrate([10,50,10])}
-function clearId(){document.getElementById('inputId').value='';document.getElementById('searchMsg').style.display='none';document.getElementById('searchResult').style.display='none';searchItem=null;checkLock()}
-function updateSearchDist(){if(!searchItem||!pos)return;const el=document.getElementById('srch-dist');const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);if(el)el.textContent='Distância: '+range(dist,pos.acc);checkLock()}
-function renderSearch(){if(!searchItem)return;const res=document.getElementById('searchResult');let dt='Aguardando GPS...';if(pos){const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);dt='Distância: '+range(dist,pos.acc);checkLock()}const exactKm=findPostExactKm(searchItem);res.style.display='block';res.innerHTML=`<div class="post searched"><div class="post-top"><div class="post-info"><p class="post-id">OS / ID: <span>${searchItem.id}</span></p><p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p><p class="post-dist" id="srch-dist">${dt}</p><p class="post-muni" data-muni-lat="${searchItem.lat}" data-muni-lon="${searchItem.lon}">Município: carregando...</p><p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p></div><button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})" title="Enviar este item por WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path d="M8.5 8.5h.01M12 8.5h.01M15.5 8.5h.01"/></svg></button></div><div class="post-map-container"><iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe></div></div>`;hydrateMunicipioTargets()}
+// ─── GPS ──────────────────────────────────────────────────────────────────────
+function startGPS(){
+  if(!('geolocation'in navigator))return;
+  navigator.geolocation.watchPosition(p=>{
+    pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
+    gpsBadge(document.getElementById('gpsStatus'),pos);
+    renderApoio();
+    updateKm();
+    updateSearchDist();
+    updateSearchKmDist();
+  },null,{enableHighAccuracy:true,maximumAge:0,timeout:10000})}
 
-function searchKm(){const rawVal=document.getElementById('inputKm').value;const targetKm=parsePt(rawVal);const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');if(isNaN(targetKm)){clearKm();return}if(!posts.length||!kmDB.length){msg.style.display='flex';msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando dados da rodovia...';return}const kmMin=Math.min(...kmDB.map(pt=>pt.km));const kmMax=Math.max(...kmDB.map(pt=>pt.km));if(targetKm<kmMin||targetKm>kmMax){msg.style.display='flex';msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} FORA DO INTERVALO DA RODOVIA ${ROUTE_LABELS[currentRouteKey]||''}.`;searchKmItems=[];res.style.display='none';return}let filteredKmDB=kmDB;const isInteger=Number.isInteger(targetKm)||targetKm===Math.floor(targetKm);if(isInteger){filteredKmDB=kmDB.filter(pt=>pt.km>=targetKm&&pt.km<targetKm+1)}else{filteredKmDB=kmDB.filter(pt=>pt.km>=targetKm)}let bestKmPt=null,minKmDiff=Infinity;for(const pt of filteredKmDB){const diff=Math.abs(pt.km-targetKm);if(diff<minKmDiff){minKmDiff=diff;bestKmPt=pt}}if(!bestKmPt){msg.style.display='flex';msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} NÃO ENCONTRADO NA RODOVIA ATUAL.`;searchKmItems=[];res.style.display='none';return}const sortedPosts=posts.map(p=>({...p,d:hav(bestKmPt.lat,bestKmPt.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,10);if(!sortedPosts.length){msg.style.display='flex';msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Nenhum poste próximo ao KM ${rawVal} nesta rodovia.`;searchKmItems=[];res.style.display='none';return}searchKmItems=sortedPosts;msg.style.display='none';renderSearchKm();showToast('10 postes mais próximos do KM '+rawVal);vibrate([10,50,10])}
-function clearKm(){document.getElementById('inputKm').value='';document.getElementById('searchKmMsg').style.display='none';document.getElementById('searchKmResult').style.display='none';searchKmItems=[]}
-function updateSearchKmDist(){if(!searchKmItems.length||!pos)return;searchKmItems.forEach((item,idx)=>{const el=document.getElementById('srch-km-dist-'+idx);if(el)el.textContent='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc)})}
-function renderSearchKm(){if(!searchKmItems.length)return;const res=document.getElementById('searchKmResult');res.style.display='block';let htmlContent='<div style="display:flex;flex-direction:column;gap:12px">';searchKmItems.forEach((item,idx)=>{let dt='Aguardando GPS...';if(pos){dt='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc)}const exactKm=findPostExactKm(item);htmlContent+=`<div class="post searched"><div class="post-top"><div class="post-info"><p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p><p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p><p class="post-dist" id="srch-km-dist-${idx}">${dt}</p><p class="post-muni" data-muni-lat="${item.lat}" data-muni-lon="${item.lon}">Município: carregando...</p><p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p></div><button class="post-wa-btn" onclick="sendSingleWhatsApp('${item.id}', ${item.lat}, ${item.lon})" title="Enviar este item por WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path d="M8.5 8.5h.01M12 8.5h.01M15.5 8.5h.01"/></svg></button></div><div class="post-map-container"><iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe></div></div>`});htmlContent+='</div>';res.innerHTML=htmlContent;hydrateMunicipioTargets()}
+// ─── KM do GPS atual (usa TODOS os kmDB) ─────────────────────────────────────
+function nearestKmEntry(){
+  if(!pos||!allKmDB.length)return null;
+  let best=null,bd=Infinity;
+  for(const p of allKmDB){const d=hav(pos.lat,pos.lon,p.lat,p.lon);if(d<bd){bd=d;best=p}}
+  return best}
+async function updateKm(){
+  const b=nearestKmEntry();
+  if(b){
+    const v=(Math.round(b.km*100)/100).toFixed(2).replace('.',',');
+    document.getElementById('kmVal').textContent=v;
+    const s=document.getElementById('kmSource');
+    if(s){const mun=pos?await resolveMunicipio(pos.lat,pos.lon):'—';
+      s.textContent=`${b.routeLabel} · ${mun}`}}
+  else{document.getElementById('kmVal').textContent='—';
+    document.getElementById('kmSource').textContent='Sem dados KM disponíveis'}}
 
-function checkLock(){const b=document.getElementById('targetLock');if(!searchItem||!pos){b.classList.remove('on');return}const d=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);if(d<=(5+(pos.acc||10))){b.classList.add('on');document.getElementById('targetLockSub').textContent=`ID ALVO: ${searchItem.id} · DISTÂNCIA EST. ~${Math.round(d)}M`;vibrate([30,100,30])}else{b.classList.remove('on')}}
+// ─── KM exato de um poste (busca nos kmDB da própria rodovia dele) ────────────
+function findPostExactKm(post){
+  // Usa apenas os registros KM da mesma rodovia do poste
+  const db=post.routeKey
+    ?allKmDB.filter(p=>p.routeKey===post.routeKey)
+    :allKmDB;
+  if(!db.length)return'---';
+  let best=null,bd=Infinity;
+  for(const pt of db){const d=hav(post.lat,post.lon,pt.lat,pt.lon);if(d<bd){bd=d;best=pt}}
+  return best?(Math.round(best.km*1000)/1000).toFixed(3).replace('.',','):'---'}
 
-function sendSingleWhatsApp(id,lat,lon){let tx=`📍 *LOCALIZAÇÃO DE POSTE*\n`;tx+=`Data/Hora: ${nowBR()}\n\n`;tx+=`*ID:* ${id}\n`;tx+=`Coordenadas: ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}\n`;tx+=`🗺️ https://maps.google.com/?q=${Number(lat).toFixed(6)},${Number(lon).toFixed(6)}`;window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');showToast(`Poste ${id} enviado para o WhatsApp`)}
+// ─── Pesquisa por ID (busca em TODAS as rodovias) ─────────────────────────────
+function searchId(){
+  const raw=document.getElementById('inputId').value.trim();
+  const msg=document.getElementById('searchMsg'),res=document.getElementById('searchResult');
+  if(!raw||raw.length!==8||!/^\d{8}$/.test(raw)){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID DEVE TER EXATAMENTE 8 DÍGITOS.';
+    searchItem=null;res.style.display='none';checkLock();vibrate(50);return}
+  if(!allPosts.length){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando dados, tente novamente...';return}
+  const found=allPosts.find(p=>p.id===raw);
+  if(!found){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID "${raw}" NÃO ENCONTRADO EM NENHUMA RODOVIA.`;
+    searchItem=null;res.style.display='none';checkLock();vibrate(50);return}
+  searchItem=found;msg.style.display='none';
+  renderSearch();
+  showToast(`Poste ${found.id} · ${found.routeLabel}`);
+  vibrate([10,50,10])}
 
-function renderApoio(){if(!pos||!posts.length)return;if(searchItem)updateSearchDist();if(searchKmItems.length)updateSearchKmDist();const qty=Number(document.getElementById('qty').value||10);const items=posts.map(p=>{const d=hav(pos.lat,pos.lon,p.lat,p.lon);return{id:p.id,lat:p.lat,lon:p.lon,d}}).sort((a,b)=>a.d-b.d).slice(0,qty);const key=items.map(i=>i.id).join(',');const list=document.getElementById('postList');if(key===renderedKey){items.forEach((o,i)=>{const el=document.getElementById('dist-'+i);const kmEl=document.getElementById('km-exato-'+i);if(el)el.textContent='Distância: '+range(o.d,pos.acc);if(kmEl&&kmDB.length)kmEl.textContent='KM Exato: '+findPostExactKm(o)});document.getElementById('btnSend').disabled=false;return}renderedKey=key;const fragment=document.createDocumentFragment();items.forEach((o,i)=>{const exactKm=findPostExactKm(o);const div=document.createElement('div');div.className='post'+(i===0?' near':'');div.innerHTML=`<div class="post-top"><input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked><div class="post-info"><p class="post-id">Poste: <span>${o.id}</span></p><p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p><p class="post-dist" id="dist-${i}">Distância: ${range(o.d,pos.acc)}</p><p class="post-muni" data-muni-lat="${o.lat}" data-muni-lon="${o.lon}">Município: carregando...</p></div><button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar este item por WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path d="M8.5 8.5h.01M12 8.5h.01M15.5 8.5h.01"/></svg></button></div><div class="post-map-container"><iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe></div>`;fragment.appendChild(div)});list.innerHTML='';list.appendChild(fragment);hydrateMunicipioTargets();document.getElementById('btnSend').disabled=false}
+function clearId(){
+  document.getElementById('inputId').value='';
+  document.getElementById('searchMsg').style.display='none';
+  document.getElementById('searchResult').style.display='none';
+  searchItem=null;checkLock()}
 
-document.getElementById('btnSend').onclick=()=>{if(!pos)return;const chks=document.querySelectorAll('.post-chk:checked');let items=[];if(chks.length){chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}))}else{const qty=Number(document.getElementById('qty').value||10);items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}))}let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;items.forEach((o,i)=>{const exactKm=findPostExactKm(o);tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactKm})\n`;if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`});window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');showToast(`${items.length} postes enviados`);vibrate(15)};
+function updateSearchDist(){
+  if(!searchItem||!pos)return;
+  const el=document.getElementById('srch-dist');
+  if(el)el.textContent='Distância: '+range(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon),pos.acc);
+  checkLock()}
+
+function renderSearch(){
+  if(!searchItem)return;
+  const res=document.getElementById('searchResult');
+  let dt='Aguardando GPS...';
+  if(pos){dt='Distância: '+range(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon),pos.acc);checkLock()}
+  const exactKm=findPostExactKm(searchItem);
+  res.style.display='block';
+  res.innerHTML=`
+    <div class="post searched">
+      <div class="post-top">
+        <div class="post-info" style="flex:1;min-width:0">
+          <p class="post-id">OS / ID: <span>${searchItem.id}</span></p>
+          <span class="br-badge">&#128650; ${searchItem.routeLabel}</span>
+          <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:4px;">KM: ${exactKm}</p>
+          <p class="post-dist" id="srch-dist">${dt}</p>
+          <p class="post-muni" data-muni-lat="${searchItem.lat}" data-muni-lon="${searchItem.lon}">Município: carregando...</p>
+          <p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p>
+        </div>
+        <button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}',${searchItem.lat},${searchItem.lon},'${searchItem.routeLabel}','${findPostExactKm(searchItem)}')" title="Enviar por WhatsApp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </button>
+      </div>
+      <div class="post-map-container">
+        <iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+      </div>
+    </div>`;
+  hydrateMunicipioTargets()}
+
+// ─── Pesquisa por KM (busca em TODAS as rodovias) ─────────────────────────────
+function searchKm(){
+  const rawVal=document.getElementById('inputKm').value;
+  const targetKm=parsePt(rawVal);
+  const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
+  if(isNaN(targetKm)){clearKm();return}
+  if(!allPosts.length||!allKmDB.length){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando dados das rodovias...';return}
+
+  // Para cada rodovia, encontra o ponto KM mais próximo do valor digitado
+  // Depois reúne os postes próximos de cada ponto e apresenta identificando a BR
+  const candidates=[];
+  for(const route of ALL_ROUTES){
+    const db=allKmDB.filter(p=>p.routeKey===route.key);
+    if(!db.length)continue;
+    const isInt=Number.isInteger(targetKm)||targetKm===Math.floor(targetKm);
+    const filtered=isInt?db.filter(p=>p.km>=targetKm&&p.km<targetKm+1):db.filter(p=>p.km>=targetKm);
+    let best=null,minDiff=Infinity;
+    for(const pt of(filtered.length?filtered:db)){
+      const diff=Math.abs(pt.km-targetKm);if(diff<minDiff){minDiff=diff;best=pt}}
+    if(best)candidates.push({point:best,diff:minDiff,route})}
+
+  if(!candidates.length){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} NÃO ENCONTRADO EM NENHUMA RODOVIA.`;
+    searchKmItems=[];res.style.display='none';return}
+
+  // Para cada candidato, pega os 3 postes mais próximos do ponto KM
+  // (distribui até 10 postes entre as rodovias encontradas)
+  const perRoute=Math.max(1,Math.floor(10/candidates.length));
+  const result=[];
+  for(const{point,route}of candidates){
+    const routePosts=allPosts.filter(p=>p.routeKey===route.key);
+    routePosts.map(p=>({...p,d:hav(point.lat,point.lon,p.lat,p.lon)}))
+      .sort((a,b)=>a.d-b.d).slice(0,perRoute)
+      .forEach(p=>result.push(p))}
+  // Ordena globalmente por distância ao ponto de referência ponderado
+  searchKmItems=result.slice(0,10);
+  if(!searchKmItems.length){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Nenhum poste encontrado próximo ao KM ${rawVal}.`;
+    res.style.display='none';return}
+  msg.style.display='none';
+  renderSearchKm();
+  showToast(`${searchKmItems.length} postes próximos ao KM ${rawVal}`);
+  vibrate([10,50,10])}
+
+function clearKm(){
+  document.getElementById('inputKm').value='';
+  document.getElementById('searchKmMsg').style.display='none';
+  document.getElementById('searchKmResult').style.display='none';
+  searchKmItems=[]}
+
+function updateSearchKmDist(){
+  if(!searchKmItems.length||!pos)return;
+  searchKmItems.forEach((item,idx)=>{
+    const el=document.getElementById('srch-km-dist-'+idx);
+    if(el)el.textContent='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc)})}
+
+function renderSearchKm(){
+  if(!searchKmItems.length)return;
+  const res=document.getElementById('searchKmResult');
+  res.style.display='block';
+  let html='<div style="display:flex;flex-direction:column;gap:12px">';
+  searchKmItems.forEach((item,idx)=>{
+    let dt='Aguardando GPS...';
+    if(pos)dt='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
+    const exactKm=findPostExactKm(item);
+    html+=`
+      <div class="post searched">
+        <div class="post-top">
+          <div class="post-info" style="flex:1;min-width:0">
+            <p class="post-id">#${idx+1} · ID: <span>${item.id}</span></p>
+            <span class="br-badge">&#128650; ${item.routeLabel}</span>
+            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:4px;">KM: ${exactKm}</p>
+            <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
+            <p class="post-muni" data-muni-lat="${item.lat}" data-muni-lon="${item.lon}">Município: carregando...</p>
+            <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
+          </div>
+          <button class="post-wa-btn" onclick="sendSingleWhatsApp('${item.id}',${item.lat},${item.lon},'${item.routeLabel}','${exactKm}')" title="Enviar por WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </button>
+        </div>
+        <div class="post-map-container">
+          <iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+        </div>
+      </div>`});
+  html+='</div>';res.innerHTML=html;hydrateMunicipioTargets()}
+
+// ─── Target Lock ──────────────────────────────────────────────────────────────
+function checkLock(){
+  const b=document.getElementById('targetLock');
+  if(!searchItem||!pos){b.classList.remove('on');return}
+  const d=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
+  if(d<=(5+(pos.acc||10))){
+    b.classList.add('on');
+    document.getElementById('targetLockSub').textContent=
+      `ID: ${searchItem.id} · ${searchItem.routeLabel} · ~${Math.round(d)}M`;
+    vibrate([30,100,30])}
+  else b.classList.remove('on')}
+
+// ─── WhatsApp ─────────────────────────────────────────────────────────────────
+function sendSingleWhatsApp(id,lat,lon,routeLabel,km){
+  let tx=`📍 *LOCALIZAÇÃO DE POSTE*\n`;
+  tx+=`Data/Hora: ${nowBR()}\n\n`;
+  tx+=`*ID:* ${id}\n`;
+  tx+=`*Rodovia:* ${routeLabel||'—'}\n`;
+  tx+=`*KM:* ${km||'—'}\n`;
+  tx+=`Coordenadas: ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}\n`;
+  tx+=`🗺️ https://maps.google.com/?q=${Number(lat).toFixed(6)},${Number(lon).toFixed(6)}`;
+  window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
+  showToast(`Poste ${id} enviado`)}
+
+// ─── Lista GPS (Proximidade) ───────────────────────────────────────────────────
+function renderApoio(){
+  if(!pos||!allPosts.length)return;
+  if(searchItem)updateSearchDist();
+  if(searchKmItems.length)updateSearchKmDist();
+  const qty=Number(document.getElementById('qty').value||10);
+  const items=allPosts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)}))
+    .sort((a,b)=>a.d-b.d).slice(0,qty);
+  const key=items.map(i=>i.id).join(',');
+  const list=document.getElementById('postList');
+  // Atualização rápida de distâncias sem re-render
+  if(key===renderedKey){
+    items.forEach((o,i)=>{
+      const dEl=document.getElementById('dist-'+i);
+      const kEl=document.getElementById('km-exato-'+i);
+      if(dEl)dEl.textContent='Distância: '+range(o.d,pos.acc);
+      if(kEl)kEl.textContent='KM: '+findPostExactKm(o)});
+    document.getElementById('btnSend').disabled=false;return}
+  renderedKey=key;
+  const frag=document.createDocumentFragment();
+  items.forEach((o,i)=>{
+    const exactKm=findPostExactKm(o);
+    const div=document.createElement('div');
+    div.className='post'+(i===0?' near':'');
+    div.innerHTML=`
+      <div class="post-top">
+        <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" data-route="${o.routeLabel}" data-km="${exactKm}" checked>
+        <div class="post-info" style="flex:1;min-width:0">
+          <p class="post-id">Poste: <span>${o.id}</span></p>
+          <span class="br-badge">&#128650; ${o.routeLabel}</span>
+          <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:4px;">KM: ${exactKm}</p>
+          <p class="post-dist" id="dist-${i}">Distância: ${range(o.d,pos.acc)}</p>
+          <p class="post-muni" data-muni-lat="${o.lat}" data-muni-lon="${o.lon}">Município: carregando...</p>
+        </div>
+        <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}',${o.lat},${o.lon},'${o.routeLabel}','${exactKm}')" title="Enviar por WhatsApp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </button>
+      </div>
+      <div class="post-map-container">
+        <iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+      </div>`;
+    frag.appendChild(div)});
+  list.innerHTML='';list.appendChild(frag);
+  hydrateMunicipioTargets();
+  document.getElementById('btnSend').disabled=false}
+
+// ─── Botão Enviar Lista WhatsApp ───────────────────────────────────────────────
+document.getElementById('btnSend').onclick=()=>{
+  if(!pos)return;
+  const chks=document.querySelectorAll('.post-chk:checked');
+  let items=[];
+  if(chks.length){chks.forEach(c=>items.push({
+    id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon),
+    routeLabel:c.dataset.route||'—',km:c.dataset.km||'—'}))}
+  else{
+    const qty=Number(document.getElementById('qty').value||10);
+    items=allPosts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)}))
+      .sort((a,b)=>a.d-b.d).slice(0,qty)
+      .map(o=>({id:o.id,lat:o.lat,lon:o.lon,routeLabel:o.routeLabel,km:findPostExactKm(o)}))}
+  let tx=`📍 *LISTA DE POSTES*\nData/Hora: ${nowBR()}\nGPS: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
+  items.forEach((o,i)=>{
+    tx+=`${i+1}. *ID:* ${o.id} · *${o.routeLabel}* · KM: ${o.km}\n`;
+    if(document.getElementById('chkMaps').checked)
+      tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`});
+  window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
+  showToast(`${items.length} postes enviados`);vibrate(15)};
 
 document.getElementById('qty').onchange=()=>{renderedKey='';renderApoio()};
-document.getElementById('routeChangeBtn').onclick=()=>{showRouteScreen()};
 
-document.querySelectorAll('.route-btn').forEach(btn=>{btn.addEventListener('click',()=>{const routeKey=btn.dataset.route;if(routeKey){loadSelectedRoute(routeKey)}})});
-
-window.addEventListener('DOMContentLoaded',()=>{initApoio();setTimeout(()=>{showRouteScreen()},150)});
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{initApp()});
 </script>
 </body>
 </html>
