@@ -160,18 +160,54 @@ img,video{display:block;max-width:100%}
 }
 .km-br-badge{
   display:block;
-  font-size:11px;
+  font-size:10px;
   font-weight:700;
-  color:rgba(220,252,231,.75);
+  color:rgba(220,252,231,.6);
   text-transform:uppercase;
-  letter-spacing:.12em;
-  margin-top:4px;
+  letter-spacing:.1em;
+  margin-top:3px;
   position:relative;
 }
 .km-sub{
   font-size:10px;font-weight:600;color:rgba(220,252,231,.5);
   margin-top:2px;position:relative;
 }
+
+.weather-box{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid rgba(16,185,129,.2);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  position:relative;
+}
+.weather-current{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:11px;
+  font-weight:800;
+  color:#d1fae5;
+}
+.weather-hourly{
+  display:flex;
+  justify-content:space-between;
+  gap:4px;
+  padding-top:4px;
+}
+.weather-hour-card{
+  flex:1;
+  background:rgba(2,44,34,0.6);
+  border:1px solid rgba(16,185,129,.15);
+  border-radius:6px;
+  padding:4px 2px;
+  text-align:center;
+}
+.weather-hour-card .time{font-size:8px;color:rgba(220,252,231,.7);font-weight:700;}
+.weather-hour-card .icon{font-size:14px;margin:2px 0;}
+.weather-hour-card .temp{font-size:9px;color:#fff;font-weight:900;}
 
 .gps{
   display:flex;align-items:center;justify-content:center;gap:8px;
@@ -200,7 +236,6 @@ img,video{display:block;max-width:100%}
   letter-spacing:.2em;color:var(--text2);
   margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;
 }
-.card-label span-left{display:flex;align-items:center;gap:8px;}
 .card-label::before{
   content:"";width:3px;height:10px;border-radius:2px;background:var(--violet2);
 }
@@ -506,10 +541,11 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="km-hero">
-      <p class="km-label">KM aproximado atual & Município</p>
+      <p class="km-label">KM aproximado atual</p>
       <p class="km-value" id="kmVal">—</p>
-      <span class="km-br-badge" id="kmBrBadge">Aguardando Rodovia...</span>
+      <span class="km-br-badge" id="kmBrBadge">---</span>
       <p class="km-sub" id="kmSource"></p>
+      <div id="weatherContainer" class="weather-box" style="display:none;"></div>
     </div>
 
     <div id="gpsStatus" class="gps bad">
@@ -588,6 +624,7 @@ function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
 let posts=[],kmDB_SP=[],kmDB_RJ=[],kmDB_BR101_SP=[],kmDB_BR101_RJ=[];
 let pos=null,searchItem=null,searchKmItems=[],renderedKey='',apoioInit=false;
 let currentMunicipio='';
+let lastWeatherFetch=0;
 
 let _tt=null;
 function showToast(msg,type='ok'){
@@ -683,14 +720,72 @@ async function fetchMunicipio(lat, lon){
   }catch(e){currentMunicipio='';}
 }
 
-function nearestInDB(db){
-  if(!db.length || !pos)return null;
-  let best=null,bd=Infinity;
-  for(const p of db){
-    const d=hav(pos.lat,pos.lon,p.lat,p.lon);
-    if(d<bd){bd=d;best={...p,d};}
-  }
-  return best;
+function getWeatherIcon(code){
+  // WMO Weather interpretation codes (WW)
+  if(code === 0) return '☀️';
+  if(code >= 1 && code <= 3) return '⛅';
+  if(code >= 45 && code <= 48) return '🌫️';
+  if(code >= 51 && code <= 67) return '🌧️';
+  if(code >= 71 && code <= 77) return '❄️';
+  if(code >= 80 && code <= 82) return '🌦️';
+  if(code >= 95 && code <= 99) return '⛈️';
+  return '☁️';
+}
+
+function getWeatherDesc(code){
+  if(code === 0) return 'Céu limpo';
+  if(code >= 1 && code <= 3) return 'Parcialmente nublado';
+  if(code >= 45 && code <= 48) return 'Nevoeiro';
+  if(code >= 51 && code <= 67) return 'Chuvoso';
+  if(code >= 71 && code <= 77) return 'Neve';
+  if(code >= 80 && code <= 82) return 'Pancadas de chuva';
+  if(code >= 95 && code <= 99) return 'Tempestade';
+  return 'Nublado';
+}
+
+async function fetchWeather(lat, lon){
+  const now = Date.now();
+  if(now - lastWeatherFetch < 900000) return; // cache 15 min
+  lastWeatherFetch = now;
+  try{
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&forecast_hours=7`);
+    if(r.ok){
+      const data = await r.json();
+      const current = data.current || {};
+      const hourly = data.hourly || {};
+      
+      const container = document.getElementById('weatherContainer');
+      container.style.display = 'flex';
+
+      let currentHtml = `
+        <div class="weather-current">
+          <span>${getWeatherIcon(current.weather_code)}</span>
+          <span>${Math.round(current.temperature_2m || 0)}°C · ${getWeatherDesc(current.weather_code)}</span>
+        </div>
+      `;
+
+      let hourlyHtml = '<div class="weather-hourly">';
+      const times = hourly.time || [];
+      const temps = hourly.temperature_2m || [];
+      const codes = hourly.weather_code || [];
+
+      // Pegar as próximas 6 horas a partir da hora atual
+      const curHourIdx = times.findIndex(t => new Date(t) >= new Date()) || 0;
+      for(let i = curHourIdx + 1; i <= Math.min(curHourIdx + 6, times.length - 1); i++){
+        const hourStr = new Date(times[i]).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+        hourlyHtml += `
+          <div class="weather-hour-card">
+            <div class="time">${hourStr}</div>
+            <div class="icon">${getWeatherIcon(codes[i])}</div>
+            <div class="temp">${Math.round(temps[i])}°C</div>
+          </div>
+        `;
+      }
+      hourlyHtml += '</div>';
+
+      container.innerHTML = currentHtml + hourlyHtml;
+    }
+  }catch(e){}
 }
 
 function findNearestInAnyDB(lat, lon){
@@ -731,7 +826,7 @@ function updateKm(){
 }
 
 function findPostExactKm(post){
-  const dbs=[{name:'SP', db:kmDB_SP},{name:'RJ', db:kmDB_RJ}];
+  const dbs=[{name:'SP', db:kmDB_SP},{name:'RJ', db:kmDB_RJ},{name:'BR101-SP', db:kmDB_BR101_SP},{name:'BR101-RJ', db:kmDB_BR101_RJ}];
   for(const dbObj of dbs){
     if(dbObj.db.length){
       let best=null, bd=Infinity;
@@ -739,7 +834,7 @@ function findPostExactKm(post){
         const d=hav(post.lat, post.lon, pt.lat, pt.lon);
         if(d<bd){bd=d;best=pt;}
       }
-      if(best && bd < 2000){
+      if(best && bd < 3000){
         return (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') + ' ('+dbObj.name+')';
       }
     }
@@ -756,6 +851,7 @@ function initApoio(){
     pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
     gpsBadge(document.getElementById('gpsStatus'),pos);
     fetchMunicipio(pos.lat, pos.lon);
+    fetchWeather(pos.lat, pos.lon);
     renderApoio();
     updateKm();
     updateSearchDist();
@@ -868,7 +964,7 @@ function updateSearchDist(){
   checkLock();
 }
 
-function renderSearch(){
+async function renderSearch(){
   if(!searchItem)return;
   const res=document.getElementById('searchResult');
   let dt='Aguardando GPS...';
@@ -878,12 +974,25 @@ function renderSearch(){
     checkLock();
   }
   const exactKm = findPostExactKm(searchItem);
+
+  // Buscar município de forma discreta para o poste pesquisado
+  let muniName = '';
+  try{
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${searchItem.lat}&lon=${searchItem.lon}&zoom=10`, {headers: {'Accept-Language': 'pt-BR'}});
+    if(r.ok){
+      const data = await r.json();
+      const addr = data.address || {};
+      muniName = addr.city || addr.town || addr.municipality || addr.village || '';
+    }
+  }catch(e){}
+
   res.style.display='block';
   res.innerHTML=`<div class="post searched">
     <div class="post-top">
       <div class="post-info">
         <p class="post-id">OS / ID: <span>${searchItem.id}</span></p>
         <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
+        ${muniName ? `<p style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:1px;">Município: ${muniName}</p>` : ''}
         <p class="post-dist" id="srch-dist">${dt}</p>
         <p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p>
       </div>
@@ -1172,3 +1281,4 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+```[cite: 1]
