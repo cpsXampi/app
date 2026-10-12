@@ -4,8 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b1020">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Apoio Técnico & Localização</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
@@ -24,7 +22,6 @@
   --accent2:#ffe44d;
   --accent3:#c8a800;
   --accent-dim:rgba(255,214,0,.06);
-  --accent-glow:rgba(255,214,0,.18);
   --green:#10b981;
   --green2:#34d399;
   --green3:#059669;
@@ -34,7 +31,6 @@
   --violet3:#4c1d95;
   --violet-dim:rgba(92,33,255,.12);
   --red:#ef4444;
-  --red-dim:rgba(239,68,68,.10);
   --warn:#f59e0b;
   --warn-dim:rgba(245,158,11,.10);
   --text:#f3f4f6;
@@ -44,11 +40,10 @@
   --dim:#4b5563;
   --dimmer:#1f2937;
   --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  --r-xs:8px;--r-sm:12px;--r-md:16px;--r-lg:20px;--r-xl:24px;--r-2xl:28px;
+  --r-xs:8px;--r-sm:12px;--r-md:16px;--r-lg:20px;--r-xl:24px;
   --safe-b:max(env(safe-area-inset-bottom,0px),20px);
   --safe-t:env(safe-area-inset-top,0px);
   --ease:cubic-bezier(.4,0,.2,1);
-  --ease-bounce:cubic-bezier(.34,1.56,.64,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
@@ -217,7 +212,6 @@ img,video{display:block;max-width:100%}
   color:#fff;
 }
 
-/* Caixa detalhada expansível de clima */
 .weather-expanded-box{
   margin-top:6px;
   padding-top:6px;
@@ -717,7 +711,6 @@ img,video{display:block;max-width:100%}
       <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
       <p class="km-sub" id="kmSource">Aguardando coordenadas GPS...</p>
       
-      <!-- Clima atual compacto (1 linha) + botão minúsculo de detalhes -->
       <div id="weatherContainer" class="weather-line-box" style="display:none;"></div>
     </div>
 
@@ -930,7 +923,7 @@ async function fetchMunicipio(lat, lon){
       return addr.city || addr.town || addr.municipality || addr.village || 'Município não identificado';
     }
   }catch(e){}
-  return '';
+  return 'Município não identificado';
 }
 
 function getWeatherIcon(code){
@@ -1049,7 +1042,7 @@ async function updateKm(){
   
   const s=document.getElementById('kmSource');
   if(s){
-    s.textContent=`Município: ${currentMunicipio || '---'} · Ref: ${best.name} (Δ ~${Math.round(best.res.d)}m)`;
+    s.textContent=`Município: ${currentMunicipio} · Ref: ${best.name} (Δ ~${Math.round(best.res.d)}m)`;
   }
 }
 
@@ -1504,17 +1497,20 @@ async function renderSearchKm(label, bestPt){
   }
 
   htmlContent += `<div style="display:flex;flex-direction:column;gap:12px">`;
-  searchKmItems.forEach((item, idx)=>{
+  for(let idx = 0; idx < searchKmItems.length; idx++){
+    const item = searchKmItems[idx];
     let dt='Aguardando GPS...';
     if(pos){
       dt='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
     }
     const exactKmObj = findPostExactKm(item);
+    const itemMuni = await fetchMunicipio(item.lat, item.lon);
     htmlContent += `
       <div class="post searched">
         <div class="post-top">
           <div class="post-info">
             <p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p>
+            <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${itemMuni}</p>
             <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKmObj.kmStr}</p>
             <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
             <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
@@ -1525,7 +1521,7 @@ async function renderSearchKm(label, bestPt){
           <iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
         </div>
       </div>`;
-  });
+  }
   htmlContent += '</div>';
   res.innerHTML = htmlContent;
 
@@ -1557,7 +1553,7 @@ function sendSingleWhatsApp(id, lat, lon) {
   showToast(`Poste ${id} enviado para o WhatsApp`);
 }
 
-function renderApoio(){
+async function renderApoio(){
   if(!pos||!posts.length)return;
   if(searchItem)updateSearchDist();
   if(searchKmItems.length)updateSearchKmDist();
@@ -1572,13 +1568,14 @@ function renderApoio(){
   const list=document.getElementById('postList');
 
   if(key===renderedKey){
-    items.forEach((o,i)=>{
+    for(let i=0; i<items.length; i++){
+      const o = items[i];
       const el=document.getElementById('dist-'+i);
       const kmEl=document.getElementById('km-exato-'+i);
       if(el)el.textContent='Distância: '+range(o.d,pos.acc);
       const exactObj = findPostExactKm(o);
       if(kmEl)kmEl.textContent='KM Exato: '+exactObj.kmStr;
-    });
+    }
     document.getElementById('btnSend').disabled=false;
     return;
   }
@@ -1586,14 +1583,17 @@ function renderApoio(){
   renderedKey=key;
   const fragment = document.createDocumentFragment();
 
-  items.forEach((o,i)=>{
+  for(let i=0; i<items.length; i++){
+    const o = items[i];
     const exactObj = findPostExactKm(o);
+    const muniName = await fetchMunicipio(o.lat, o.lon);
     const div=document.createElement('div');
     div.className='post'+(i===0?' near':'');
     div.innerHTML=`<div class="post-top">
       <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
       <div class="post-info">
         <p class="post-id">Poste: <span>${o.id}</span></p>
+        <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${muniName}</p>
         <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactObj.kmStr}</p>
         <p class="post-dist" id="dist-${i}">Distância: ${range(o.d,pos.acc)}</p>
       </div>
@@ -1607,7 +1607,7 @@ function renderApoio(){
       <iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
     </div>`;
     fragment.appendChild(div);
-  });
+  }
 
   list.innerHTML='';
   list.appendChild(fragment);
@@ -1643,4 +1643,3 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-```[cite: 1]
