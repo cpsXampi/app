@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1020">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Apoio Localização</title>
+<title>Apoio Técnico & Localização</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -174,7 +174,7 @@ img,video{display:block;max-width:100%}
   border-radius:4px;
 }
 .km-sub{
-  font-size:10px;font-weight:600;color:rgba(220,252,231,.5);
+  font-size:10px;font-weight:600;color:rgba(220,252,231,.7);
   margin-top:2px;position:relative;
 }
 
@@ -428,7 +428,6 @@ img,video{display:block;max-width:100%}
   border:1px solid rgba(16,185,129,0.4);
 }
 
-/* Painel flutuante sobreposto no mapa ao clicar */
 .map-overlay-card{
   position:absolute;
   bottom:16px;
@@ -577,6 +576,37 @@ img,video{display:block;max-width:100%}
 }
 .ctrl-chk{width:18px;height:18px;accent-color:var(--accent)}
 
+.tools-grid{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:8px;
+  margin-top:8px;
+}
+.tool-btn{
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border2);
+  border-radius:var(--r-xs);
+  padding:10px;
+  text-align:left;
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  text-decoration:none;
+  transition:all 0.15s ease;
+}
+.tool-btn:hover{
+  background:rgba(92,33,255,0.2);
+  border-color:var(--violet2);
+}
+.tool-btn span{
+  font-size:9px;
+  color:var(--muted);
+  font-weight:600;
+}
+
 .skel{
   height:120px;border-radius:var(--r-lg);
   background:linear-gradient(110deg,var(--surface) 30%,var(--surface2) 50%,var(--surface) 70%);
@@ -610,8 +640,8 @@ img,video{display:block;max-width:100%}
 <header class="hdr">
   <div class="hdr-in">
     <div class="hdr-title">
-      <h1>Apoio Localização</h1>
-      <p>Pesquisa & Proximidade GPS</p>
+      <h1>Apoio Técnico & Localização</h1>
+      <p>Campo, Rodovias, Clima & Ferramentas</p>
     </div>
     <span class="hdr-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -655,7 +685,7 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="card card-accent">
-      <p class="card-label">Pesquisa por KM (BR116 - SP ou RJ)</p>
+      <p class="card-label">Pesquisa por KM (BR116 / BR101 - SP ou RJ)</p>
       <div class="search-row">
         <div class="search-wrap">
           <input class="search-input" id="inputKm" placeholder="EX: 115 ou 115.5" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
@@ -683,10 +713,10 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="km-hero">
-      <p class="km-label">KM aproximado atual</p>
+      <p class="km-label">KM aproximado & Município atual</p>
       <p class="km-value" id="kmVal">—</p>
       <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
-      <p class="km-sub" id="kmSource"></p>
+      <p class="km-sub" id="kmSource">Aguardando coordenadas GPS...</p>
       <div id="weatherContainer" class="weather-box" style="display:none;"></div>
     </div>
 
@@ -721,13 +751,12 @@ img,video{display:block;max-width:100%}
         </div>
 
         <label class="ctrl-label" style="margin-top:2px;">
-          <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM e Nox mais próximo
+          <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM, Município e Nox mais próximo
         </label>
 
-        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Mapa Interativo (Escolha o modo de exibição e clique para ver o clima e informações):</div>
+        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Mapa Interativo (Normal, Satélite, Híbrido, Full e Clique):</div>
         
         <div class="map-picker-box" id="mapPickerBox">
-          <!-- Barra de controles do mapa: Modos e Fullscreen -->
           <div class="map-controls-bar">
             <button class="map-layer-btn active" id="btnLayerNormal" onclick="setMapLayer('normal')">Normal</button>
             <button class="map-layer-btn" id="btnLayerSatellite" onclick="setMapLayer('satellite')">Satélite</button>
@@ -737,7 +766,6 @@ img,video{display:block;max-width:100%}
 
           <div id="leafletMap" style="width:100%;height:100%;"></div>
 
-          <!-- Card flutuante sobreposto no mapa com as informações do clique -->
           <div class="map-overlay-card" id="mapOverlayCard">
             <div class="map-overlay-header">
               <span class="map-overlay-title" id="mapOverlayTitle">Informações do Ponto</span>
@@ -779,6 +807,70 @@ img,video{display:block;max-width:100%}
 
     <div id="postList" style="display:flex;flex-direction:column;gap:12px">
       <div class="skel"></div><div class="skel"></div>
+    </div>
+  </div>
+
+  <!-- ==================== SEÇÃO 3: PAINEL DE 50+ FERRAMENTAS E APIS TÉCNICAS ==================== -->
+  <div class="section-block">
+    <div class="section-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      Central de Ferramentas & APIs Gratuitas para Técnicos
+    </div>
+    <div style="font-size:11px;color:var(--text2);line-height:1.4;">
+      Ferramentas essenciais de consulta pública, infraestrutura, geolocalização, clima e diagnóstico de redes gratuitas integradas para acesso rápido em campo:
+    </div>
+
+    <div class="tools-grid">
+      <a class="tool-btn" href="https://nominatim.openstreetmap.org/ui/search.html" target="_blank">OpenStreetMap Nominatim<span>Geocodificação Reversa Global</span></a>
+      <a class="tool-btn" href="https://open-meteo.com/" target="_blank">Open-Meteo API<span>Previsão do Tempo Global Gratuita</span></a>
+      <a class="tool-btn" href="https://geohack.toolforge.org/" target="_blank">GeoHack Tools<span>Conversor de Coordenadas Militares</span></a>
+      <a class="tool-btn" href="https://earth.google.com/" target="_blank">Google Earth Web<span>Imagens de Satélite de Alta Definição</span></a>
+      <a class="tool-btn" href="https://www.speedtest.net/" target="_blank">Speedtest Ookla<span>Teste de Velocidade de Conexão</span></a>
+      <a class="tool-btn" href="https://www.db-ip.com/" target="_blank">DB-IP GeoIP Locator<span>Consulta de IP e ASN</span></a>
+      <a class="tool-btn" href="https://dnschecker.org/" target="_blank">DNS Checker Global<span>Propagação de DNS e Rotas</span></a>
+      <a class="tool-btn" href="https://www.whatismyip.com/" target="_blank">What Is My IP<span>Identificação de IP Público do Técnico</span></a>
+      <a class="tool-btn" href="https://www.ultratest.com/" target="_blank">UltraPing Test<span>Latência e Perda de Pacotes</span></a>
+      <a class="tool-btn" href="https://cime.inmet.gov.br/" target="_blank">INMET Clima Brasil<span>Radar Meteorológico Oficial</span></a>
+      <a class="tool-btn" href="https://www.suni.org.br/" target="_blank">SUNI Brasil<span>Monitoramento de Radiação e Sol</span></a>
+      <a class="tool-btn" href="https://www.cptec.inpe.br/" target="_blank">CPTEC / INPE<span>Previsão Numérica de Tempo</span></a>
+      <a class="tool-btn" href="https://www.gov.br/anatel/pt-br" target="_blank">Anatel Sistemas<span>Regulamentação de Telecomunicações</span></a>
+      <a class="tool-btn" href="https://www.gov.br/antt/pt-br" target="_blank">ANTT Rodovias<span>Concessões e Ruas Federais</span></a>
+      <a class="tool-btn" href="https://www.viario.com.br/" target="_blank">Portal Viário<span>Condições de Tráfego Rodoviário</span></a>
+      <a class="tool-btn" href="https://www.ccr.com.br/" target="_blank">CCR Rodovias<span>Atendimento e Rotas Concessionadas</span></a>
+      <a class="tool-btn" href="https://www.gov.br/ibge/pt-br" target="_blank">IBGE Cidades<span>Dados Demográficos e Municipais</span></a>
+      <a class="tool-btn" href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap Editor<span>Mapeamento Colaborativo de Ruas</span></a>
+      <a class="tool-btn" href="https://overpass-turbo.eu/" target="_blank">Overpass Turbo<span>API de Consulta de Dados OSM</span></a>
+      <a class="tool-btn" href="https://www.qrcode-monkey.com/" target="_blank">Gerador QR Code<span>Criação de Códigos para Equipamentos</span></a>
+      <a class="tool-btn" href="https://jsonformatter.curiousconcept.com/" target="_blank">JSON Formatter<span>Validação de Endpoints e JSON</span></a>
+      <a class="tool-btn" href="https://www.base64encode.org/" target="_blank">Base64 Encoder/Decoder<span>Codificação de Strings Técnicas</span></a>
+      <a class="tool-btn" href="https://www.epochconverter.com/" target="_blank">Epoch Timestamp<span>Conversor de Horário Unix/UTC</span></a>
+      <a class="tool-btn" href="https://www.sslshopper.com/" target="_blank">SSL Checker<span>Validação de Certificados de Servidores</span></a>
+      <a class="tool-btn" href="https://mxtoolbox.com/" target="_blank">MX Toolbox<span>Diagnóstico de E-mail e Redes IP</span></a>
+      <a class="tool-btn" href="https://www.colormind.io/" target="_blank">Paletas UI<span>Design de Interfaces Web</span></a>
+      <a class="tool-btn" href="https://icomoon.io/" target="_blank">IcoMoon Icons<span>Gerador de Ícones Vetoriais SVG</span></a>
+      <a class="tool-btn" href="https://www.svgrepo.com/" target="_blank">SVG Repo<span>Repositório Gratuito de Ícones</span></a>
+      <a class="tool-btn" href="https://gist.github.com/" target="_blank">GitHub Gist<span>Repositório de Scripts e Notas</span></a>
+      <a class="tool-btn" href="https://jsfiddle.net/" target="_blank">JSFiddle Sandbox<span>Testes Rápidos de Código Front-end</span></a>
+      <a class="tool-btn" href="https://codepen.io/" target="_blank">CodePen IDE<span>Protótipos HTML/JS em Nuvem</span></a>
+      <a class="tool-btn" href="https://www.w3schools.com/" target="_blank">W3Schools Docs<span>Manuais de Referência de Código</span></a>
+      <a class="tool-btn" href="https://developer.mozilla.org/" target="_blank">MDN Web Docs<span>Documentação Oficial Web API</span></a>
+      <a class="tool-btn" href="https://leafletjs.com/" target="_blank">Leaflet.js Docs<span>Biblioteca de Mapas Interativos</span></a>
+      <a class="tool-btn" href="https://developers.google.com/maps" target="_blank">Google Maps Platform<span>APIs de Rotas e Geolocalização</span></a>
+      <a class="tool-btn" href="https://firebase.google.com/" target="_blank">Google Firebase<span>Hospedagem e Banco de Dados Realtime</span></a>
+      <a class="tool-btn" href="https://sheets.google.com/" target="_blank">Google Sheets API<span>Backend Simples para Relatórios</span></a>
+      <a class="tool-btn" href="https://script.google.com/" target="_blank">Google Apps Script<span>Automação de Endpoints em Nuvem</span></a>
+      <a class="tool-btn" href="https://github.com/" target="_blank">GitHub Version Control<span>Controle de Versão de Projetos</span></a>
+      <a class="tool-btn" href="https://vercel.com/" target="_blank">Vercel Deployment<span>Deploy Instantâneo de Web Apps</span></a>
+      <a class="tool-btn" href="https://netlify.com/" target="_blank">Netlify Hosting<span>Hospedagem Estática Global</span></a>
+      <a class="tool-btn" href="https://www.cloudflare.com/" target="_blank">Cloudflare CDN & DNS<span>Segurança e Aceleração de Domínios</span></a>
+      <a class="tool-btn" href="https://www.whatsapp.com/" target="_blank">WhatsApp Web/API<span>Envio de Relatórios Diretos</span></a>
+      <a class="tool-btn" href="https://trello.com/" target="_blank">Trello Board<span>Gestão de Chamados e Tarefas</span></a>
+      <a class="tool-btn" href="https://notion.so/" target="_blank">Notion Workspace<span>Documentação Técnica e Wiki</span></a>
+      <a class="tool-btn" href="https://chatgpt.com/" target="_blank">ChatGPT AI Assistant<span>Apoio de Consultoria Técnica</span></a>
+      <a class="tool-btn" href="https://gemini.google.com/" target="_blank">Google Gemini AI<span>Análise de Dados e Resolução de Bugs</span></a>
+      <a class="tool-btn" href="https://translate.google.com/" target="_blank">Google Translate<span>Tradução Técnica Multilíngue</span></a>
+      <a class="tool-btn" href="https://www.wolframalpha.com/" target="_blank">Wolfram Alpha<span>Cálculos Científicos e Engenharia</span></a>
+      <a class="tool-btn" href="https://www.timeanddate.com/" target="_blank">Time & Date World<span>Fusos Horários e Feriados Globais</span></a>
     </div>
   </div>
 
@@ -898,9 +990,10 @@ async function fetchMunicipio(lat, lon){
     if(r.ok){
       const data = await r.json();
       const addr = data.address || {};
-      currentMunicipio = addr.city || addr.town || addr.municipality || addr.village || '';
+      return addr.city || addr.town || addr.municipality || addr.village || 'Município não identificado';
     }
-  }catch(e){currentMunicipio='';}
+  }catch(e){}
+  return '';
 }
 
 function getWeatherIcon(code){
@@ -1003,9 +1096,11 @@ function findNearestInAnyDB(lat, lon){
   return candidates[0];
 }
 
-function updateKm(){
+async function updateKm(){
   if(!pos)return;
   const best=findNearestInAnyDB(pos.lat, pos.lon);
+  currentMunicipio = await fetchMunicipio(pos.lat, pos.lon);
+
   if(!best)return;
 
   const kmValStr=(Math.round(best.res.km*100)/100).toFixed(2).replace('.',',');
@@ -1015,8 +1110,7 @@ function updateKm(){
   
   const s=document.getElementById('kmSource');
   if(s){
-    let muniTxt = currentMunicipio ? ` · ${currentMunicipio}` : '';
-    s.textContent=`Posição atual${muniTxt}`;
+    s.textContent=`Município: ${currentMunicipio || '---'} · Ref: ${best.name} (Δ ~${Math.round(best.res.d)}m)`;
   }
 }
 
@@ -1030,11 +1124,15 @@ function findPostExactKm(post){
         if(d<bd){bd=d;best=pt;}
       }
       if(best && bd < 3000){
-        return (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') + ' ('+dbObj.name+')';
+        return {
+          kmStr: (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') + ' ('+dbObj.name+')',
+          lat: best.lat,
+          lon: best.lon
+        };
       }
     }
   }
-  return '---';
+  return {kmStr: '---', lat: post.lat, lon: post.lon};
 }
 
 function setMapLayer(mode){
@@ -1049,9 +1147,8 @@ function setMapLayer(mode){
   if(mode === 'normal'){
     currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19});
   } else if(mode === 'satellite'){
-    currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}, {maxZoom: 19, attribution: 'Tiles &copy; Esri'});
+    currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19});
   } else if(mode === 'hybrid'){
-    // Camada base de satélite + camada de labels por cima
     const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19});
     const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom: 19, subdomains: 'abcd'});
     currentTileLayer = L.layerGroup([sat, labels]);
@@ -1108,7 +1205,6 @@ function initApoio(){
   if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
     pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
     gpsBadge(document.getElementById('gpsStatus'),pos);
-    fetchMunicipio(pos.lat, pos.lon);
     fetchWeather(pos.lat, pos.lon);
     renderApoio();
     updateKm();
@@ -1191,24 +1287,23 @@ async function searchManualCoordByLatLon(lat, lon){
   const overlayCard = document.getElementById('mapOverlayCard');
   const overlayContent = document.getElementById('mapOverlayContent');
 
+  const muniName = await fetchMunicipio(lat, lon);
   const foundRodovia = findNearestInAnyDB(lat, lon);
-  if(!foundRodovia){
-    msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Nenhuma rodovia encontrada próxima.';
-    res.style.display='none';
-    overlayCard.style.display='none';
-    return;
-  }
-
+  
   msg.style.display='none';
   res.style.display='block';
 
-  const kmValStr = (Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',');
-  let kmDistLine = Math.round(foundRodovia.res.d);
-
   let html = `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;">
-    <p style="color:var(--accent);font-weight:900;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>
-    <p style="color:var(--text2);font-weight:700;margin-top:2px;">Distância em linha reta até a rodovia: ~${kmDistLine}m</p>`;
+    <p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
+
+  let overlayHtml = `<p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
+
+  if(foundRodovia){
+    const kmValStr = (Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',');
+    let kmDistLine = Math.round(foundRodovia.res.d);
+    html += `<p style="color:var(--green2);font-weight:900;margin-top:2px;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr} (~${kmDistLine}m)</p>`;
+    overlayHtml += `<p style="color:var(--green2);font-weight:900;margin-top:2px;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>`;
+  }
 
   let closestPostId = '---';
   const doFindNearest = document.getElementById('chkFindNearestPost').checked;
@@ -1220,27 +1315,21 @@ async function searchManualCoordByLatLon(lat, lon){
     }
     if(closestPost){
       closestPostId = closestPost.id;
-      html += `<p style="color:var(--green2);font-weight:900;margin-top:4px;">Nox / Poste mais próximo: <span>${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
+      html += `<p style="color:#fff;font-weight:800;margin-top:4px;">Nox / Poste mais próximo: <span>${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
+      overlayHtml += `<p style="color:#fff;font-weight:800;margin-top:2px;">Poste: <span style="color:var(--accent);">${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
     }
   }
 
-  html += `<div id="coordWeatherBox" class="weather-box" style="margin-top:8px;"></div>`;
-  html += `</div>`;
-  
+  html += `<div id="coordWeatherBox" class="weather-box" style="margin-top:8px;"></div></div>`;
   res.innerHTML = html;
   
-  // Renderizar também no card flutuante sobreposto no mapa
-  overlayContent.innerHTML = `
-    <p style="color:var(--accent);font-weight:900;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>
-    <p style="color:var(--text2);font-weight:700;margin-top:2px;">Linha reta rodovia: ~${kmDistLine}m | Poste: <span style="color:var(--green2);">${closestPostId}</span></p>
-    <div id="mapOverlayWeather" class="weather-box" style="margin-top:6px;"></div>
-  `;
+  overlayHtml += `<div id="mapOverlayWeather" class="weather-box" style="margin-top:6px;"></div>`;
+  overlayContent.innerHTML = overlayHtml;
   overlayCard.style.display = 'block';
 
-  renderWeatherWidget(foundRodovia.res.lat, foundRodovia.res.lon, 'coordWeatherBox');
-  renderWeatherWidget(foundRodovia.res.lat, foundRodovia.res.lon, 'mapOverlayWeather');
-  
-  showToast('Ponto selecionado com sucesso');
+  renderWeatherWidget(lat, lon, 'coordWeatherBox');
+  renderWeatherWidget(lat, lon, 'mapOverlayWeather');
+  showToast('Ponto analisado com sucesso');
 }
 
 async function searchId(){
@@ -1301,25 +1390,16 @@ async function renderSearch(){
     dt='Distância: '+range(dist,pos.acc);
     checkLock();
   }
-  const exactKm = findPostExactKm(searchItem);
-
-  let muniName = '';
-  try{
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${searchItem.lat}&lon=${searchItem.lon}&zoom=10`, {headers: {'Accept-Language': 'pt-BR'}});
-    if(r.ok){
-      const data = await r.json();
-      const addr = data.address || {};
-      muniName = addr.city || addr.town || addr.municipality || addr.village || '';
-    }
-  }catch(e){}
+  const exactKmObj = findPostExactKm(searchItem);
+  const muniName = await fetchMunicipio(searchItem.lat, searchItem.lon);
 
   res.style.display='block';
   res.innerHTML=`<div class="post searched">
     <div class="post-top">
       <div class="post-info">
         <p class="post-id">OS / ID: <span>${searchItem.id}</span></p>
-        <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
-        ${muniName ? `<p style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:1px;">Município: ${muniName}</p>` : ''}
+        <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${muniName}</p>
+        <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Referência: ${exactKmObj.kmStr}</p>
         <p class="post-dist" id="srch-dist">${dt}</p>
         <p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p>
         <div id="searchWeatherBox" class="weather-box" style="margin-top:8px;"></div>
@@ -1343,7 +1423,7 @@ function getMinMaxKm(db){
   return {min, max};
 }
 
-function executeSearchKm(db, label){
+async function executeSearchKm(db, label){
   const rawVal=document.getElementById('inputKm').value;
   const targetKm=parsePt(rawVal);
   const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
@@ -1396,7 +1476,7 @@ function executeSearchKm(db, label){
 
   searchKmItems = sortedPosts;
   msg.style.display='none';
-  renderSearchKm(label, bestPt);
+  await renderSearchKm(label, bestPt);
   showToast('10 postes mais próximos do KM '+rawVal+' ('+label+')');
   vibrate([10,50,10]);
 }
@@ -1470,16 +1550,18 @@ function updateSearchKmDist(){
   });
 }
 
-function renderSearchKm(label, bestPt){
+async function renderSearchKm(label, bestPt){
   if(!searchKmItems.length)return;
   const res=document.getElementById('searchKmResult');
   res.style.display='block';
   
-  let htmlContent = `<div style="font-size:10px;font-weight:900;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">Resultado para ${label}</div>`;
+  const muniName = bestPt ? await fetchMunicipio(bestPt.lat, bestPt.lon) : '';
+
+  let htmlContent = `<div style="font-size:10px;font-weight:900;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">Resultado para ${label} · Município: ${muniName}</div>`;
   
   if(bestPt){
     htmlContent += `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;margin-bottom:8px;">
-      <p style="color:var(--green2);font-weight:900;">Clima no KM Pesquisado (${label}):</p>
+      <p style="color:var(--green2);font-weight:900;">Clima no KM Pesquisado (${label} - ${muniName}):</p>
       <div id="kmSearchWeatherBox" class="weather-box" style="margin-top:6px;"></div>
     </div>`;
   }
@@ -1490,13 +1572,13 @@ function renderSearchKm(label, bestPt){
     if(pos){
       dt='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
     }
-    const exactKm = findPostExactKm(item);
+    const exactKmObj = findPostExactKm(item);
     htmlContent += `
       <div class="post searched">
         <div class="post-top">
           <div class="post-info">
             <p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p>
-            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
+            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKmObj.kmStr}</p>
             <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
             <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
           </div>
@@ -1557,7 +1639,8 @@ function renderApoio(){
       const el=document.getElementById('dist-'+i);
       const kmEl=document.getElementById('km-exato-'+i);
       if(el)el.textContent='Distância: '+range(o.d,pos.acc);
-      if(kmEl)kmEl.textContent='KM Exato: '+findPostExactKm(o);
+      const exactObj = findPostExactKm(o);
+      if(kmEl)kmEl.textContent='KM Exato: '+exactObj.kmStr;
     });
     document.getElementById('btnSend').disabled=false;
     return;
@@ -1567,14 +1650,14 @@ function renderApoio(){
   const fragment = document.createDocumentFragment();
 
   items.forEach((o,i)=>{
-    const exactKm = findPostExactKm(o);
+    const exactObj = findPostExactKm(o);
     const div=document.createElement('div');
     div.className='post'+(i===0?' near':'');
     div.innerHTML=`<div class="post-top">
       <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
       <div class="post-info">
         <p class="post-id">Poste: <span>${o.id}</span></p>
-        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
+        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactObj.kmStr}</p>
         <p class="post-dist" id="dist-${i}">Distância: ${range(o.d,pos.acc)}</p>
       </div>
       <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar este item por WhatsApp">
@@ -1606,8 +1689,8 @@ document.getElementById('btnSend').onclick=()=>{
   }
   let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
   items.forEach((o,i)=>{
-    const exactKm = findPostExactKm(o);
-    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactKm})\n`;
+    const exactObj = findPostExactKm(o);
+    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactObj.kmStr})\n`;
     if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`;
   });
   window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
@@ -1623,3 +1706,4 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+```[cite: 1]
