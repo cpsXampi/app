@@ -152,7 +152,7 @@ img,video{display:block;max-width:100%}
   letter-spacing:.25em;color:rgba(220,252,231,.65);position:relative;
 }
 .km-value{
-  font-size:clamp(34px,10vw,48px);font-weight:900;
+  font-size:clamp(30px,9vw,44px);font-weight:900;
   line-height:1.05;letter-spacing:-.04em;margin-top:2px;
   font-variant-numeric:tabular-nums;position:relative;
   background:linear-gradient(180deg,#fff 25%,#6ee7b7);
@@ -236,6 +236,24 @@ img,video{display:block;max-width:100%}
   display:flex;align-items:center;gap:6px;
 }
 .search-msg svg{width:13px;height:13px}
+
+.modal-box{
+  background:rgba(17,24,39,0.95);
+  border:1px solid var(--border3);
+  border-radius:var(--r-md);
+  padding:12px;
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.modal-box p{font-size:11px;font-weight:800;color:var(--accent)}
+.modal-btns{display:flex;gap:8px}
+.modal-btn{
+  flex:1;padding:10px;border-radius:var(--r-xs);font-size:11px;font-weight:900;text-transform:uppercase;
+  background:var(--violet);color:#fff;cursor:pointer;text-align:center;
+}
+.modal-btn.rj{background:var(--green3)}
 
 .target-lock{
   display:none;border-radius:var(--r-lg);
@@ -423,7 +441,7 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="card card-accent">
-      <p class="card-label">Pesquisa por KM (10 mais próximos)</p>
+      <p class="card-label">Pesquisa por KM (BR116 - SP ou RJ)</p>
       <div class="search-row">
         <div class="search-wrap">
           <input class="search-input" id="inputKm" placeholder="EX: 115 ou 115.5" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
@@ -433,6 +451,7 @@ img,video{display:block;max-width:100%}
         <button class="btn-icon clr" onclick="clearKm()" aria-label="Limpar KM"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <div id="searchKmMsg" class="search-msg" style="display:none"></div>
+      <div id="searchKmModal" style="display:none"></div>
       <div id="searchKmResult" style="display:none;margin-top:12px"></div>
     </div>
   </div>
@@ -450,7 +469,7 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="km-hero">
-      <p class="km-label">KM aproximado atual</p>
+      <p class="km-label">KM aproximado atual & Município</p>
       <p class="km-value" id="kmVal">—</p>
       <p class="km-sub" id="kmSource"></p>
     </div>
@@ -507,8 +526,9 @@ const nowBR=()=>new Date().toLocaleString('pt-BR').toUpperCase();
 function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(norm(c));if(i>=0)return i}return-1}
 function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
 
-let posts=[],kmDB=[],pos=null,searchItem=null,searchKmItems=[],renderedKey='',apoioInit=false;
-let curSpeed=0;
+let posts=[],kmDB_SP=[],kmDB_RJ=[],kmDB_BR101_SP=[],kmDB_BR101_RJ=[];
+let pos=null,searchItem=null,searchKmItems=[],renderedKey='',apoioInit=false;
+let currentMunicipio='';
 
 let _tt=null;
 function showToast(msg,type='ok'){
@@ -534,85 +554,134 @@ function gpsBadge(el,p,err){
   el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>${txt}`;
 }
 
+async function fetchCSV(files){
+  for(const f of files){
+    try{
+      let r=await fetch(f+'?v='+Date.now(),{cache:'no-store'});
+      if(r?.ok){
+        let t=await r.text();
+        if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
+        return t;
+      }
+    }catch(e){}
+  }
+  return null;
+}
+
 async function loadPosts(){
-  try{
-    let r=await fetch('dados.csv?v='+Date.now(),{cache:'no-store'}).catch(()=>null);
-    if(!r?.ok)r=await fetch('Dados_Completos_Grupo_2_all.csv?v='+Date.now(),{cache:'no-store'});
-    if(!r?.ok)return;
-    let t=await r.text();
-    if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
-    const lines=t.split(/\r?\n/).filter(l=>l.trim());
-    const h=lines.shift().split(';');
-    const iId=findCol(h,['id do nox','idnox','id']),iLat=findCol(h,['latitude','lat']),iLon=findCol(h,['longitude','lon','long']);
-    posts=lines.map(l=>{
-      const r=l.split(';');
-      return {
-        id:String(r[iId]||'').trim().toUpperCase(),
-        lat:parsePt(r[iLat]),
-        lon:parsePt(r[iLon])
-      };
-    }).filter(p=>p.id&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
-    renderApoio();
-  }catch(e){}
+  let t=await fetchCSV(['dados.csv','Dados_Completos_Grupo_2_all.csv']);
+  if(!t)return;
+  const lines=t.split(/\r?\n/).filter(l=>l.trim());
+  const h=lines.shift().split(';');
+  const iId=findCol(h,['id do nox','idnox','id']),iLat=findCol(h,['latitude','lat']),iLon=findCol(h,['longitude','lon','long']);
+  posts=lines.map(l=>{
+    const r=l.split(';');
+    return {
+      id:String(r[iId]||'').trim().toUpperCase(),
+      lat:parsePt(r[iLat]),
+      lon:parsePt(r[iLon])
+    };
+  }).filter(p=>p.id&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
+  renderApoio();
 }
 
-async function loadKm(){
-  try{
-    let r=await fetch('SNVBR116SPRJ.csv?v='+Date.now(),{cache:'no-store'});
-    if(!r?.ok)return;
-    let t=await r.text();
-    if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
-    const lines=t.split(/\r?\n/).filter(l=>l.trim());
-    const h=lines.shift().split(';');
-    const iKm=findCol(h,['km']),iLat=findCol(h,['lat','latitude']),iLon=findCol(h,['lon','long','longitude']);
-    kmDB=lines.map(l=>{
-      const r=l.split(';');
-      return {km:parsePt(r[iKm]),lat:parsePt(r[iLat]),lon:parsePt(r[iLon])};
-    }).filter(p=>Number.isFinite(p.km)&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
-    updateKm();
-    renderApoio();
-  }catch(e){}
+async function parseKmFile(text){
+  if(!text)return [];
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  const h=lines.shift().split(';');
+  const iKm=findCol(h,['km']),iLat=findCol(h,['lat','latitude']),iLon=findCol(h,['lon','long','longitude']);
+  return lines.map(l=>{
+    const r=l.split(';');
+    return {km:parsePt(r[iKm]),lat:parsePt(r[iLat]),lon:parsePt(r[iLon])};
+  }).filter(p=>Number.isFinite(p.km)&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
 }
 
-function nearestKm(){
-  if(!pos||!kmDB.length)return null;
+async function loadKmDatabases(){
+  const tSP=await fetchCSV(['SNVBR116SPRJ.csv','br116sp.csv','BR116_SP.csv']);
+  kmDB_SP=await parseKmFile(tSP);
+
+  const tRJ=await fetchCSV(['SNVBR116RJ.csv','br116rj.csv','BR116_RJ.csv']);
+  kmDB_RJ=await parseKmFile(tRJ);
+
+  const t101SP=await fetchCSV(['br101sp.csv','BR101_SP.csv']);
+  kmDB_BR101_SP=await parseKmFile(t101SP);
+
+  const t101RJ=await fetchCSV(['br101rj.csv','BR101_RJ.csv']);
+  kmDB_BR101_RJ=await parseKmFile(t101RJ);
+
+  updateKm();
+  renderApoio();
+}
+
+async function fetchMunicipio(lat, lon){
+  try{
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`, {headers: {'Accept-Language': 'pt-BR'}});
+    if(r.ok){
+      const data = await r.json();
+      const addr = data.address || {};
+      currentMunicipio = addr.city || addr.town || addr.municipality || addr.village || '';
+    }
+  }catch(e){currentMunicipio='';}
+}
+
+function nearestInDB(db){
+  if(!pos||!db.length)return null;
   let best=null,bd=Infinity;
-  for(const p of kmDB){
+  for(const p of db){
     const d=hav(pos.lat,pos.lon,p.lat,p.lon);
-    if(d<bd){bd=d;best=p}
+    if(d<bd){bd=d;best={...p,d};}
   }
   return best;
 }
 
 function updateKm(){
-  const b=nearestKm();
-  if(b){
-    const v=(Math.round(b.km*100)/100).toFixed(2).replace('.',',');
-    document.getElementById('kmVal').textContent=v;
-    const s=document.getElementById('kmSource');
-    if(s)s.textContent=`Referência: ${kmDB.length} pontos`;
+  if(!pos)return;
+  const candidates=[
+    {name:'BR116/SP', db:kmDB_SP},
+    {name:'BR116/RJ', db:kmDB_RJ},
+    {name:'BR101/SP', db:kmDB_BR101_SP},
+    {name:'BR101/RJ', db:kmDB_BR101_RJ}
+  ].map(c=>({name:c.name, res:nearestInDB(c.db)})).filter(c=>c.res!==null);
+
+  if(!candidates.length)return;
+  candidates.sort((a,b)=>a.res.d - b.res.d);
+  const best=candidates[0];
+  const kmValStr=(Math.round(best.res.km*100)/100).toFixed(2).replace('.',',');
+  
+  document.getElementById('kmVal').textContent = `KM ${kmValStr} (${best.name})`;
+  const s=document.getElementById('kmSource');
+  if(s){
+    let muniTxt = currentMunicipio ? ` · ${currentMunicipio}` : '';
+    s.textContent=`Localizado na ${best.name}${muniTxt}`;
   }
 }
 
 function findPostExactKm(post){
-  if(!kmDB.length)return '---';
-  let best=null, bd=Infinity;
-  for(const pt of kmDB){
-    const d=hav(post.lat, post.lon, pt.lat, pt.lon);
-    if(d<bd){bd=d;best=pt;}
+  const dbs=[{name:'SP', db:kmDB_SP},{name:'RJ', db:kmDB_RJ}];
+  for(const dbObj of dbs){
+    if(dbObj.db.length){
+      let best=null, bd=Infinity;
+      for(const pt of dbObj.db){
+        const d=hav(post.lat, post.lon, pt.lat, pt.lon);
+        if(d<bd){bd=d;best=pt;}
+      }
+      if(best && bd < 2000){
+        return (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') + ' ('+dbObj.name+')';
+      }
+    }
   }
-  return best ? (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') : '---';
+  return '---';
 }
 
 function initApoio(){
   if(apoioInit)return;
   apoioInit=true;
   loadPosts();
-  loadKm();
+  loadKmDatabases();
   if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
     pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
-    curSpeed=p.coords.speed?Math.round(p.coords.speed*3.6):0;
     gpsBadge(document.getElementById('gpsStatus'),pos);
+    fetchMunicipio(pos.lat, pos.lon);
     renderApoio();
     updateKm();
     updateSearchDist();
@@ -686,45 +755,40 @@ function renderSearch(){
   </div>`;
 }
 
-function searchKm(){
+function executeSearchKm(db, label){
   const rawVal=document.getElementById('inputKm').value;
   const targetKm=parsePt(rawVal);
   const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
-  
-  if(isNaN(targetKm)){clearKm();return}
-  if(!posts.length || !kmDB.length){
-    msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando bases de dados...';
-    return;
-  }
-  
-  let filteredKmDB = kmDB;
+  const modal=document.getElementById('searchKmModal');
+  modal.style.display='none';
+
+  let filteredDB = db;
   const isInteger = Number.isInteger(targetKm) || targetKm === Math.floor(targetKm);
   
   if (isInteger) {
-    filteredKmDB = kmDB.filter(pt => pt.km >= targetKm && pt.km < targetKm + 1);
-    if (filteredKmDB.length === 0) filteredKmDB = kmDB;
+    filteredDB = db.filter(pt => pt.km >= targetKm && pt.km < targetKm + 1);
+    if (filteredDB.length === 0) filteredDB = db;
   } else {
-    filteredKmDB = kmDB.filter(pt => pt.km >= targetKm);
-    if (filteredKmDB.length === 0) filteredKmDB = kmDB;
+    filteredDB = db.filter(pt => pt.km >= targetKm);
+    if (filteredDB.length === 0) filteredDB = db;
   }
 
-  let bestKmPt=null, minKmDiff=Infinity;
-  for(const pt of filteredKmDB){
+  let bestPt=null, minDiff=Infinity;
+  for(const pt of filteredDB){
     const diff=Math.abs(pt.km - targetKm);
-    if(diff<minKmDiff){minKmDiff=diff;bestKmPt=pt;}
+    if(diff<minDiff){minDiff=diff;bestPt=pt;}
   }
 
-  if(!bestKmPt){
+  if(!bestPt){
     msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} NÃO ENCONTRADO.`;
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} NÃO ENCONTRADO (${label}).`;
     searchKmItems=[];res.style.display='none';
     return;
   }
 
   const sortedPosts = posts.map(p => ({
     ...p,
-    d: hav(bestKmPt.lat, bestKmPt.lon, p.lat, p.lon)
+    d: hav(bestPt.lat, bestPt.lon, p.lat, p.lon)
   })).sort((a, b) => a.d - b.d).slice(0, 10);
 
   if(!sortedPosts.length){
@@ -736,15 +800,55 @@ function searchKm(){
 
   searchKmItems = sortedPosts;
   msg.style.display='none';
-  renderSearchKm();
-  showToast('10 postes mais próximos do KM '+rawVal);
+  renderSearchKm(label);
+  showToast('10 postes mais próximos do KM '+rawVal+' ('+label+')');
   vibrate([10,50,10]);
+}
+
+function searchKm(){
+  const rawVal=document.getElementById('inputKm').value;
+  const targetKm=parsePt(rawVal);
+  const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult'),modal=document.getElementById('searchKmModal');
+  
+  if(isNaN(targetKm)){clearKm();return}
+  if(!posts.length || (!kmDB_SP.length && !kmDB_RJ.length)){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando bases de dados...';
+    return;
+  }
+
+  const existsSP = kmDB_SP.some(pt => Math.abs(pt.km - targetKm) < 1.0);
+  const existsRJ = kmDB_RJ.some(pt => Math.abs(pt.km - targetKm) < 1.0);
+
+  if(existsSP && existsRJ){
+    msg.style.display='none';
+    res.style.display='none';
+    modal.style.display='block';
+    modal.innerHTML=`<div class="modal-box">
+      <p>O KM ${rawVal} existe em São Paulo e no Rio de Janeiro. Escolha a base:</p>
+      <div class="modal-btns">
+        <button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'BR116-SP')">São Paulo (SP)</button>
+        <button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'BR116-RJ')">Rio de Janeiro (RJ)</button>
+      </div>
+    </div>`;
+    return;
+  }
+
+  modal.style.display='none';
+  if(existsSP){
+    executeSearchKm(kmDB_SP, 'BR116-SP');
+  }else if(existsRJ){
+    executeSearchKm(kmDB_RJ, 'BR116-RJ');
+  }else{
+    executeSearchKm(kmDB_SP.length ? kmDB_SP : kmDB_RJ, 'BR116');
+  }
 }
 
 function clearKm(){
   document.getElementById('inputKm').value='';
   document.getElementById('searchKmMsg').style.display='none';
   document.getElementById('searchKmResult').style.display='none';
+  document.getElementById('searchKmModal').style.display='none';
   searchKmItems=[];
 }
 
@@ -756,12 +860,12 @@ function updateSearchKmDist(){
   });
 }
 
-function renderSearchKm(){
+function renderSearchKm(label){
   if(!searchKmItems.length)return;
   const res=document.getElementById('searchKmResult');
   res.style.display='block';
   
-  let htmlContent = '<div style="display:flex;flex-direction:column;gap:12px">';
+  let htmlContent = `<div style="font-size:10px;font-weight:900;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">Resultado para ${label}</div><div style="display:flex;flex-direction:column;gap:12px">`;
   searchKmItems.forEach((item, idx)=>{
     let dt='Aguardando GPS...';
     if(pos){
@@ -830,7 +934,7 @@ function renderApoio(){
       const el=document.getElementById('dist-'+i);
       const kmEl=document.getElementById('km-exato-'+i);
       if(el)el.textContent='Distância: '+range(o.d,pos.acc);
-      if(kmEl && kmDB.length)kmEl.textContent='KM Exato: '+findPostExactKm(o);
+      if(kmEl)kmEl.textContent='KM Exato: '+findPostExactKm(o);
     });
     document.getElementById('btnSend').disabled=false;
     return;
