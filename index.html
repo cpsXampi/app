@@ -755,12 +755,30 @@ function renderSearch(){
   </div>`;
 }
 
+function getMinMaxKm(db){
+  if(!db.length) return {min:0, max:0};
+  let min=Infinity, max=-Infinity;
+  for(const pt of db){
+    if(pt.km < min) min = pt.km;
+    if(pt.km > max) max = pt.km;
+  }
+  return {min, max};
+}
+
 function executeSearchKm(db, label){
   const rawVal=document.getElementById('inputKm').value;
   const targetKm=parsePt(rawVal);
   const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
   const modal=document.getElementById('searchKmModal');
   modal.style.display='none';
+
+  const rangeDB = getMinMaxKm(db);
+  if(targetKm < rangeDB.min || targetKm > rangeDB.max){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} FORA DO RANGE (${Math.round(rangeDB.min)} a ${Math.round(rangeDB.max)}) (${label}).`;
+    searchKmItems=[];res.style.display='none';
+    return;
+  }
 
   let filteredDB = db;
   const isInteger = Number.isInteger(targetKm) || targetKm === Math.floor(targetKm);
@@ -817,8 +835,22 @@ function searchKm(){
     return;
   }
 
-  const existsSP = kmDB_SP.some(pt => Math.abs(pt.km - targetKm) < 1.0);
-  const existsRJ = kmDB_RJ.some(pt => Math.abs(pt.km - targetKm) < 1.0);
+  const rangeSP = getMinMaxKm(kmDB_SP);
+  const rangeRJ = getMinMaxKm(kmDB_RJ);
+
+  const inRangeSP = kmDB_SP.length && (targetKm >= rangeSP.min && targetKm <= rangeSP.max);
+  const inRangeRJ = kmDB_RJ.length && (targetKm >= rangeRJ.min && targetKm <= rangeRJ.max);
+
+  if(!inRangeSP && !inRangeRJ){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} FORA DOS LIMITES DE TODAS AS BASES.`;
+    searchKmItems=[];res.style.display='none';
+    modal.style.display='none';
+    return;
+  }
+
+  const existsSP = inRangeSP && kmDB_SP.some(pt => Math.abs(pt.km - targetKm) < 1.0);
+  const existsRJ = inRangeRJ && kmDB_RJ.some(pt => Math.abs(pt.km - targetKm) < 1.0);
 
   if(existsSP && existsRJ){
     msg.style.display='none';
@@ -840,7 +872,7 @@ function searchKm(){
   }else if(existsRJ){
     executeSearchKm(kmDB_RJ, 'BR116-RJ');
   }else{
-    executeSearchKm(kmDB_SP.length ? kmDB_SP : kmDB_RJ, 'BR116');
+    executeSearchKm(inRangeSP ? kmDB_SP : kmDB_RJ, inRangeSP ? 'BR116-SP' : 'BR116-RJ');
   }
 }
 
