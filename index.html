@@ -152,15 +152,25 @@ img,video{display:block;max-width:100%}
   letter-spacing:.25em;color:rgba(220,252,231,.65);position:relative;
 }
 .km-value{
-  font-size:clamp(30px,9vw,44px);font-weight:900;
+  font-size:clamp(32px,10vw,48px);font-weight:900;
   line-height:1.05;letter-spacing:-.04em;margin-top:2px;
   font-variant-numeric:tabular-nums;position:relative;
   background:linear-gradient(180deg,#fff 25%,#6ee7b7);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
+.km-br-badge{
+  display:block;
+  font-size:11px;
+  font-weight:700;
+  color:rgba(220,252,231,.75);
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  margin-top:4px;
+  position:relative;
+}
 .km-sub{
   font-size:10px;font-weight:600;color:rgba(220,252,231,.5);
-  margin-top:4px;position:relative;
+  margin-top:2px;position:relative;
 }
 
 .gps{
@@ -188,8 +198,9 @@ img,video{display:block;max-width:100%}
 .card-label{
   font-size:10px;font-weight:900;text-transform:uppercase;
   letter-spacing:.2em;color:var(--text2);
-  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+  margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;
 }
+.card-label span-left{display:flex;align-items:center;gap:8px;}
 .card-label::before{
   content:"";width:3px;height:10px;border-radius:2px;background:var(--violet2);
 }
@@ -254,6 +265,32 @@ img,video{display:block;max-width:100%}
   background:var(--violet);color:#fff;cursor:pointer;text-align:center;
 }
 .modal-btn.rj{background:var(--green3)}
+
+.coord-btn-toggle{
+  background:rgba(92,33,255,.2);
+  border:1px solid rgba(92,33,255,.4);
+  color:#a78bfa;
+  font-size:9px;
+  font-weight:900;
+  padding:4px 8px;
+  border-radius:6px;
+  text-transform:uppercase;
+  cursor:pointer;
+  letter-spacing:.05em;
+  transition:all .15s ease;
+}
+.coord-btn-toggle:hover{background:rgba(92,33,255,.4);color:#fff}
+
+.coord-container{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
 .target-lock{
   display:none;border-radius:var(--r-lg);
@@ -471,6 +508,7 @@ img,video{display:block;max-width:100%}
     <div class="km-hero">
       <p class="km-label">KM aproximado atual & Município</p>
       <p class="km-value" id="kmVal">—</p>
+      <span class="km-br-badge" id="kmBrBadge">Aguardando Rodovia...</span>
       <p class="km-sub" id="kmSource"></p>
     </div>
 
@@ -482,7 +520,28 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="card">
-      <button id="btnSend" class="ctrl-send" disabled>
+      <div class="card-label" style="margin-bottom:12px;">
+        <span>Ferramentas de Lista</span>
+        <button class="coord-btn-toggle" onclick="toggleCoordSearch()">Pesq. Coordenadas</button>
+      </div>
+
+      <div id="coordSearchBox" class="coord-container" style="display:none;">
+        <p style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;">Digite Lat, Lon (ex: -22.8,-43.7)</p>
+        <div class="search-row">
+          <div class="search-wrap">
+            <input class="search-input" id="inputCoord" placeholder="-22.851234, -43.712345" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchManualCoord()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/></svg>
+          </div>
+          <button class="btn-icon go" onclick="searchManualCoord()" aria-label="Calcular Coordenada"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="m5 12 5 5L20 7"/></svg></button>
+        </div>
+        <label class="ctrl-label" style="margin-top:6px;">
+          <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM ou Nox mais próximo
+        </label>
+        <div id="coordSearchMsg" class="search-msg" style="display:none"></div>
+        <div id="coordSearchResult" style="display:none;margin-top:8px"></div>
+      </div>
+
+      <button id="btnSend" class="ctrl-send" disabled style="margin-top:10px;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
         </svg>
@@ -625,7 +684,7 @@ async function fetchMunicipio(lat, lon){
 }
 
 function nearestInDB(db){
-  if(!pos||!db.length)return null;
+  if(!db.length || !pos)return null;
   let best=null,bd=Infinity;
   for(const p of db){
     const d=hav(pos.lat,pos.lon,p.lat,p.lon);
@@ -634,25 +693,40 @@ function nearestInDB(db){
   return best;
 }
 
-function updateKm(){
-  if(!pos)return;
+function findNearestInAnyDB(lat, lon){
   const candidates=[
     {name:'BR116/SP', db:kmDB_SP},
     {name:'BR116/RJ', db:kmDB_RJ},
     {name:'BR101/SP', db:kmDB_BR101_SP},
     {name:'BR101/RJ', db:kmDB_BR101_RJ}
-  ].map(c=>({name:c.name, res:nearestInDB(c.db)})).filter(c=>c.res!==null);
+  ].map(c=>{
+    let best=null, bd=Infinity;
+    for(const p of c.db){
+      const d=hav(lat, lon, p.lat, p.lon);
+      if(d<bd){bd=d;best={...p,d};}
+    }
+    return {name:c.name, res:best};
+  }).filter(c=>c.res!==null);
 
-  if(!candidates.length)return;
+  if(!candidates.length)return null;
   candidates.sort((a,b)=>a.res.d - b.res.d);
-  const best=candidates[0];
+  return candidates[0];
+}
+
+function updateKm(){
+  if(!pos)return;
+  const best=findNearestInAnyDB(pos.lat, pos.lon);
+  if(!best)return;
+
   const kmValStr=(Math.round(best.res.km*100)/100).toFixed(2).replace('.',',');
   
-  document.getElementById('kmVal').textContent = `KM ${kmValStr} (${best.name})`;
+  document.getElementById('kmVal').textContent = `KM ${kmValStr}`;
+  document.getElementById('kmBrBadge').textContent = best.name;
+  
   const s=document.getElementById('kmSource');
   if(s){
     let muniTxt = currentMunicipio ? ` · ${currentMunicipio}` : '';
-    s.textContent=`Localizado na ${best.name}${muniTxt}`;
+    s.textContent=`Posição atual${muniTxt}`;
   }
 }
 
@@ -689,6 +763,62 @@ function initApoio(){
   },null,{enableHighAccuracy:true,maximumAge:0,timeout:10000});
 }
 
+function toggleCoordSearch(){
+  const box = document.getElementById('coordSearchBox');
+  box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+}
+
+function searchManualCoord(){
+  const val = document.getElementById('inputCoord').value.trim();
+  const msg = document.getElementById('coordSearchMsg');
+  const res = document.getElementById('coordSearchResult');
+  
+  if(!val){res.style.display='none';msg.style.display='none';return;}
+
+  const parts = val.split(/[,;\s]+/).map(Number);
+  if(parts.length < 2 || isNaN(parts[0]) || isNaN(parts[1])){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Formato inválido. Use: lat, lon';
+    res.style.display='none';
+    return;
+  }
+
+  const lat = parts[0];
+  const lon = parts[1];
+
+  const foundRodovia = findNearestInAnyDB(lat, lon);
+  if(!foundRodovia){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Nenhuma rodovia encontrada próxima.';
+    res.style.display='none';
+    return;
+  }
+
+  msg.style.display='none';
+  res.style.display='block';
+
+  const kmValStr = (Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',');
+  let html = `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;">
+    <p style="color:var(--accent);font-weight:900;">Rodovia: ${foundRodovia.name}</p>
+    <p style="color:var(--green2);font-weight:900;margin-top:2px;">KM Aproximado: ${kmValStr}</p>`;
+
+  const doFindNearest = document.getElementById('chkFindNearestPost').checked;
+  if(doFindNearest && posts.length){
+    let closestPost = null, minD = Infinity;
+    for(const p of posts){
+      const d = hav(lat, lon, p.lat, p.lon);
+      if(d < minD){minD = d; closestPost = p;}
+    }
+    if(closestPost){
+      html += `<p style="color:#fff;font-weight:800;margin-top:4px;">Nox/Poste mais próximo: <span>${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
+    }
+  }
+
+  html += `</div>`;
+  res.innerHTML = html;
+  showToast('Coordenada calculada com sucesso');
+}
+
 function searchId(){
   const rawInput = document.getElementById('inputId').value.trim();
   const msg=document.getElementById('searchMsg'),
@@ -696,7 +826,6 @@ function searchId(){
   
   if(!rawInput){clearId();return}
 
-  // Extrair apenas os dígitos do ID inserido para validação estrita de 8 dígitos
   const digitsOnly = rawInput.replace(/\D/g, '');
   if(digitsOnly.length !== 8){
     msg.style.display='flex';
