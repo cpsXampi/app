@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Apoio Localização</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
 :root{
   --bg:#050816;
@@ -369,16 +371,15 @@ img,video{display:block;max-width:100%}
   overflow:hidden;
   position:relative;
   resize:vertical;
-  min-height:220px;
-  max-height:450px;
-  height:260px;
+  min-height:280px;
+  max-height:600px;
+  height:340px;
   background:#020617;
 }
 .map-picker-iframe{
   width:100%;
   height:100%;
   border:0;
-  filter:grayscale(10%) contrast(1.06);
 }
 .map-picker-overlay{
   position:absolute;
@@ -393,6 +394,7 @@ img,video{display:block;max-width:100%}
   font-weight:800;
   color:var(--accent);
   pointer-events:none;
+  z-index:1000;
 }
 
 .target-lock{
@@ -647,15 +649,14 @@ img,video{display:block;max-width:100%}
         </div>
 
         <label class="ctrl-label" style="margin-top:2px;">
-          <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM ou Nox mais próximo
+          <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM e Nox mais próximo
         </label>
 
-        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Ou clique diretamente no mapa interativo abaixo:</div>
+        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Ou clique diretamente no mapa (use os botões + / - para dar zoom):</div>
         
         <div class="map-picker-box" id="mapPickerBox">
-          <!-- Mapa estático interativo via Leaflet sem recarregar/piscando -->
           <div id="leafletMap" style="width:100%;height:100%;"></div>
-          <div class="map-picker-overlay" id="mapPickerOverlay">Clique em qualquer ponto do mapa para selecionar</div>
+          <div class="map-picker-overlay" id="mapPickerOverlay">Clique no mapa para calcular o KM e Nox</div>
         </div>
         
         <button class="ctrl-send" style="min-height:36px;font-size:10px;background:linear-gradient(135deg,var(--violet),var(--violet2));box-shadow:0 3px 12px rgba(92,33,255,.3);" onclick="useCurrentGpsCoord()">Usar Minha Posição GPS Atual</button>
@@ -697,8 +698,7 @@ img,video{display:block;max-width:100%}
 
 <div class="toast" id="toast" aria-live="polite"></div>
 
-<!-- Leaflet CSS e JS para o mapa estável sem piscar -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<!-- Leaflet JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
@@ -954,7 +954,7 @@ function initLeafletMap(initLat, initLon){
   mapInstance = L.map('leafletMap', {
     zoomControl: true,
     attributionControl: false
-  }).setView([initLat, initLon], 14);
+  }).setView([initLat, initLon], 13);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19
@@ -980,7 +980,6 @@ function initApoio(){
   loadPosts();
   loadKmDatabases();
 
-  // Inicializar Leaflet com coordenada padrão (ex: Itaguaí/RJ) até o GPS responder
   initLeafletMap(-22.8512, -43.7744);
 
   if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
@@ -995,7 +994,7 @@ function initApoio(){
 
     if(!gpsInitializedOnce && mapInstance){
       gpsInitializedOnce = true;
-      mapInstance.setView([pos.lat, pos.lon], 15);
+      mapInstance.setView([pos.lat, pos.lon], 14);
       mapMarker.setLatLng([pos.lat, pos.lon]);
     }
   },null,{enableHighAccuracy:true,maximumAge:0,timeout:10000});
@@ -1078,8 +1077,11 @@ async function searchManualCoordByLatLon(lat, lon){
   res.style.display='block';
 
   const kmValStr = (Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',');
+  let kmDistLine = Math.round(foundRodovia.res.d);
+
   let html = `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;">
-    <p style="color:var(--accent);font-weight:900;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>`;
+    <p style="color:var(--accent);font-weight:900;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>
+    <p style="color:var(--text2);font-weight:700;margin-top:2px;">Distância em linha reta até a rodovia: ~${kmDistLine}m</p>`;
 
   const doFindNearest = document.getElementById('chkFindNearestPost').checked;
   if(doFindNearest && posts.length){
@@ -1089,7 +1091,7 @@ async function searchManualCoordByLatLon(lat, lon){
       if(d < minD){minD = d; closestPost = p;}
     }
     if(closestPost){
-      html += `<p style="color:#fff;font-weight:800;margin-top:4px;">Nox/Poste mais próximo: <span>${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
+      html += `<p style="color:var(--green2);font-weight:900;margin-top:4px;">Nox / Poste mais próximo: <span>${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
     }
   }
 
@@ -1480,4 +1482,3 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-```[cite: 1]
