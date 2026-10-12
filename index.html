@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1020">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Apoio Localização</title>
+<title>Apoio Técnico & Localização</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -174,44 +174,74 @@ img,video{display:block;max-width:100%}
   border-radius:4px;
 }
 .km-sub{
-  font-size:10px;font-weight:600;color:rgba(220,252,231,.5);
+  font-size:10px;font-weight:600;color:rgba(220,252,231,.7);
   margin-top:2px;position:relative;
 }
 
-.weather-box{
-  margin-top:10px;
-  padding-top:10px;
+/* Clima compacto (1 linha) com botão minúsculo de detalhes */
+.weather-line-box{
+  margin-top:8px;
+  padding-top:8px;
   border-top:1px solid rgba(16,185,129,.2);
   display:flex;
-  flex-direction:column;
-  gap:6px;
+  align-items:center;
+  justify-content:space-between;
   position:relative;
 }
-.weather-current{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  font-size:11px;
+.weather-line-text{
+  font-size:10px;
   font-weight:800;
   color:#d1fae5;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.btn-weather-details{
+  font-size:8px;
+  font-weight:900;
+  text-transform:uppercase;
+  background:rgba(16,185,129,0.25);
+  color:#a7f3d0;
+  border:1px solid rgba(16,185,129,0.4);
+  padding:2px 6px;
+  border-radius:4px;
+  cursor:pointer;
+  flex-shrink:0;
+  transition:all 0.15s ease;
+}
+.btn-weather-details:hover{
+  background:rgba(16,185,129,0.45);
+  color:#fff;
+}
+
+/* Caixa detalhada expansível de clima */
+.weather-expanded-box{
+  margin-top:6px;
+  padding-top:6px;
+  border-top:1px dashed rgba(16,185,129,0.2);
+  display:none;
+  flex-direction:column;
+  gap:4px;
 }
 .weather-hourly{
   display:flex;
   justify-content:space-between;
   gap:4px;
-  padding-top:4px;
+  padding-top:2px;
 }
 .weather-hour-card{
   flex:1;
   background:rgba(2,44,34,0.6);
   border:1px solid rgba(16,185,129,.15);
   border-radius:6px;
-  padding:4px 2px;
+  padding:3px 2px;
   text-align:center;
 }
 .weather-hour-card .time{font-size:8px;color:rgba(220,252,231,.7);font-weight:700;}
-.weather-hour-card .icon{font-size:14px;margin:2px 0;}
+.weather-hour-card .icon{font-size:12px;margin:1px 0;}
 .weather-hour-card .temp{font-size:9px;color:#fff;font-weight:900;}
 
 .gps{
@@ -428,7 +458,6 @@ img,video{display:block;max-width:100%}
   border:1px solid rgba(16,185,129,0.4);
 }
 
-/* Painel flutuante sobreposto no mapa ao clicar */
 .map-overlay-card{
   position:absolute;
   bottom:16px;
@@ -610,8 +639,8 @@ img,video{display:block;max-width:100%}
 <header class="hdr">
   <div class="hdr-in">
     <div class="hdr-title">
-      <h1>Apoio Localização</h1>
-      <p>Pesquisa & Proximidade GPS</p>
+      <h1>Apoio Técnico & Localização</h1>
+      <p>Campo, Rodovias & Clima</p>
     </div>
     <span class="hdr-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -655,7 +684,7 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="card card-accent">
-      <p class="card-label">Pesquisa por KM (BR116 - SP ou RJ)</p>
+      <p class="card-label">Pesquisa por KM (BR116 / BR101 - SP ou RJ)</p>
       <div class="search-row">
         <div class="search-wrap">
           <input class="search-input" id="inputKm" placeholder="EX: 115 ou 115.5" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
@@ -683,11 +712,13 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="km-hero">
-      <p class="km-label">KM aproximado atual</p>
+      <p class="km-label">KM aproximado & Município atual</p>
       <p class="km-value" id="kmVal">—</p>
       <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
-      <p class="km-sub" id="kmSource"></p>
-      <div id="weatherContainer" class="weather-box" style="display:none;"></div>
+      <p class="km-sub" id="kmSource">Aguardando coordenadas GPS...</p>
+      
+      <!-- Clima atual compacto (1 linha) + botão minúsculo de detalhes -->
+      <div id="weatherContainer" class="weather-line-box" style="display:none;"></div>
     </div>
 
     <div id="gpsStatus" class="gps bad">
@@ -721,13 +752,12 @@ img,video{display:block;max-width:100%}
         </div>
 
         <label class="ctrl-label" style="margin-top:2px;">
-          <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM e Nox mais próximo
+          <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM, Município e Nox mais próximo
         </label>
 
-        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Mapa Interativo (Escolha o modo de exibição e clique para ver o clima e informações):</div>
+        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Mapa Interativo (Normal, Satélite, Híbrido, Full e Clique):</div>
         
         <div class="map-picker-box" id="mapPickerBox">
-          <!-- Barra de controles do mapa: Modos e Fullscreen -->
           <div class="map-controls-bar">
             <button class="map-layer-btn active" id="btnLayerNormal" onclick="setMapLayer('normal')">Normal</button>
             <button class="map-layer-btn" id="btnLayerSatellite" onclick="setMapLayer('satellite')">Satélite</button>
@@ -737,7 +767,6 @@ img,video{display:block;max-width:100%}
 
           <div id="leafletMap" style="width:100%;height:100%;"></div>
 
-          <!-- Card flutuante sobreposto no mapa com as informações do clique -->
           <div class="map-overlay-card" id="mapOverlayCard">
             <div class="map-overlay-header">
               <span class="map-overlay-title" id="mapOverlayTitle">Informações do Ponto</span>
@@ -898,9 +927,10 @@ async function fetchMunicipio(lat, lon){
     if(r.ok){
       const data = await r.json();
       const addr = data.address || {};
-      currentMunicipio = addr.city || addr.town || addr.municipality || addr.village || '';
+      return addr.city || addr.town || addr.municipality || addr.village || 'Município não identificado';
     }
-  }catch(e){currentMunicipio='';}
+  }catch(e){}
+  return '';
 }
 
 function getWeatherIcon(code){
@@ -925,11 +955,18 @@ function getWeatherDesc(code){
   return 'Nublado';
 }
 
-async function renderWeatherWidget(lat, lon, containerId){
+function toggleWeatherDetails(boxId){
+  const box = document.getElementById(boxId);
+  if(!box) return;
+  const isHidden = box.style.display === 'none' || !box.style.display;
+  box.style.display = isHidden ? 'flex' : 'none';
+}
+
+async function renderWeatherWidget(lat, lon, containerId, detailsId){
   const container = document.getElementById(containerId);
   if(!container) return;
   container.style.display = 'flex';
-  container.innerHTML = '<div style="font-size:9px;color:var(--muted);text-align:center;">Carregando clima...</div>';
+  container.innerHTML = '<div style="font-size:10px;color:#d1fae5;width:100%;text-align:center;">Carregando clima...</div>';
 
   try{
     const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&forecast_hours=6`);
@@ -938,11 +975,12 @@ async function renderWeatherWidget(lat, lon, containerId){
       const current = data.current || {};
       const hourly = data.hourly || {};
       
-      let currentHtml = `
-        <div class="weather-current">
+      const lineHtml = `
+        <div class="weather-line-text">
           <span>${getWeatherIcon(current.weather_code)}</span>
           <span>Agora: ${Math.round(current.temperature_2m || 0)}°C · ${getWeatherDesc(current.weather_code)}</span>
         </div>
+        <button class="btn-weather-details" onclick="toggleWeatherDetails('${detailsId}')">Detalhes</button>
       `;
 
       let hourlyHtml = '<div class="weather-hourly">';
@@ -952,13 +990,7 @@ async function renderWeatherWidget(lat, lon, containerId){
 
       const curHourIdx = times.findIndex(t => new Date(t) >= new Date()) || 0;
       for(let i = curHourIdx; i <= Math.min(curHourIdx + 4, times.length - 1); i++){
-        let timeLabel = '';
-        if(i === curHourIdx){
-          timeLabel = 'Agora';
-        } else {
-          const diffHours = i - curHourIdx;
-          timeLabel = `+${diffHours}h`;
-        }
+        let timeLabel = (i === curHourIdx) ? 'Agora' : `+${i - curHourIdx}h`;
         hourlyHtml += `
           <div class="weather-hour-card">
             <div class="time">${timeLabel}</div>
@@ -969,7 +1001,7 @@ async function renderWeatherWidget(lat, lon, containerId){
       }
       hourlyHtml += '</div>';
 
-      container.innerHTML = currentHtml + hourlyHtml;
+      container.innerHTML = lineHtml + `<div class="weather-expanded-box" id="${detailsId}">${hourlyHtml}</div>`;
     }
   }catch(e){
     container.style.display = 'none';
@@ -980,7 +1012,7 @@ async function fetchWeather(lat, lon){
   const now = Date.now();
   if(now - lastWeatherFetch < 900000) return;
   lastWeatherFetch = now;
-  renderWeatherWidget(lat, lon, 'weatherContainer');
+  renderWeatherWidget(lat, lon, 'weatherContainer', 'weatherDetailsBox');
 }
 
 function findNearestInAnyDB(lat, lon){
@@ -1003,9 +1035,11 @@ function findNearestInAnyDB(lat, lon){
   return candidates[0];
 }
 
-function updateKm(){
+async function updateKm(){
   if(!pos)return;
   const best=findNearestInAnyDB(pos.lat, pos.lon);
+  currentMunicipio = await fetchMunicipio(pos.lat, pos.lon);
+
   if(!best)return;
 
   const kmValStr=(Math.round(best.res.km*100)/100).toFixed(2).replace('.',',');
@@ -1015,8 +1049,7 @@ function updateKm(){
   
   const s=document.getElementById('kmSource');
   if(s){
-    let muniTxt = currentMunicipio ? ` · ${currentMunicipio}` : '';
-    s.textContent=`Posição atual${muniTxt}`;
+    s.textContent=`Município: ${currentMunicipio || '---'} · Ref: ${best.name} (Δ ~${Math.round(best.res.d)}m)`;
   }
 }
 
@@ -1030,11 +1063,15 @@ function findPostExactKm(post){
         if(d<bd){bd=d;best=pt;}
       }
       if(best && bd < 3000){
-        return (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') + ' ('+dbObj.name+')';
+        return {
+          kmStr: (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') + ' ('+dbObj.name+')',
+          lat: best.lat,
+          lon: best.lon
+        };
       }
     }
   }
-  return '---';
+  return {kmStr: '---', lat: post.lat, lon: post.lon};
 }
 
 function setMapLayer(mode){
@@ -1049,9 +1086,8 @@ function setMapLayer(mode){
   if(mode === 'normal'){
     currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19});
   } else if(mode === 'satellite'){
-    currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}, {maxZoom: 19, attribution: 'Tiles &copy; Esri'});
+    currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19});
   } else if(mode === 'hybrid'){
-    // Camada base de satélite + camada de labels por cima
     const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19});
     const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom: 19, subdomains: 'abcd'});
     currentTileLayer = L.layerGroup([sat, labels]);
@@ -1108,7 +1144,6 @@ function initApoio(){
   if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
     pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
     gpsBadge(document.getElementById('gpsStatus'),pos);
-    fetchMunicipio(pos.lat, pos.lon);
     fetchWeather(pos.lat, pos.lon);
     renderApoio();
     updateKm();
@@ -1191,26 +1226,24 @@ async function searchManualCoordByLatLon(lat, lon){
   const overlayCard = document.getElementById('mapOverlayCard');
   const overlayContent = document.getElementById('mapOverlayContent');
 
+  const muniName = await fetchMunicipio(lat, lon);
   const foundRodovia = findNearestInAnyDB(lat, lon);
-  if(!foundRodovia){
-    msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Nenhuma rodovia encontrada próxima.';
-    res.style.display='none';
-    overlayCard.style.display='none';
-    return;
-  }
-
+  
   msg.style.display='none';
   res.style.display='block';
 
-  const kmValStr = (Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',');
-  let kmDistLine = Math.round(foundRodovia.res.d);
-
   let html = `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;">
-    <p style="color:var(--accent);font-weight:900;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>
-    <p style="color:var(--text2);font-weight:700;margin-top:2px;">Distância em linha reta até a rodovia: ~${kmDistLine}m</p>`;
+    <p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
 
-  let closestPostId = '---';
+  let overlayHtml = `<p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
+
+  if(foundRodovia){
+    const kmValStr = (Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',');
+    let kmDistLine = Math.round(foundRodovia.res.d);
+    html += `<p style="color:var(--green2);font-weight:900;margin-top:2px;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr} (~${kmDistLine}m)</p>`;
+    overlayHtml += `<p style="color:var(--green2);font-weight:900;margin-top:2px;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>`;
+  }
+
   const doFindNearest = document.getElementById('chkFindNearestPost').checked;
   if(doFindNearest && posts.length){
     let closestPost = null, minD = Infinity;
@@ -1219,28 +1252,21 @@ async function searchManualCoordByLatLon(lat, lon){
       if(d < minD){minD = d; closestPost = p;}
     }
     if(closestPost){
-      closestPostId = closestPost.id;
-      html += `<p style="color:var(--green2);font-weight:900;margin-top:4px;">Nox / Poste mais próximo: <span>${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
+      html += `<p style="color:#fff;font-weight:800;margin-top:4px;">Nox / Poste mais próximo: <span>${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
+      overlayHtml += `<p style="color:#fff;font-weight:800;margin-top:2px;">Poste: <span style="color:var(--accent);">${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
     }
   }
 
-  html += `<div id="coordWeatherBox" class="weather-box" style="margin-top:8px;"></div>`;
-  html += `</div>`;
-  
+  html += `<div id="coordWeatherBox" class="weather-line-box" style="margin-top:8px;"></div></div>`;
   res.innerHTML = html;
   
-  // Renderizar também no card flutuante sobreposto no mapa
-  overlayContent.innerHTML = `
-    <p style="color:var(--accent);font-weight:900;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>
-    <p style="color:var(--text2);font-weight:700;margin-top:2px;">Linha reta rodovia: ~${kmDistLine}m | Poste: <span style="color:var(--green2);">${closestPostId}</span></p>
-    <div id="mapOverlayWeather" class="weather-box" style="margin-top:6px;"></div>
-  `;
+  overlayHtml += `<div id="mapOverlayWeather" class="weather-line-box" style="margin-top:6px;"></div>`;
+  overlayContent.innerHTML = overlayHtml;
   overlayCard.style.display = 'block';
 
-  renderWeatherWidget(foundRodovia.res.lat, foundRodovia.res.lon, 'coordWeatherBox');
-  renderWeatherWidget(foundRodovia.res.lat, foundRodovia.res.lon, 'mapOverlayWeather');
-  
-  showToast('Ponto selecionado com sucesso');
+  renderWeatherWidget(lat, lon, 'coordWeatherBox', 'coordWeatherDetails');
+  renderWeatherWidget(lat, lon, 'mapOverlayWeather', 'mapWeatherDetails');
+  showToast('Ponto analisado com sucesso');
 }
 
 async function searchId(){
@@ -1301,28 +1327,19 @@ async function renderSearch(){
     dt='Distância: '+range(dist,pos.acc);
     checkLock();
   }
-  const exactKm = findPostExactKm(searchItem);
-
-  let muniName = '';
-  try{
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${searchItem.lat}&lon=${searchItem.lon}&zoom=10`, {headers: {'Accept-Language': 'pt-BR'}});
-    if(r.ok){
-      const data = await r.json();
-      const addr = data.address || {};
-      muniName = addr.city || addr.town || addr.municipality || addr.village || '';
-    }
-  }catch(e){}
+  const exactKmObj = findPostExactKm(searchItem);
+  const muniName = await fetchMunicipio(searchItem.lat, searchItem.lon);
 
   res.style.display='block';
   res.innerHTML=`<div class="post searched">
     <div class="post-top">
       <div class="post-info">
         <p class="post-id">OS / ID: <span>${searchItem.id}</span></p>
-        <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
-        ${muniName ? `<p style="font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:1px;">Município: ${muniName}</p>` : ''}
+        <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${muniName}</p>
+        <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Referência: ${exactKmObj.kmStr}</p>
         <p class="post-dist" id="srch-dist">${dt}</p>
         <p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p>
-        <div id="searchWeatherBox" class="weather-box" style="margin-top:8px;"></div>
+        <div id="searchWeatherBox" class="weather-line-box" style="margin-top:8px;"></div>
       </div>
       <span class="post-pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
     </div>
@@ -1330,7 +1347,7 @@ async function renderSearch(){
       <iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
     </div>
   </div>`;
-  renderWeatherWidget(searchItem.lat, searchItem.lon, 'searchWeatherBox');
+  renderWeatherWidget(searchItem.lat, searchItem.lon, 'searchWeatherBox', 'searchWeatherDetails');
 }
 
 function getMinMaxKm(db){
@@ -1343,7 +1360,7 @@ function getMinMaxKm(db){
   return {min, max};
 }
 
-function executeSearchKm(db, label){
+async function executeSearchKm(db, label){
   const rawVal=document.getElementById('inputKm').value;
   const targetKm=parsePt(rawVal);
   const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
@@ -1396,7 +1413,7 @@ function executeSearchKm(db, label){
 
   searchKmItems = sortedPosts;
   msg.style.display='none';
-  renderSearchKm(label, bestPt);
+  await renderSearchKm(label, bestPt);
   showToast('10 postes mais próximos do KM '+rawVal+' ('+label+')');
   vibrate([10,50,10]);
 }
@@ -1470,17 +1487,19 @@ function updateSearchKmDist(){
   });
 }
 
-function renderSearchKm(label, bestPt){
+async function renderSearchKm(label, bestPt){
   if(!searchKmItems.length)return;
   const res=document.getElementById('searchKmResult');
   res.style.display='block';
   
-  let htmlContent = `<div style="font-size:10px;font-weight:900;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">Resultado para ${label}</div>`;
+  const muniName = bestPt ? await fetchMunicipio(bestPt.lat, bestPt.lon) : '';
+
+  let htmlContent = `<div style="font-size:10px;font-weight:900;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">Resultado para ${label} · Município: ${muniName}</div>`;
   
   if(bestPt){
     htmlContent += `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;margin-bottom:8px;">
-      <p style="color:var(--green2);font-weight:900;">Clima no KM Pesquisado (${label}):</p>
-      <div id="kmSearchWeatherBox" class="weather-box" style="margin-top:6px;"></div>
+      <p style="color:var(--green2);font-weight:900;">Clima no KM Pesquisado (${label} - ${muniName}):</p>
+      <div id="kmSearchWeatherBox" class="weather-line-box" style="margin-top:6px;"></div>
     </div>`;
   }
 
@@ -1490,13 +1509,13 @@ function renderSearchKm(label, bestPt){
     if(pos){
       dt='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
     }
-    const exactKm = findPostExactKm(item);
+    const exactKmObj = findPostExactKm(item);
     htmlContent += `
       <div class="post searched">
         <div class="post-top">
           <div class="post-info">
             <p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p>
-            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
+            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKmObj.kmStr}</p>
             <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
             <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
           </div>
@@ -1511,7 +1530,7 @@ function renderSearchKm(label, bestPt){
   res.innerHTML = htmlContent;
 
   if(bestPt){
-    renderWeatherWidget(bestPt.lat, bestPt.lon, 'kmSearchWeatherBox');
+    renderWeatherWidget(bestPt.lat, bestPt.lon, 'kmSearchWeatherBox', 'kmSearchWeatherDetails');
   }
 }
 
@@ -1557,7 +1576,8 @@ function renderApoio(){
       const el=document.getElementById('dist-'+i);
       const kmEl=document.getElementById('km-exato-'+i);
       if(el)el.textContent='Distância: '+range(o.d,pos.acc);
-      if(kmEl)kmEl.textContent='KM Exato: '+findPostExactKm(o);
+      const exactObj = findPostExactKm(o);
+      if(kmEl)kmEl.textContent='KM Exato: '+exactObj.kmStr;
     });
     document.getElementById('btnSend').disabled=false;
     return;
@@ -1567,14 +1587,14 @@ function renderApoio(){
   const fragment = document.createDocumentFragment();
 
   items.forEach((o,i)=>{
-    const exactKm = findPostExactKm(o);
+    const exactObj = findPostExactKm(o);
     const div=document.createElement('div');
     div.className='post'+(i===0?' near':'');
     div.innerHTML=`<div class="post-top">
       <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
       <div class="post-info">
         <p class="post-id">Poste: <span>${o.id}</span></p>
-        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKm}</p>
+        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactObj.kmStr}</p>
         <p class="post-dist" id="dist-${i}">Distância: ${range(o.d,pos.acc)}</p>
       </div>
       <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar este item por WhatsApp">
@@ -1606,8 +1626,8 @@ document.getElementById('btnSend').onclick=()=>{
   }
   let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
   items.forEach((o,i)=>{
-    const exactKm = findPostExactKm(o);
-    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactKm})\n`;
+    const exactObj = findPostExactKm(o);
+    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactObj.kmStr})\n`;
     if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`;
   });
   window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
@@ -1623,3 +1643,4 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+```[cite: 1]
