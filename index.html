@@ -322,10 +322,74 @@ img,video{display:block;max-width:100%}
   border-top:1px solid var(--border);
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:10px;
   animation:fadeIn .2s ease;
 }
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+.coord-inputs-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:8px;
+}
+.coord-field{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.coord-field label{
+  font-size:9px;
+  font-weight:800;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.coord-input{
+  width:100%;
+  border-radius:var(--r-xs);
+  border:1px solid var(--border3);
+  background:rgba(15,23,42,.9);
+  padding:10px;
+  font-size:12px;
+  font-weight:800;
+  color:#fff;
+  text-align:center;
+}
+.coord-input:focus{
+  border-color:var(--violet2);
+  box-shadow:0 0 0 3px rgba(92,33,255,.35);
+}
+
+.map-picker-box{
+  margin-top:8px;
+  border-radius:var(--r-sm);
+  border:1px solid var(--border2);
+  overflow:hidden;
+  position:relative;
+  resize:vertical;
+  min-height:180px;
+  max-height:400px;
+  height:220px;
+}
+.map-picker-iframe{
+  width:100%;
+  height:100%;
+  border:0;
+  filter:grayscale(10%) contrast(1.06);
+}
+.map-picker-overlay{
+  position:absolute;
+  bottom:8px;
+  left:8px;
+  background:rgba(5,10,24,0.85);
+  backdrop-filter:blur(8px);
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid var(--border2);
+  font-size:9px;
+  font-weight:800;
+  color:var(--accent);
+  pointer-events:none;
+}
 
 .target-lock{
   display:none;border-radius:var(--r-lg);
@@ -558,21 +622,38 @@ img,video{display:block;max-width:100%}
     <div class="card">
       <div class="card-label" style="margin-bottom:12px;">
         <span>Ferramentas de Lista</span>
-        <button class="coord-btn-toggle" onclick="toggleCoordSearch()">Pesq. Coordenadas</button>
+        <button class="coord-btn-toggle" onclick="toggleCoordSearch()">Pesq. Coordenadas / Mapa</button>
       </div>
 
       <div id="coordSearchBox" class="coord-container" style="display:none;">
-        <p style="font-size:10px;color:var(--text2);font-weight:700;text-transform:uppercase;">Digite Lat, Lon (ex: -22.8,-43.7)</p>
-        <div class="search-row">
-          <div class="search-wrap">
-            <input class="search-input" id="inputCoord" placeholder="-22.851234, -43.712345" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchManualCoord()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/></svg>
+        <div class="coord-inputs-grid">
+          <div class="coord-field">
+            <label>Latitude</label>
+            <input class="coord-input" id="inputLat" placeholder="-22.8512" autocomplete="off" spellcheck="false">
           </div>
-          <button class="btn-icon go" onclick="searchManualCoord()" aria-label="Calcular Coordenada"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="m5 12 5 5L20 7"/></svg></button>
+          <div class="coord-field">
+            <label>Longitude</label>
+            <input class="coord-input" id="inputLon" placeholder="-43.7123" autocomplete="off" spellcheck="false">
+          </div>
         </div>
-        <label class="ctrl-label" style="margin-top:6px;">
+        
+        <div style="display:flex;gap:8px;">
+          <button class="ctrl-send" style="min-height:38px;font-size:11px;" onclick="searchManualCoord()">Calcular por Coordenada</button>
+          <button class="btn-icon clr" onclick="clearCoordFields()" title="Limpar Campos" style="width:38px;height:38px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        </div>
+
+        <label class="ctrl-label" style="margin-top:2px;">
           <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM ou Nox mais próximo
         </label>
+
+        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Ou clique no mapa abaixo para selecionar:</div>
+        
+        <div class="map-picker-box">
+          <iframe class="map-picker-iframe" id="mapPickerIframe" src="https://maps.google.com/maps?q=-22.85,-43.70&t=k&z=12&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
+          <div class="map-picker-overlay">Dica: Use os campos acima ou abra o mapa em tela cheia / clique nas proximidades</div>
+        </div>
+        <button class="ctrl-send" style="min-height:36px;font-size:10px;background:linear-gradient(135deg,var(--violet),var(--violet2));box-shadow:0 3px 12px rgba(92,33,255,.3);" onclick="useCurrentGpsCoord()">Usar Minha Posição GPS Atual</button>
+
         <div id="coordSearchMsg" class="search-msg" style="display:none"></div>
         <div id="coordSearchResult" style="display:none;margin-top:8px"></div>
       </div>
@@ -721,7 +802,6 @@ async function fetchMunicipio(lat, lon){
 }
 
 function getWeatherIcon(code){
-  // WMO Weather interpretation codes (WW)
   if(code === 0) return '☀️';
   if(code >= 1 && code <= 3) return '⛅';
   if(code >= 45 && code <= 48) return '🌫️';
@@ -745,7 +825,7 @@ function getWeatherDesc(code){
 
 async function fetchWeather(lat, lon){
   const now = Date.now();
-  if(now - lastWeatherFetch < 900000) return; // cache 15 min
+  if(now - lastWeatherFetch < 900000) return;
   lastWeatherFetch = now;
   try{
     const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&forecast_hours=7`);
@@ -769,7 +849,6 @@ async function fetchWeather(lat, lon){
       const temps = hourly.temperature_2m || [];
       const codes = hourly.weather_code || [];
 
-      // Pegar as próximas 6 horas a partir da hora atual
       const curHourIdx = times.findIndex(t => new Date(t) >= new Date()) || 0;
       for(let i = curHourIdx + 1; i <= Math.min(curHourIdx + 6, times.length - 1); i++){
         const hourStr = new Date(times[i]).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
@@ -856,31 +935,63 @@ function initApoio(){
     updateKm();
     updateSearchDist();
     updateSearchKmDist();
+
+    // Atualizar iframe do mapa para a posição atual
+    const iframe = document.getElementById('mapPickerIframe');
+    if(iframe && !iframe.dataset.userMoved){
+      iframe.src = `https://maps.google.com/maps?q=${pos.lat},${pos.lon}&t=k&z=15&ie=UTF8&iwloc=&output=embed`;
+    }
   },null,{enableHighAccuracy:true,maximumAge:0,timeout:10000});
 }
 
 function toggleCoordSearch(){
   const box = document.getElementById('coordSearchBox');
   box.style.display = box.style.display === 'none' ? 'flex' : 'none';
+  if(box.style.display === 'flex' && pos){
+    const iframe = document.getElementById('mapPickerIframe');
+    iframe.src = `https://maps.google.com/maps?q=${pos.lat},${pos.lon}&t=k&z=15&ie=UTF8&iwloc=&output=embed`;
+  }
+}
+
+function useCurrentGpsCoord(){
+  if(!pos){
+    showToast('GPS ainda não localizado', 'err');
+    return;
+  }
+  document.getElementById('inputLat').value = pos.lat.toFixed(6);
+  document.getElementById('inputLon').value = pos.lon.toFixed(6);
+  searchManualCoord();
+}
+
+function clearCoordFields(){
+  document.getElementById('inputLat').value = '';
+  document.getElementById('inputLon').value = '';
+  document.getElementById('coordSearchMsg').style.display = 'none';
+  document.getElementById('coordSearchResult').style.display = 'none';
 }
 
 function searchManualCoord(){
-  const val = document.getElementById('inputCoord').value.trim();
+  const latStr = document.getElementById('inputLat').value.trim();
+  const lonStr = document.getElementById('inputLon').value.trim();
   const msg = document.getElementById('coordSearchMsg');
   const res = document.getElementById('coordSearchResult');
   
-  if(!val){res.style.display='none';msg.style.display='none';return;}
-
-  const parts = val.split(/[,;\s]+/).map(Number);
-  if(parts.length < 2 || isNaN(parts[0]) || isNaN(parts[1])){
-    msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Formato inválido. Use: lat, lon';
+  if(!latStr || !lonStr){
     res.style.display='none';
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Preencha latitude e longitude.';
     return;
   }
 
-  const lat = parts[0];
-  const lon = parts[1];
+  const lat = parsePt(latStr);
+  const lon = parsePt(lonStr);
+
+  if(isNaN(lat) || isNaN(lon)){
+    msg.style.display='flex';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Coordenadas inválidas.';
+    res.style.display='none';
+    return;
+  }
 
   const foundRodovia = findNearestInAnyDB(lat, lon);
   if(!foundRodovia){
@@ -975,7 +1086,6 @@ async function renderSearch(){
   }
   const exactKm = findPostExactKm(searchItem);
 
-  // Buscar município de forma discreta para o poste pesquisado
   let muniName = '';
   try{
     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${searchItem.lat}&lon=${searchItem.lon}&zoom=10`, {headers: {'Accept-Language': 'pt-BR'}});
@@ -1281,4 +1391,3 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-```[cite: 1]
