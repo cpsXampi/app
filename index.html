@@ -376,11 +376,6 @@ img,video{display:block;max-width:100%}
   height:340px;
   background:#020617;
 }
-.map-picker-iframe{
-  width:100%;
-  height:100%;
-  border:0;
-}
 .map-picker-overlay{
   position:absolute;
   bottom:8px;
@@ -1098,7 +1093,7 @@ async function searchManualCoordByLatLon(lat, lon){
   html += `<div id="coordWeatherBox" class="weather-box" style="margin-top:8px;"></div>`;
   html += `</div>`;
   res.innerHTML = html;
-  renderWeatherWidget(lat, lon, 'coordWeatherBox');
+  renderWeatherWidget(foundRodovia.res.lat, foundRodovia.res.lon, 'coordWeatherBox');
   showToast('Ponto selecionado com sucesso');
 }
 
@@ -1461,7 +1456,7 @@ document.getElementById('btnSend').onclick=()=>{
     chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
   }else{
     const qty=Number(document.getElementById('qty').value||10);
-    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
+    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,pos.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
   }
   let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
   items.forEach((o,i)=>{
