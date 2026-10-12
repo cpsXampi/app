@@ -417,10 +417,10 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="card card-accent">
-      <p class="card-label">Pesquisa ID-NX</p>
+      <p class="card-label">Pesquisa ID-NX (Exatamente 8 dígitos)</p>
       <div class="search-row">
         <div class="search-wrap">
-          <input class="search-input" id="inputId" placeholder="EX: 1800 - 1400" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
+          <input class="search-input" id="inputId" placeholder="EX: 12345678" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
           </svg>
@@ -690,10 +690,21 @@ function initApoio(){
 }
 
 function searchId(){
-  const term=norm(document.getElementById('inputId').value),
-        msg=document.getElementById('searchMsg'),
+  const rawInput = document.getElementById('inputId').value.trim();
+  const msg=document.getElementById('searchMsg'),
         res=document.getElementById('searchResult');
-  if(!term){clearId();return}
+  
+  if(!rawInput){clearId();return}
+
+  // Extrair apenas os dígitos do ID inserido para validação estrita de 8 dígitos
+  const digitsOnly = rawInput.replace(/\D/g, '');
+  if(digitsOnly.length !== 8){
+    msg.style.display='flex';
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>O ID DEVE CONTER EXATAMENTE 8 DÍGITOS.`;
+    searchItem=null;res.style.display='none';checkLock();vibrate(50);return;
+  }
+
+  const term=norm(rawInput);
   if(!posts.length){
     msg.style.display='flex';
     msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando dados, tente novamente...';
@@ -702,7 +713,7 @@ function searchId(){
   const found=posts.find(p=>norm(p.id)===term||norm(p.id).includes(term));
   if(!found){
     msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID "${term}" NÃO ENCONTRADO.`;
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID "${rawInput}" NÃO ENCONTRADO.`;
     searchItem=null;res.style.display='none';checkLock();vibrate(50);return;
   }
   searchItem=found;
