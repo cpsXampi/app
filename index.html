@@ -15,10 +15,10 @@
   --surface2:#161f3d;
   --border:rgba(165,165,185,.18);
   --border2:rgba(165,165,185,.35);
-  --accent:#ff682c; /* Laranja identidade */
+  --accent:#ff682c;
   --accent-glow:rgba(255,104,44,.3);
-  --anil:#161f3d; /* Anil identidade */
-  --turq:#2fc8e3; /* Turquesa */
+  --anil:#161f3d;
+  --turq:#2fc8e3;
   --green:#10b981;
   --green2:#34d399;
   --red:#ef4444;
@@ -379,9 +379,6 @@ input,select{font-family:var(--font);outline:none}
       </div>
     </div>
 
-    <!-- PAINEL DE CLIQUE NO MAPA -->
-    <div id="mapClickInfo" class="card" style="display:none;border-color:var(--turq);background:linear-gradient(145deg,rgba(47,200,227,.05),rgba(15,21,45,.9));"></div>
-
     <div id="postList" style="display:flex;flex-direction:column;gap:8px"></div>
   </div>
 
@@ -403,7 +400,7 @@ function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(
 let posts=[], postIndex=new Map();
 let kmDB_SP=[], kmDB_RJ=[], kmDB_BR101_SP=[], kmDB_BR101_RJ=[];
 let pos=null, searchItem=null, searchKmItems=[], renderedKey='';
-let mapInstance=null, mapMarker=null, mapLayerObj=null;
+let mapInstance=null, mapMarker=null, mapLayerObj=null, popupInstance=null;
 let cityCache = new Map();
 
 function showToast(msg,type='ok'){
@@ -496,7 +493,7 @@ async function loadSystemData(){
 
 async function parseKmFile(text){
   if(!text)return [];
-  let lines=text.split(/\r?\n/).filter(l=>l.trim());
+  let lines=t.split(/\r?\n/).filter(l=>l.trim());
   let h=lines.shift().split(';');
   let iKm=findCol(h,['km']),iLat=findCol(h,['lat','latitude']),iLon=findCol(h,['lon','long','longitude']);
   return lines.map(l=>{
@@ -559,33 +556,45 @@ function initMap(lat, lon){
   setMapLayer('sat');
   mapMarker = L.marker([lat, lon]).addTo(mapInstance);
   
-  // CLIQUE NO MAPA: MOSTRA MUNICÍPIO, ID MAIS PRÓXIMO, KM E DISTÂNCIA
+  // CLIQUE NO MAPA: MOSTRA POP-UP COM MUNICÍPIO, KM MAIS PRÓXIMO DA RODOVIA, ID MAIS PRÓXIMO E DISTÂNCIA
   mapInstance.on('click', async e=>{
     let l = e.latlng;
     document.getElementById('inputLat').value = l.lat.toFixed(6);
     document.getElementById('inputLon').value = l.lng.toFixed(6);
     mapMarker.setLatLng([l.lat, l.lng]);
 
-    if(!posts.length) return;
-    let nearest = null, minD = Infinity;
-    for(let p of posts){
-      let d = hav(l.lat, l.lng, p.lat, p.lon);
-      if(d < minD){minD = d; nearest = p;}
+    const cityName = await fetchCityName(l.lat, l.lng);
+    const nearestKm = findNearestInAnyDB(l.lat, l.lng);
+    let kmStr = '---';
+    if(nearestKm && nearestKm.res){
+      kmStr = `KM ${(Math.round(nearestKm.res.km*100)/100).toFixed(2).replace('.','mö')} (${nearestKm.name})`.replace('mö',',');
     }
 
-    if(nearest){
-      const cityName = await fetchCityName(l.lat, l.lng);
-      const postKm = findPostExactKm(nearest);
-      let infoEl = document.getElementById('mapClickInfo');
-      infoEl.style.display = 'block';
-      infoEl.innerHTML = `
-        <p style="font-size:9px;font-weight:900;color:var(--turq);text-transform:uppercase;margin-bottom:4px;">Análise do Ponto no Mapa</p>
-        <p style="font-size:9px;font-weight:800;color:#fff;">Município: ${cityName}</p>
-        <p style="font-size:9px;font-weight:800;color:var(--accent);">ID Mais Próximo: ${nearest.id}</p>
-        <p style="font-size:8px;font-weight:700;color:var(--muted);">KM do ID: ${postKm}</p>
-        <p style="font-size:8px;font-weight:700;color:var(--green2);">Distância até o ID: ${range(minD)}</p>
-      `;
+    let nearestPost = null, minPostDist = Infinity;
+    if(posts.length){
+      for(let p of posts){
+        let d = hav(l.lat, l.lng, p.lat, p.lon);
+        if(d < minPostDist){minPostDist = d; nearestPost = p;}
+      }
     }
+
+    let postIdStr = nearestPost ? nearestPost.id : '---';
+    let distStr = nearestPost ? range(minPostDist) : '---';
+
+    let popupContent = `
+      <div style="font-family:var(--font);color:#070913;padding:4px;min-width:160px;">
+        <p style="font-size:10px;font-weight:900;color:#ff682c;text-transform:uppercase;margin-bottom:2px;">${cityName}</p>
+        <p style="font-size:9px;font-weight:800;color:#161f3d;">Rodovia: ${kmStr}</p>
+        <p style="font-size:9px;font-weight:900;color:#10b981;">ID Próximo: ${postIdStr}</p>
+        <p style="font-size:8px;font-weight:700;color:#4b5563;">Distância do Ponto: ${distStr}</p>
+        <button style="margin-top:6px;width:100%;background:#10b981;color:#fff;border:0;padding:4px;border-radius:4px;font-size:8px;font-weight:900;text-transform:uppercase;cursor:pointer;" onclick="sendWhatsApp('${postIdStr}', ${l.lat}, ${l.lng})">Enviar WhatsApp</button>
+      </div>
+    `;
+
+    if(popupInstance){
+      mapInstance.removeLayer(popupInstance);
+    }
+    popupInstance = L.popup().setLatLng([l.lat, l.lng]).setContent(popupContent).openOn(mapInstance);
   });
 }
 
@@ -878,7 +887,7 @@ document.getElementById('btnSend').onclick=()=>{
     chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
   }else{
     let qty=Number(document.getElementById('qty').value||10);
-    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,pos.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty);
+    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty);
   }
   let tx=`📍 *LISTA*\nData: ${nowBR()}\n\n`;
   items.forEach((o,i)=>{
