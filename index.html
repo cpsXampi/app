@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<!-- Tesseract.js OCR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
 <style>
 :root{
   --bg:#070913;
@@ -361,7 +363,12 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
     <!-- PAINEL: COORDENADA -->
     <div class="collapsible-pane" id="paneCoord">
       <div class="card card-accent">
-        <div style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Coordenada Manual</div>
+        <div style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;">
+          <span>Coordenada Manual</span>
+          <label style="background:rgba(59,130,246,.2);border:1px solid var(--border2);padding:2px 6px;border-radius:3px;font-size:7px;cursor:pointer;color:var(--text);display:inline-flex;align-items:center;gap:3px;">
+            📷 OCR <input type="file" accept="image/*" capture="environment" id="ocrInput" style="display:none" onchange="handleOcrUpload(event)">
+          </label>
+        </div>
         <div class="coord-container">
           <div class="coord-inputs">
             <input class="coord-input" id="inputLat" placeholder="LAT" inputmode="decimal" pattern="[0-9]*" autocomplete="off" spellcheck="false">
@@ -761,6 +768,36 @@ async function searchManualCoord(){
   res.innerHTML=html;
 
   showToast('Resultados carregados');
+}
+
+async function handleOcrUpload(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  showToast('Lendo imagem (OCR)...');
+  try {
+    const { data: { text } } = await Tesseract.recognize(file, 'eng', {
+      logger: m => {}
+    });
+    
+    // Procura por números parecidos com coordenadas (-22.xxxx ou 22.xxxx ou -23,xxxx)
+    const matches = text.match(/-?\d{1,2}[.,]\d{4,}/g);
+    if(matches && matches.length >= 2){
+      let lat = parsePt(matches[0]);
+      let lon = parsePt(matches[1]);
+      if(Number.isFinite(lat) && Number.isFinite(lon)){
+        document.getElementById('inputLat').value = lat;
+        document.getElementById('inputLon').value = lon;
+        showToast('Coordenada lida com sucesso!');
+        searchManualCoord();
+        return;
+      }
+    }
+    showToast('Não foi possível identificar coordenadas', 'err');
+  } catch(e) {
+    showToast('Erro ao processar imagem', 'err');
+  } finally {
+    event.target.value = '';
+  }
 }
 
 function searchId(){
