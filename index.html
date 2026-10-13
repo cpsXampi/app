@@ -332,7 +332,7 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
       <div class="card card-accent">
         <div class="search-row">
           <div class="search-wrap">
-            <input class="search-input" id="inputId" placeholder="ID (8 DÍGITOS)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
+            <input class="search-input" id="inputId" placeholder="ID (8 DÍGITOS)" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
           </div>
           <button class="btn-icon go" onclick="searchId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
           <button class="btn-icon clr" onclick="clearId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
@@ -347,7 +347,7 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
       <div class="card card-accent">
         <div class="search-row">
           <div class="search-wrap">
-            <input class="search-input" id="inputKm" placeholder="KM (EX: 115)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
+            <input class="search-input" id="inputKm" placeholder="KM (EX: 115)" inputmode="decimal" pattern="[0-9]*" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
           </div>
           <button class="btn-icon go" onclick="searchKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
           <button class="btn-icon clr" onclick="clearKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
@@ -364,8 +364,8 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
         <div style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Coordenada Manual</div>
         <div class="coord-container">
           <div class="coord-inputs">
-            <input class="coord-input" id="inputLat" placeholder="LAT" autocomplete="off" spellcheck="false">
-            <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
+            <input class="coord-input" id="inputLat" placeholder="LAT" inputmode="decimal" pattern="[0-9]*" autocomplete="off" spellcheck="false">
+            <input class="coord-input" id="inputLon" placeholder="LON" inputmode="decimal" pattern="[0-9]*" autocomplete="off" spellcheck="false">
           </div>
           <div style="display:flex;gap:3px;">
             <button class="btn-icon go" style="flex:1;height:28px;border-radius:var(--r-xs);font-size:8px;" onclick="searchManualCoord()">Calcular</button>
