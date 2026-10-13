@@ -29,7 +29,23 @@
   --r-xs:4px;--r-sm:8px;--r-md:12px;
   --safe-b:max(env(safe-area-inset-bottom,0px),12px);
   --safe-t:env(safe-area-inset-top,0px);
+  --container-max: 760px;
 }
+
+/* Modo Desktop expandido ativado por clique */
+body.desktop-mode {
+  --container-max: 1320px;
+}
+body.desktop-mode .wrap {
+  display: grid !important;
+  grid-template-columns: 420px 1fr !important;
+  gap: 16px !important;
+  align-items: start !important;
+}
+body.desktop-mode .map-box {
+  height: 380px !important;
+}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
 body{
@@ -61,18 +77,27 @@ input,select{font-family:var(--font);outline:none}
   box-shadow:0 4px 20px rgba(0,0,0,.6);
 }
 .hdr-in{
-  max-width:760px;margin:0 auto;
+  max-width:var(--container-max);margin:0 auto;
   display:flex;align-items:center;justify-content:space-between;height:44px;
+  transition:max-width .3s ease;
 }
 .hdr-title{
   font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.25em;
   color:var(--accent);text-shadow:0 0 10px var(--accent-glow);
 }
 
+.view-toggle-btn{
+  background:rgba(59,130,246,.15);border:1px solid var(--border2);color:var(--text2);
+  padding:4px 8px;border-radius:var(--r-xs);font-size:8px;font-weight:900;text-transform:uppercase;
+  cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .2s ease;
+}
+.view-toggle-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+
 .wrap{
-  max-width:760px;margin:0 auto;
+  max-width:var(--container-max);margin:0 auto;
   padding:12px;padding-bottom:var(--safe-b);
   display:flex;flex-direction:column;gap:12px;
+  transition:max-width .3s ease;
 }
 
 .section-block{
@@ -324,7 +349,12 @@ body.fs-active .fs-close-btn {display:inline-flex;}
 
 <header class="hdr">
   <div class="hdr-in">
-    <div class="hdr-title">Apoio Técnico</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="hdr-title">Apoio Técnico</div>
+      <button class="view-toggle-btn" id="viewToggleBtn" onclick="toggleDesktopMode()">
+        <span id="viewToggleIcon">💻</span> <span id="viewToggleText">Modo PC</span>
+      </button>
+    </div>
     <div style="font-size:9px;font-weight:900;color:var(--accent);" id="topKmLive">—</div>
   </div>
 </header>
@@ -480,6 +510,14 @@ let mapInstance=null, mapMarker=null, mapLayerObj=null, popupInstance=null;
 let activePane = null;
 let cityCache = new Map();
 
+function toggleDesktopMode(){
+  let isDesktop = document.body.classList.toggle('desktop-mode');
+  document.getElementById('viewToggleIcon').textContent = isDesktop ? '📱' : '💻';
+  document.getElementById('viewToggleText').textContent = isDesktop ? 'Modo Celular' : 'Modo PC';
+  if(mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
+  showToast(isDesktop ? 'Modo PC Ativado' : 'Modo Celular Ativado');
+}
+
 function showToast(msg,type='ok'){
   const el=document.getElementById('toast');
   el.className='toast '+type;el.textContent=msg;
@@ -508,7 +546,7 @@ function gpsBadge(p,err){
   const a=p?.acc;let cls='bad',txt;
   if(err)txt='GPS · BLOQUEADO / DESLIGADO';
   else if(!a)txt='GPS · USANDO REFERÊNCIA';
-  else if(a<=15) {cls='ok';txt=`GPS · ALTA (±${Math.round(a)}M)`;}
+  else if(a<=15) {cls='ok',txt=`GPS · ALTA (±${Math.round(a)}M)`;}
   else {cls='warn';txt=`GPS · MÉDIA (±${Math.round(a)}M)`;}
   el.className='gps '+cls;textEl.textContent=txt;
 }
@@ -778,14 +816,6 @@ function clearCoordFields(){
   searchCoordItems=[];
 }
 
-function updateSearchCoordDist(){
-  if(!searchCoordItems.length)return;
-  searchCoordItems.forEach((item, idx)=>{
-    let el=document.getElementById('srch-coord-dist-'+idx);
-    if(el)el.textContent='distância até o local: '+formatDist(hav(item.lat,item.lon,item.clickedLat,item.clickedLon));
-  });
-}
-
 async function searchManualCoord(){
   let lat = parsePt(document.getElementById('inputLat').value);
   let lon = parsePt(document.getElementById('inputLon').value);
@@ -885,12 +915,6 @@ function clearId(){
   document.getElementById('searchMsg').style.display='none';
   document.getElementById('searchResult').style.display='none';
   searchItem=null;
-}
-
-function updateSearchDist(){
-  if(!searchItem||!pos)return;
-  let el=document.getElementById('srch-dist');
-  if(el)el.textContent='distância até o local: '+formatDist(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon));
 }
 
 async function renderSearch(){
@@ -1018,14 +1042,6 @@ function clearKm(){
   document.getElementById('searchKmResult').style.display='none';
   document.getElementById('searchKmModal').style.display='none';
   searchKmItems=[];
-}
-
-function updateSearchKmDist(){
-  if(!searchKmItems.length||!pos)return;
-  searchKmItems.forEach((item, idx)=>{
-    let el=document.getElementById('srch-km-dist-'+idx);
-    if(el)el.textContent='distância até o local: '+formatDist(hav(pos.lat,pos.lon,item.lat,item.lon));
-  });
 }
 
 async function renderSearchKm(label, bestPt){
