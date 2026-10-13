@@ -371,8 +371,8 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
         </div>
         <div class="coord-container">
           <div class="coord-inputs">
-            <input class="coord-input" id="inputLat" placeholder="LAT" inputmode="decimal" pattern="[0-9]*" autocomplete="off" spellcheck="false">
-            <input class="coord-input" id="inputLon" placeholder="LON" inputmode="decimal" pattern="[0-9]*" autocomplete="off" spellcheck="false">
+            <input class="coord-input" id="inputLat" placeholder="LAT" autocomplete="off" spellcheck="false">
+            <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
           </div>
           <div style="display:flex;gap:3px;">
             <button class="btn-icon go" style="flex:1;height:28px;border-radius:var(--r-xs);font-size:8px;" onclick="searchManualCoord()">Calcular</button>
@@ -779,7 +779,6 @@ async function handleOcrUpload(event) {
       logger: m => {}
     });
     
-    // Procura por números parecidos com coordenadas (-22.xxxx ou 22.xxxx ou -23,xxxx)
     const matches = text.match(/-?\d{1,2}[.,]\d{4,}/g);
     if(matches && matches.length >= 2){
       let lat = parsePt(matches[0]);
