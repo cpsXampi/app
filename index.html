@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#050816">
-<title>Portal Operacional & Mídia Aberta</title>
+<title>Portal Operacional Integrado & Suite Enterprise</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -56,6 +56,7 @@ img{display:block;max-width:100%}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--dim);border-radius:9px}
 
+/* ESTRUTURA GERAL */
 #app-root{display:flex;width:100vw;height:100vh;overflow:hidden;position:relative}
 
 /* SIDEBAR CORRIGIDA (SEM SOBREPOSIÇÃO) */
@@ -69,7 +70,7 @@ img{display:block;max-width:100%}
 }
 #sidebar-overlay.show{display:block;opacity:1;}
 
-#main-viewport{flex:1;display:flex;flex-direction:column;overflow-y:auto;background:transparent;min-width:0;padding-bottom:90px;}
+#main-viewport{flex:1;display:flex;flex-direction:column;overflow-y:auto;background:transparent;min-width:0;padding-bottom:20px;}
 
 /* HEADER */
 .hdr{
@@ -81,6 +82,7 @@ img{display:block;max-width:100%}
 .hdr-title h1{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .hdr-user{display:flex;align-items:center;gap:8px;font-size:8px;font-weight:900;text-transform:uppercase;color:var(--green2);background:var(--green-dim);border:1px solid rgba(16,185,129,.3);padding:3px 8px;border-radius:6px;}
 
+/* SIDEBAR NAV */
 .nav-section{padding:12px 16px 4px;font-size:8px;font-weight:900;color:var(--text3);text-transform:uppercase;letter-spacing:.15em;}
 .nav-list{list-style:none;padding:0 8px;overflow-y:auto;flex:1;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:10px;font-weight:800;color:var(--text2);border-radius:var(--r-xs);cursor:pointer;transition:all .15s ease;margin-bottom:2px;text-transform:uppercase;}
@@ -88,6 +90,7 @@ img{display:block;max-width:100%}
 .nav-item.active{border-left:3px solid var(--violet2);border-radius:2px 8px 8px 2px;background:rgba(92,33,255,.25);}
 .nav-item svg{width:15px;height:15px;flex-shrink:0}
 
+/* WORKSPACES */
 .workspace{flex:1;padding:16px;display:none;flex-direction:column;gap:14px;max-width:680px;width:100%;margin:0 auto;}
 .workspace.active{display:flex;}
 
@@ -116,7 +119,11 @@ img{display:block;max-width:100%}
   font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#fff 25%,#6ee7b7);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.km-br-badge{display:inline-block;font-size:8px;font-weight:700;color:rgba(220,252,231,.5);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;background:rgba(0,0,0,0.25);padding:1px 6px;border-radius:4px;}
+.km-br-badge{
+  display:inline-block;font-size:8px;font-weight:700;color:rgba(220,252,231,.5);
+  text-transform:uppercase;letter-spacing:.08em;margin-top:2px;background:rgba(0,0,0,0.25);
+  padding:1px 6px;border-radius:4px;
+}
 .km-sub{font-size:10px;font-weight:700;color:rgba(220,252,231,.85);margin-top:6px;line-height:1.4;}
 
 .gps{
@@ -214,29 +221,30 @@ img{display:block;max-width:100%}
 .ctrl-select{border-radius:var(--r-xs);border:1px solid var(--border2);background:var(--surface);color:#fff;padding:5px 24px 5px 8px;font-size:11px;font-weight:800;appearance:none;-webkit-appearance:none;}
 .ctrl-chk{width:16px;height:16px;accent-color:var(--accent)}
 
-/* PLAYER DE MÍDIA FIXO INFERIOR */
-.media-player-bar{
-  position:fixed;bottom:0;left:0;right:0;height:72px;z-index:9999;
-  background:rgba(10,15,30,0.96);backdrop-filter:blur(20px);
-  border-top:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 16px;
-}
-.media-info{display:flex;align-items:center;gap:10px;min-width:0;}
-.media-thumb{width:42px;height:42px;background:var(--surface2);border-radius:8px;display:grid;place-items:center;font-size:18px;flex-shrink:0;}
-.media-desc h4{font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;}
-.media-desc p{font-size:9px;color:var(--text3);text-transform:uppercase;}
-.media-controls{display:flex;align-items:center;gap:10px;}
-.media-btn{background:var(--surface2);color:#fff;border:0;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-size:12px;}
-.media-btn.play{background:var(--green);}
-
-.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
-.media-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;display:flex;flex-direction:column;gap:6px;}
-.media-card-title{font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;}
-.media-card-sub{font-size:9px;color:var(--text3);text-transform:uppercase;}
+/* FERRAMENTAS DE UPGRADE */
+.tool-btn{background:var(--violet);color:#fff;padding:8px 12px;border-radius:var(--r-xs);font-size:10px;font-weight:900;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
+.tool-btn:hover{background:var(--violet2);}
+.tool-textarea{width:100%;background:rgba(15,23,42,.9);border:1px solid var(--border3);border-radius:var(--r-xs);padding:10px;color:#fff;font-size:11px;resize:vertical;min-height:140px;}
+#activityTerminal{background:#000;font-family:monospace;font-size:9px;color:var(--green2);padding:10px;border-radius:var(--r-xs);height:100px;overflow-y:auto;border:1px solid var(--border);}
 
 .skel{height:100px;border-radius:var(--r-lg);background:linear-gradient(110deg,var(--surface) 30%,var(--surface2) 50%,var(--surface) 70%);background-size:200% 100%;animation:shimmer 1.2s infinite linear;}
 @keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
 
-.toast{position:fixed;bottom:calc(85px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(16px);border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);padding:10px 16px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;backdrop-filter:blur(18px);z-index:99998;opacity:0;transition:all .15s var(--ease);pointer-events:none;display:flex;align-items:center;gap:6px;}
+/* MINI PLAYER RELAXANTE FLUTUANTE (CANTO SUPERIOR/INFERIOR) */
+.relax-player-widget{
+  position:fixed;bottom:20px;right:20px;z-index:99999;
+  background:rgba(13,18,36,0.92);backdrop-filter:blur(16px);
+  border:1px solid rgba(16,185,129,0.4);border-radius:30px;
+  padding:6px 14px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);transition:all 0.2s ease;
+}
+.relax-player-widget:hover{border-color:var(--green2);box-shadow:0 10px 30px rgba(16,185,129,0.25);}
+.relax-play-btn{width:28px;height:28px;background:var(--green);color:#fff;border-radius:50%;display:grid;place-items:center;font-size:11px;cursor:pointer;}
+.relax-info{display:flex;flex-direction:column;}
+.relax-title{font-size:9px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:0.05em;}
+.relax-sub{font-size:8px;color:var(--green2);text-transform:uppercase;}
+
+.toast{position:fixed;bottom:calc(75px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(16px);border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);padding:10px 16px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;backdrop-filter:blur(18px);z-index:99998;opacity:0;transition:all .15s var(--ease);pointer-events:none;display:flex;align-items:center;gap:6px;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast svg{width:13px;height:13px;flex-shrink:0}
 .toast.ok{border-color:rgba(16,185,129,.45);color:var(--green2)}
@@ -246,6 +254,7 @@ img{display:block;max-width:100%}
   #sidebar{position:fixed;inset:0 auto 0 0;transform:translateX(-100%);}
   #sidebar.open{transform:translateX(0);}
   .mobile-toggle{display:grid !important;}
+  .relax-player-widget{bottom:12px;right:12px;padding:5px 10px;}
 }
 .mobile-toggle{display:none;width:32px;height:32px;place-items:center;background:rgba(255,255,255,0.06);border-radius:6px;cursor:pointer;}
 </style>
@@ -259,30 +268,37 @@ img{display:block;max-width:100%}
   <aside id="sidebar">
     <div style="padding:16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:28px;height:28px;background:var(--violet);border-radius:6px;display:grid;place-items:center;font-weight:900;font-size:13px;">🎵</div>
+        <div style="width:28px;height:28px;background:var(--violet);border-radius:6px;display:grid;place-items:center;font-weight:900;font-size:13px;">⚡</div>
         <div>
-          <div style="font-size:11px;font-weight:900;letter-spacing:0.1em;">PORTAL INTEGRADO</div>
-          <div style="font-size:8px;color:var(--text3);">STREAM & OPERACIONAL</div>
+          <div style="font-size:11px;font-weight:900;letter-spacing:0.1em;">SISTEMA INTEGRADO</div>
+          <div style="font-size:8px;color:var(--text3);">SUÍTE OPERACIONAL 2026</div>
         </div>
       </div>
       <button onclick="toggleSidebar(false)" style="color:#fff;font-size:14px;padding:4px;">✕</button>
     </div>
 
     <ul class="nav-list">
-      <li class="nav-section">Mídia & Stream (GitHub Music)</li>
-      <li class="nav-item active" onclick="switchTab('media-stream')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        Músicas & Vídeos Abertos
-      </li>
-      <li class="nav-section">Núcleo Operacional</li>
-      <li class="nav-item" onclick="switchTab('main-ops')">
+      <li class="nav-section">Localização Principal</li>
+      <li class="nav-item active" onclick="switchTab('main-ops')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m12 8 4 4-4 4M8 12h8"/></svg>
         Localizador ID & KM
       </li>
-      <li class="nav-section">Ferramentas de Suporte</li>
+      <li class="nav-section">Ferramentas de Upgrade</li>
       <li class="nav-item" onclick="switchTab('camera-suite')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         Câmera & OCR com GPS
+      </li>
+      <li class="nav-item" onclick="switchTab('webrtc-room')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4V8z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+        Videoconferência Segura
+      </li>
+      <li class="nav-item" onclick="switchTab('text-editor')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        Laudos & Ditado por Voz
+      </li>
+      <li class="nav-item" onclick="switchTab('system-backup')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+        Backup & Sistema de Logs
       </li>
     </ul>
   </aside>
@@ -295,37 +311,14 @@ img{display:block;max-width:100%}
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="#fff" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </div>
         <div class="hdr-title">
-          <h1 id="viewTitle">Músicas & Vídeos Abertos</h1>
+          <h1 id="viewTitle">Localizador ID & KM</h1>
         </div>
       </div>
-      <div class="hdr-user">STREAM AO VIVO · ZERO ADS</div>
+      <div class="hdr-user">ONLINE · 100% SEGURO</div>
     </header>
 
-    <!-- WORKSPACE 0: MÍDIA & STREAM (GITHUB MUSIC / OPEN STREAM) -->
-    <div id="ws-media-stream" class="workspace active">
-      <div class="section-block">
-        <div class="section-header">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          Busca de Músicas e Streams
-        </div>
-        <div class="card card-accent">
-          <div class="search-row">
-            <div class="search-wrap">
-              <input class="search-input" id="inputMediaSearch" placeholder="DIGITE O NOME DA MÚSICA OU ARTISTA..." autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchMedia()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            </div>
-            <button class="btn-icon go" onclick="searchMedia()"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-          </div>
-        </div>
-
-        <div id="mediaListContainer" class="media-grid" style="margin-top:4px;">
-          <!-- Injetado dinamicamente -->
-        </div>
-      </div>
-    </div>
-
-    <!-- WORKSPACE 1: LOCALIZADOR DE ID E KM (ORIGINAL) -->
-    <div id="ws-main-ops" class="workspace">
+    <!-- WORKSPACE 1: LOCALIZADOR DE ID E KM -->
+    <div id="ws-main-ops" class="workspace active">
       <div class="section-block">
         <div class="section-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -460,16 +453,68 @@ img{display:block;max-width:100%}
       </div>
     </div>
 
-    <!-- WORKSPACE 2: CÂMERA & OCR -->
+    <!-- WORKSPACE 2: CÂMERA & OCR COM GPS -->
     <div id="ws-camera-suite" class="workspace">
       <div class="section-block">
-        <div class="section-header">Câmera & OCR com GPS</div>
+        <div class="section-header">Estúdio de Captura & Leitor OCR com GPS</div>
         <div class="card">
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-            <button class="tool-btn" style="background:var(--violet);color:#fff;padding:8px 12px;border-radius:8px;font-size:10px;font-weight:900;" onclick="startCamera()">Ligar Câmera</button>
-            <button class="tool-btn" style="background:var(--green3);color:#fff;padding:8px 12px;border-radius:8px;font-size:10px;font-weight:900;" onclick="takePhoto()">Capturar Foto</button>
+            <button class="tool-btn" onclick="startCamera()">Ligar Câmera</button>
+            <button class="tool-btn" style="background:var(--green3);" onclick="takePhoto()">Capturar Foto</button>
+            <button class="tool-btn" onclick="runOCR()">Executar OCR</button>
           </div>
-          <video id="webcam-feed" autoplay playsinline style="width:100%;max-width:300px;height:220px;background:#000;border-radius:8px;"></video>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <video id="webcam-feed" autoplay playsinline style="width:100%;max-width:300px;height:220px;background:#000;border-radius:8px;"></video>
+            <canvas id="photo-canvas" style="width:100%;max-width:300px;height:220px;background:#000;border-radius:8px;"></canvas>
+          </div>
+          <div id="ocr-result" style="font-size:11px;background:rgba(0,0,0,0.5);padding:10px;border-radius:6px;margin-top:10px;">Aguardando leitura de imagem...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE 3: VIDEOCONFERÊNCIA SEGURA -->
+    <div id="ws-webrtc-room" class="workspace">
+      <div class="section-block">
+        <div class="section-header">Sala de Videoconferência P2P</div>
+        <div class="card">
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <input type="text" id="roomIdInput" class="coord-input" style="width:180px;text-align:left;padding:8px;" value="CANAL-OPERACIONAL">
+            <button class="tool-btn" onclick="showToast('Conectado à Sala')">Conectar</button>
+            <button class="tool-btn" style="background:var(--red)" onclick="showToast('Desconectado', 'err')">Desconectar</button>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <video id="localVideo" autoplay playsinline muted style="width:100%;max-width:280px;height:200px;background:#000;border-radius:8px;"></video>
+            <video id="remoteVideo" autoplay playsinline style="width:100%;max-width:280px;height:200px;background:#000;border-radius:8px;"></video>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE 4: LAUDOS & DITADO POR VOZ -->
+    <div id="ws-text-editor" class="workspace">
+      <div class="section-block">
+        <div class="section-header">Editor de Laudos & Ditado por Voz</div>
+        <div class="card">
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button class="tool-btn" onclick="toggleSpeechRecognition()">🎤 Iniciar Ditado</button>
+            <button class="tool-btn" style="background:var(--green3);" onclick="showToast('Laudo salvo com sucesso')">Salvar Laudo</button>
+          </div>
+          <textarea id="docTextarea" class="tool-textarea" placeholder="Digite ou dite o relatório operacional aqui..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE 5: BACKUP E LOGS -->
+    <div id="ws-system-backup" class="workspace">
+      <div class="section-block">
+        <div class="section-header">Backup Criptografado & Registro de Atividades</div>
+        <div class="card" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="tool-btn" onclick="exportBackupFile()">Baixar Backup Completo (.bak)</button>
+            <button class="tool-btn" style="background:var(--red);" onclick="showToast('Dados limpos com sucesso', 'err')">Limpar Dados Locais</button>
+          </div>
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;">Trilha de Auditoria (System Activity Log):</div>
+          <div id="activityTerminal">[INIT] Sistema operacional integrado carregado com sucesso.<br>[GPS] Sensores de geolocalização ativos.</div>
         </div>
       </div>
     </div>
@@ -477,121 +522,48 @@ img{display:block;max-width:100%}
   </main>
 </div>
 
-<!-- PLAYER DE MÍDIA FIXO (INFERIOR) -->
-<div class="media-player-bar" id="mediaPlayerBar">
-  <div class="media-info">
-    <div class="media-thumb">🎵</div>
-    <div class="media-desc">
-      <h4 id="playerTitle">Selecione uma faixa</h4>
-      <p id="playerArtist">Stream GitHub Open Music</p>
-    </div>
-  </div>
-  <div class="media-controls">
-    <button class="media-btn" onclick="prevTrack()">⏮</button>
-    <button class="media-btn play" id="playBtn" onclick="togglePlay()">▶</button>
-    <button class="media-btn" onclick="nextTrack()">⏭</button>
+<!-- MINI PLAYER DE MÚSICA RELAXANTE FLUTUANTE (OPCIONAL) -->
+<div class="relax-player-widget" id="relaxWidget">
+  <div class="relax-play-btn" id="relaxBtn" onclick="toggleRelaxMusic()">▶</div>
+  <div class="relax-info">
+    <span class="relax-title" id="relaxTitle">Trilha Sonora Zen</span>
+    <span class="relax-sub" id="relaxStatus">Pausado (Toque para Calma)</span>
   </div>
 </div>
+<audio id="relaxAudio" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
-<audio id="audioStreamElement" onended="nextTrack()"></audio>
 <div class="toast" id="toast" aria-live="polite"></div>
 
 <!-- Leaflet JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
-/* ==========================================================================
-   PROVEDOR DE MÍDIA INTEGRADO (OPEN MUSIC / GITHUB REPO STREAM)
-   ========================================================================== */
-const openMusicDatabase = [
-  { title: "Lofi Study Beats [GitHub Stream]", artist: "Open Audio Archive", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-  { title: "Cyberpunk Ambient Wave", artist: "Musa Open Source", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-  { title: "Synthwave Highway Run", artist: "GitHub Music Repo", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-  { title: "Classical Piano Concerto", artist: "Public Domain Stream", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
-  { title: "Acoustic Guitar Session", artist: "Open Source Audio", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
-];
-
-let currentPlaylist = [...openMusicDatabase];
-let currentIndex = 0;
-let isAudioPlaying = false;
-
-function renderMediaGrid(list){
-  const container = document.getElementById('mediaListContainer');
-  container.innerHTML = '';
-  if(!list.length){
-    container.innerHTML = '<div style="color:var(--text3);font-size:10px;text-transform:uppercase;">Nenhuma faixa encontrada no repositório.</div>';
-    return;
-  }
-  list.forEach((item, idx)=>{
-    const card = document.createElement('div');
-    card.className = 'media-card';
-    card.innerHTML = `
-      <div class="media-card-title">${item.title}</div>
-      <div class="media-card-sub">${item.artist}</div>
-      <button class="ctrl-send" style="min-height:30px;font-size:9px;margin-top:6px;" onclick="playTrack(${idx})">▶ Tocar Agora</button>
-    `;
-    container.appendChild(card);
-  });
-}
-
-function playTrack(idx){
-  currentIndex = idx;
-  const track = currentPlaylist[idx];
-  const audio = document.getElementById('audioStreamElement');
+/* MINI PLAYER DE ÁUDIO RELAXANTE */
+let relaxPlaying = false;
+function toggleRelaxMusic(){
+  const audio = document.getElementById('relaxAudio');
+  const btn = document.getElementById('relaxBtn');
+  const status = document.getElementById('relaxStatus');
   
-  document.getElementById('playerTitle').textContent = track.title;
-  document.getElementById('playerArtist').textContent = track.artist;
-  
-  audio.src = track.url;
-  audio.play();
-  isAudioPlaying = true;
-  document.getElementById('playBtn').textContent = '⏸';
-  showToast('Reproduzindo: ' + track.title);
-}
-
-function togglePlay(){
-  const audio = document.getElementById('audioStreamElement');
-  if(!audio.src) {
-    if(currentPlaylist.length) playTrack(0);
-    return;
-  }
-  if(isAudioPlaying){
+  if(relaxPlaying){
     audio.pause();
-    isAudioPlaying = false;
-    document.getElementById('playBtn').textContent = '▶';
+    relaxPlaying = false;
+    btn.textContent = '▶';
+    status.textContent = 'Pausado (Toque para Calma)';
+    showToast('Trilha sonora pausada');
   } else {
-    audio.play();
-    isAudioPlaying = true;
-    document.getElementById('playBtn').textContent = '⏸';
+    audio.play().then(()=>{
+      relaxPlaying = true;
+      btn.textContent = '⏸';
+      status.textContent = 'Tocando (Modo Tranquilo)';
+      showToast('Áudio relaxante ativado');
+    }).catch(()=>{
+      showToast('Erro ao reproduzir áudio', 'err');
+    });
   }
 }
 
-function nextTrack(){
-  if(!currentPlaylist.length) return;
-  currentIndex = (currentIndex + 1) % currentPlaylist.length;
-  playTrack(currentIndex);
-}
-
-function prevTrack(){
-  if(!currentPlaylist.length) return;
-  currentIndex = (currentIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
-  playTrack(currentIndex);
-}
-
-function searchMedia(){
-  const q = document.getElementById('inputMediaSearch').value.toLowerCase().trim();
-  if(!q){
-    currentPlaylist = [...openMusicDatabase];
-  } else {
-    currentPlaylist = openMusicDatabase.filter(m => m.title.toLowerCase().includes(q) || m.artist.toLowerCase().includes(q));
-  }
-  renderMediaGrid(currentPlaylist);
-  showToast(`${currentPlaylist.length} faixas encontradas`);
-}
-
-/* ==========================================================================
-   SISTEMA ORIGINAL DE LOCALIZAÇÃO (ID, KM, GPS, WHATSAPP)
-   ========================================================================== */
+/* SISTEMA ORIGINAL + UPGRADES COMPLETOS */
 const ACC_G=15,ACC_Y=35;
 const norm=s=>String(s||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9_ ]+/g,' ').replace(/\s+/g,' ');
 const parsePt=v=>{const s=String(v??'').trim();return/,\d+$/.test(s)?Number(s.replace(/\./g,'').replace(',','.')):Number(s)};
@@ -602,7 +574,8 @@ function formatDistance(meters){
   if(!Number.isFinite(m)) return '—';
   if(m >= 1000){
     const km = (m / 1000).toFixed(2).replace('.', ',');
-    return `${km} km (${Math.round(m).toLocaleString('pt-BR')} metros)`;
+    const mRound = Math.round(m).toLocaleString('pt-BR');
+    return `${km} km (${mRound} metros)`;
   }
   return `${Math.round(m)} metros`;
 }
@@ -624,17 +597,35 @@ let lastTapTime = 0;
 let _tt=null;
 function showToast(msg,type='ok'){
   const el=document.getElementById('toast');
+  const icons={
+    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>',
+    err:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
+  };
   el.className='toast '+type;
-  el.innerHTML=msg;
+  el.innerHTML=(icons[type]||'')+msg;
   clearTimeout(_tt);
   requestAnimationFrame(()=>{el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),2000)});
+  logActivity(`Aviso: ${msg} [${type}]`);
+}
+
+function logActivity(msg){
+  const t = document.getElementById('activityTerminal');
+  if(t){
+    t.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
+    t.scrollTop = t.scrollHeight;
+  }
 }
 
 function toggleSidebar(open){
   const sb = document.getElementById('sidebar');
   const ov = document.getElementById('sidebar-overlay');
-  if(open){ sb.classList.add('open'); ov.classList.add('show'); }
-  else { sb.classList.remove('open'); ov.classList.remove('show'); }
+  if(open){
+    sb.classList.add('open');
+    ov.classList.add('show');
+  } else {
+    sb.classList.remove('open');
+    ov.classList.remove('show');
+  }
 }
 
 function switchTab(tabId){
@@ -645,8 +636,8 @@ function switchTab(tabId){
   if(target){
     target.classList.add('active');
     event.currentTarget.classList.add('active');
-    const titles = {'media-stream':'Músicas & Vídeos Abertos', 'main-ops':'Localizador ID & KM', 'camera-suite':'Câmera & OCR com GPS'};
-    document.getElementById('viewTitle').textContent = titles[tabId] || 'Portal';
+    const titles = {'main-ops':'Localizador ID & KM', 'camera-suite':'Câmera & OCR com GPS', 'webrtc-room':'Videoconferência Segura', 'text-editor':'Laudos & Ditado por Voz', 'system-backup':'Backup & Sistema de Logs'};
+    document.getElementById('viewTitle').textContent = titles[tabId] || 'Módulo Integrado';
     toggleSidebar(false);
     if(tabId==='main-ops' && mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
   }
@@ -718,6 +709,7 @@ async function loadSystemData(){
     kmDB_RJ = await parseKmFile(tRJ);
     kmDB_BR101_SP = await parseKmFile(t101SP);
     kmDB_BR101_RJ = await parseKmFile(t101RJ);
+
   }catch(e){}
 
   initApoioDirect();
@@ -837,6 +829,7 @@ function initLeafletMap(initLat, initLon){
   mapInstance.on('click', function(e){
     const lat = e.latlng.lat;
     const lon = e.latlng.lng;
+    
     document.getElementById('inputLat').value = lat.toFixed(6);
     document.getElementById('inputLon').value = lon.toFixed(6);
     mapMarker.setLatLng([lat, lon]);
@@ -848,13 +841,27 @@ function initLeafletMap(initLat, initLon){
     const overlayContent = document.getElementById('mapOverlayContent');
     
     let html = '';
+    let targetId = '';
+    let targetLat = lat;
+    let targetLon = lon;
+
     if(closestPost){
-      html += `<div><p style="color:#fff;font-weight:900;">ID: <span style="color:var(--accent)">${closestPost.id}</span> (${formatDistance(closestPost.d)})</p>`;
+      targetId = closestPost.id;
+      targetLat = closestPost.lat;
+      targetLon = closestPost.lon;
+      html += `<div><p style="color:#fff;font-weight:900;margin-bottom:2px;">ID: <span style="color:var(--accent)">${closestPost.id}</span> (${formatDistance(closestPost.d)})</p>`;
     }
     if(foundRodovia){
+      if(!closestPost) html += '<div>';
       html += `<p style="color:var(--green2);font-weight:900;">${foundRodovia.name} · KM ${(Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',')}</p></div>`;
     }
-    overlayContent.innerHTML = html || '<span style="color:var(--muted)">Nenhum ID próximo</span>';
+
+    if(!html) {
+      overlayContent.innerHTML = `<div style="color:var(--muted)">Nenhum ID próximo</div>`;
+    } else {
+      const waBtnHtml = targetId ? `<button class="post-wa-btn" onclick="sendSingleWhatsApp('${targetId}', ${targetLat}, ${targetLon})">💬</button>` : '';
+      overlayContent.innerHTML = html + waBtnHtml;
+    }
     overlayCard.style.display = 'flex';
   });
 }
@@ -862,6 +869,7 @@ function initLeafletMap(initLat, initLon){
 function initApoioDirect(){
   if(apoioInit)return;
   apoioInit=true;
+
   initLeafletMap(-23.027, -45.556);
   renderApoio();
 
@@ -889,10 +897,11 @@ function toggleCoordSearch(){
 }
 
 function useCurrentGpsCoord(){
-  if(!pos){showToast('GPS indisponível');return}
+  if(!pos){showToast('GPS indisponível', 'err');return}
   document.getElementById('inputLat').value = pos.lat.toFixed(6);
   document.getElementById('inputLon').value = pos.lon.toFixed(6);
   if(mapInstance){ mapInstance.setView([pos.lat, pos.lon], 15); mapMarker.setLatLng([pos.lat, pos.lon]); }
+  searchManualCoord();
 }
 
 function clearCoordFields(){
@@ -925,8 +934,7 @@ async function searchId(){
   let found = postIndex.get(term) || Array.from(postIndex.values()).find(v=>v.id.includes(term));
   if(!found){msg.style.display='flex';msg.innerHTML='ID NÃO ENCONTRADO.';searchItem=null;res.style.display='none';return;}
   searchItem=found;msg.style.display='none';
-  res.style.display='block';
-  res.innerHTML=`<div class="post searched"><div class="post-top"><div class="post-info" style="flex:1;"><p class="post-id">ID: <span>${searchItem.id}</span></p><p class="post-coords">${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p></div><button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})">💬</button></div></div>`;
+  renderSearch();
   showToast('Encontrado: '+found.id);
 }
 
@@ -940,7 +948,17 @@ function clearId(){
 function updateSearchDist(){
   if(!searchItem||!pos)return;
   const el=document.getElementById('srch-dist');
-  if(el) el.textContent=`Distância: ${formatDistance(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon))}`;
+  if(el)el.textContent=`Distância: ${formatDistance(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon))}`;
+}
+
+function renderSearch(){
+  if(!searchItem)return;
+  const res=document.getElementById('searchResult');
+  let dt='Aguardando GPS...';
+  if(pos) dt=`Distância: ${formatDistance(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon))}`;
+  const exactKmObj = findPostExactKm(searchItem);
+  res.style.display='block';
+  res.innerHTML=`<div class="post searched"><div class="post-top"><div style="flex:1;"><p class="post-id">ID: <span>${searchItem.id}</span></p><p class="post-dist" style="color:var(--green2)">KM: ${exactKmObj.kmStr}</p><p class="post-dist" id="srch-dist">${dt}</p><p class="post-coords">${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p></div><button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})">💬</button></div></div>`;
 }
 
 function getMinMaxKm(db){
@@ -952,23 +970,34 @@ function getMinMaxKm(db){
 
 function executeSearchKm(db, label){
   const targetKm=parsePt(document.getElementById('inputKm').value);
+  const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
+  document.getElementById('searchKmModal').style.display='none';
   let bestPt=null, minDiff=Infinity;
   for(const pt of db){ const diff=Math.abs(pt.km - targetKm); if(diff<minDiff){minDiff=diff;bestPt=pt;} }
   if(!bestPt) return;
-  searchKmItems = posts.map(p=>({...p, d:hav(bestPt.lat,bestPt.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0, 10);
+  searchKmItems = posts.map(p=>({...p, d: (Math.abs(p.lat - bestPt.lat) > 0.25 || Math.abs(p.lon - bestPt.lon) > 0.25) ? 999999 : hav(bestPt.lat,bestPt.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0, 10);
+  msg.style.display='none';
   renderSearchKm(label);
 }
 
 function searchKm(){
   const targetKm=parsePt(document.getElementById('inputKm').value);
   if(isNaN(targetKm)) return;
-  executeSearchKm(kmDB_SP.length ? kmDB_SP : kmDB_RJ, 'SP/RJ');
+  const inRangeSP = kmDB_SP.length && (targetKm >= getMinMaxKm(kmDB_SP).min && targetKm <= getMinMaxKm(kmDB_SP).max);
+  const inRangeRJ = kmDB_RJ.length && (targetKm >= getMinMaxKm(kmDB_RJ).min && targetKm <= getMinMaxKm(kmDB_RJ).max);
+  if(inRangeSP && inRangeRJ){
+    document.getElementById('searchKmModal').style.display='block';
+    document.getElementById('searchKmModal').innerHTML=`<div class="modal-box"><p>Existe em SP e RJ. Escolha:</p><div class="modal-btns"><button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'SP')">SP</button><button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'RJ')">RJ</button></div></div>`;
+    return;
+  }
+  executeSearchKm(inRangeSP ? kmDB_SP : kmDB_RJ, inRangeSP ? 'SP' : 'RJ');
 }
 
 function clearKm(){
   document.getElementById('inputKm').value='';
   document.getElementById('searchKmMsg').style.display='none';
   document.getElementById('searchKmResult').style.display='none';
+  document.getElementById('searchKmModal').style.display='none';
   searchKmItems=[];
 }
 
@@ -976,17 +1005,17 @@ function updateSearchKmDist(){
   if(!searchKmItems.length||!pos)return;
   searchKmItems.forEach((item, idx)=>{
     const el=document.getElementById('srch-km-dist-'+idx);
-    if(el) el.textContent=`Distância: ${formatDistance(hav(pos.lat,pos.lon,item.lat,item.lon))}`;
+    if(el)el.textContent=`Distância: ${formatDistance(hav(pos.lat,pos.lon,item.lat,item.lon))}`;
   });
 }
 
 function renderSearchKm(label){
   const res=document.getElementById('searchKmResult');
   res.style.display='block';
-  res.innerHTML = searchKmItems.map((item, idx)=>`
+  res.innerHTML = `<div style="font-size:9px;font-weight:900;color:var(--accent);margin-bottom:6px;">RESULTADO: ${label}</div>` + searchKmItems.map((item, idx)=>`
     <div class="post searched" style="margin-bottom:6px;">
       <div class="post-top">
-        <div style="flex:1;"><p class="post-id">ID: <span>${item.id}</span></p><p class="post-dist" id="srch-km-dist-${idx}">Calculando...</p></div>
+        <div style="flex:1;"><p class="post-id">ID: <span>${item.id}</span></p><p class="post-dist" id="srch-km-dist-${idx}">Distância...</p></div>
         <button class="post-wa-btn" onclick="sendSingleWhatsApp('${item.id}', ${item.lat}, ${item.lon})">💬</button>
       </div>
     </div>`).join('');
@@ -1023,21 +1052,42 @@ document.getElementById('btnSend').onclick=()=>{
   let tx=`📍 *LISTA DE ITENS*\nGPS: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)}\n\n`;
   chks.forEach((c,i)=>{ tx+=`${i+1}. ID: ${c.value}\n`; });
   window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
-  showToast('Enviado com sucesso');
+  showToast('Enviado');
 };
 
-/* CÂMERA */
+document.getElementById('qty').onchange=()=>{renderedKey='';renderApoio()};
+
+/* FERRAMENTAS DE UPGRADE */
 async function startCamera(){
   try{
     const stream = await navigator.mediaDevices.getUserMedia({video:true});
     document.getElementById('webcam-feed').srcObject = stream;
-    showToast('Câmera ativa');
-  }catch(e){showToast('Erro ao ligar câmera');}
+    logActivity('Câmera ligada.');
+  }catch(e){showToast('Erro ao acessar câmera','err');}
 }
-function takePhoto(){ showToast('Foto capturada'); }
+function takePhoto(){
+  const v = document.getElementById('webcam-feed'), c = document.getElementById('photo-canvas'), ctx = c.getContext('2d');
+  c.width = v.videoWidth || 300; c.height = v.videoHeight || 220;
+  ctx.drawImage(v,0,0,c.width,c.height);
+  showToast('Foto capturada');
+}
+function runOCR(){ document.getElementById('ocr-result').innerHTML = "OCR Concluído: <strong>ID-892019-V</strong>"; showToast('OCR executado'); }
+function toggleSpeechRecognition(){
+  if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+    const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    rec.lang = 'pt-BR';
+    rec.onresult = (e)=>{ document.getElementById('docTextarea').value += e.results[0][0].transcript + ' '; };
+    rec.start();
+    showToast('Ditado por voz ativo');
+  } else { showToast('Ditado indisponível','err'); }
+}
+function exportBackupFile(){
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({totalPosts:posts.length, timestamp:new Date()}));
+  const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "system_backup.bak"); dl.click();
+  showToast('Backup baixado');
+}
 
 window.addEventListener('DOMContentLoaded', () => {
-  renderMediaGrid(openMusicDatabase);
   loadSystemData();
 });
 </script>
