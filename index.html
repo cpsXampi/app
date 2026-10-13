@@ -311,6 +311,19 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
   letter-spacing: .02em;
 }
 
+/* Pop-up Limpo e Otimizado para Tela Cheia */
+.leaflet-popup-content-wrapper{
+  background:rgba(11,17,36,0.98) !important;
+  color:#fff !important;
+  border:1px solid var(--border2) !important;
+  border-radius:var(--r-sm) !important;
+  box-shadow:0 8px 32px rgba(0,0,0,.8) !important;
+  backdrop-filter:blur(12px);
+  z-index:9999999 !important;
+}
+.leaflet-popup-tip{background:rgba(11,17,36,0.98) !important;}
+.leaflet-popup{z-index:9999999 !important;}
+
 /* Modal do Mapa dos Arredores */
 .modal-overlay{
   position:fixed;inset:0;background:rgba(7,9,19,.92);z-index:999999;
@@ -321,16 +334,6 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
   background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#fecaca;
   padding:3px 8px;border-radius:var(--r-xs);font-size:8px;font-weight:900;cursor:pointer;
 }
-
-.leaflet-popup-content-wrapper{
-  background:rgba(11,17,36,0.96) !important;
-  color:#fff !important;
-  border:1px solid var(--border2) !important;
-  border-radius:var(--r-xs) !important;
-  box-shadow:0 4px 16px rgba(0,0,0,.6) !important;
-  backdrop-filter:blur(8px);
-}
-.leaflet-popup-tip{background:rgba(11,17,36,0.96) !important;}
 
 .toast{
   position:fixed;bottom:calc(10px + var(--safe-b));left:50%;
@@ -708,6 +711,39 @@ function initMap(lat, lon){
     document.getElementById('inputLat').value = l.lat.toFixed(6);
     document.getElementById('inputLon').value = l.lng.toFixed(6);
     mapMarker.setLatLng([l.lat, l.lng]);
+
+    const cityName = await fetchCityName(l.lat, l.lng);
+    const nearestKm = findNearestInAnyDB(l.lat, l.lng);
+    let kmStr = '---';
+    if(nearestKm && nearestKm.res){
+      kmStr = `KM ${(Math.round(nearestKm.res.km*100)/100).toFixed(2).replace('.','mö')} (${nearestKm.name})`.replace('mö',',');
+    }
+
+    let nearestPost = null, minPostDist = Infinity;
+    if(posts.length){
+      for(let p of posts){
+        let d = hav(l.lat, l.lng, p.lat, p.lon);
+        if(d < minPostDist){minPostDist = d; nearestPost = p;}
+      }
+    }
+
+    let postIdStr = nearestPost ? nearestPost.id : '---';
+    let distStr = nearestPost ? formatDist(minPostDist) : '---';
+
+    let popupContent = `
+      <div style="font-family:var(--font);color:#fff;padding:2px;min-width:145px;font-size:8.5px;line-height:1.3;">
+        <div style="font-weight:900;color:#3b82f6;text-transform:uppercase;margin-bottom:2px;">${cityName}</div>
+        <div style="font-weight:800;color:#d1d5db;">Rodovia: ${kmStr}</div>
+        <div style="font-weight:900;color:#34d399;margin-top:2px;">ID Perto: ${postIdStr}</div>
+        <div style="font-size:7px;color:var(--muted);margin-top:1px;">dist.: ${distStr}</div>
+        <button style="margin-top:5px;width:100%;background:#10b981;color:#fff;border:0;padding:3px;border-radius:3px;font-size:7.5px;font-weight:900;text-transform:uppercase;cursor:pointer;" onclick="sendWhatsApp('${postIdStr}', ${l.lat}, ${l.lng})">WhatsApp</button>
+      </div>
+    `;
+
+    if(popupInstance){
+      mapInstance.removeLayer(popupInstance);
+    }
+    popupInstance = L.popup({maxWidth:190, className:'custom-leaflet-popup'}).setLatLng([l.lat, l.lng]).setContent(popupContent).openOn(mapInstance);
   });
 }
 
@@ -728,7 +764,9 @@ function toggleFullscreen(){
   let box = document.getElementById('mapBox');
   let isFS = box.classList.toggle('fullscreen');
   document.body.classList.toggle('fs-active', isFS);
-  if(mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
+  if(mapInstance) {
+    setTimeout(()=>mapInstance.invalidateSize(), 50);
+  }
 }
 
 function useCurrentGps(){
@@ -890,7 +928,7 @@ async function renderSearch(){
       </button>
     </div>
     <div style="padding:0 6px 6px;"><iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&output=embed" loading="lazy"></iframe></div>
-  </div>`;
+  `;
 }
 
 function getDbRange(db){
