@@ -3,1322 +3,206 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#050816">
-<title>Apoio Operacional Integrado & Suite Enterprise</title>
+<meta name="theme-color" content="#030712">
+<title>Portal de Mídia & Stream Aberto</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
 :root{
-  --bg:#050816;
-  --surface:#0d1224;
-  --surface2:#111731;
-  --border:rgba(255,255,255,.06);
-  --border2:rgba(255,255,255,.12);
-  --border3:rgba(255,255,255,.18);
-  --accent:#ffd600;
+  --bg:#030712;
+  --surface:#0f172a;
+  --surface2:#1e293b;
+  --border:rgba(255,255,255,.08);
+  --border2:rgba(255,255,255,.15);
+  --accent:#3b82f6;
+  --accent-hover:#2563eb;
   --green:#10b981;
-  --green2:#34d399;
-  --green3:#059669;
-  --green-dim:rgba(16,185,129,.10);
-  --violet:#5b21ff;
-  --violet2:#7c3aed;
-  --warn:#f59e0b;
-  --warn-dim:rgba(245,158,11,.10);
-  --red:#ef4444;
-  --text:#f3f4f6;
-  --text2:#d1d5db;
-  --text3:#9ca3af;
-  --muted:#6b7280;
-  --dim:#4b5563;
-  --dimmer:#1f2937;
-  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  --r-xs:8px;--r-sm:12px;--r-md:16px;--r-lg:20px;--r-xl:24px;
-  --safe-b:max(env(safe-area-inset-bottom,0px),20px);
-  --safe-t:env(safe-area-inset-top,0px);
-  --sidebar-w:260px;
-  --header-h:52px;
-  --ease:cubic-bezier(.4,0,.2,1);
+  --text:#f8fafc;
+  --text-muted:#94a3b8;
+  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:24px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{-webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{
-  background:radial-gradient(circle at top,rgba(92,33,255,.18),transparent 55%),var(--bg);
-  color:var(--text);font-family:var(--font);overflow-x:hidden;
-  height:100vh;height:100dvh;display:flex;
-  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  background:radial-gradient(circle at top,rgba(59,130,246,.12),transparent 50%),var(--bg);
+  color:var(--text);font-family:var(--font);min-height:100vh;display:flex;flex-direction:column;
+  overflow-x:hidden;
 }
-button{font-family:var(--font);cursor:pointer;border:0;background:none;color:inherit;-webkit-user-select:none;user-select:none;touch-action:manipulation;}
-button:active{opacity:.80;transform:scale(.96);transition:transform 30ms,opacity 30ms}
-input,select,textarea{font-family:var(--font);outline:none}
-img{display:block;max-width:100%}
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--dim);border-radius:9px}
-
-/* ESTRUTURA GERAL */
-#app-root{display:flex;width:100vw;height:100vh;overflow:hidden;position:relative}
-
-/* SIDEBAR CORRIGIDA (SEM SOBREPOSIÇÃO) */
-#sidebar{
-  width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border2);
-  display:flex;flex-direction:column;z-index:200;transition:transform 0.25s var(--ease);
+header{
+  height:60px;background:rgba(15,23,42,0.85);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;position:sticky;top:0;z-index:100;
 }
-#sidebar-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);
-  z-index:150;display:none;opacity:0;transition:opacity 0.2s var(--ease);
+.brand{font-weight:900;font-size:13px;letter-spacing:0.15em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.brand span{background:var(--accent);color:#fff;padding:2px 6px;border-radius:4px;font-size:9px;}
+
+.container{max-width:900px;margin:0 auto;width:100%;padding:20px;flex:1;display:flex;flex-direction:column;gap:20px;padding-bottom:120px;}
+
+.search-box{display:flex;gap:8px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-md);padding:8px;}
+.search-input{flex:1;background:transparent;border:0;color:var(--text);font-size:13px;padding:4px 8px;outline:none;}
+.search-input::placeholder{color:var(--text-muted);}
+.btn{background:var(--accent);color:#fff;border:0;padding:8px 16px;border-radius:var(--r-sm);font-weight:800;font-size:11px;cursor:pointer;text-transform:uppercase;transition:background 0.15s;}
+.btn:hover{background:var(--accent-hover);}
+
+.tabs{display:flex;gap:8px;border-bottom:1px solid var(--border);padding-bottom:10px;}
+.tab{background:var(--surface);color:var(--text-muted);border:1px solid var(--border);padding:6px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:800;cursor:pointer;text-transform:uppercase;}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.media-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;display:flex;flex-direction:column;gap:8px;transition:border-color 0.15s;}
+.media-card:hover{border-color:var(--border2);}
+.media-title{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.media-subtitle{font-size:10px;color:var(--text-muted);text-transform:uppercase;}
+
+/* PLAYER FIXO INFERIOR */
+.player-bar{
+  position:fixed;bottom:0;left:0;right:0;height:80px;
+  background:rgba(15,23,42,0.95);backdrop-filter:blur(20px);
+  border-top:1px solid var(--border2);display:flex;align-items:center;
+  justify-content:space-between;padding:0 20px;z-index:200;
 }
-#sidebar-overlay.show{display:block;opacity:1;}
+.player-info{display:flex;align-items:center;gap:12px;min-width:0;}
+.player-thumb{width:48px;height:48px;background:var(--surface2);border-radius:var(--r-sm);display:grid;place-items:center;font-size:16px;}
+.player-details h4{font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.player-details p{font-size:9px;color:var(--text-muted);}
 
-#main-viewport{flex:1;display:flex;flex-direction:column;overflow-y:auto;background:transparent;min-width:0;}
-
-/* HEADER */
-.hdr{
-  position:sticky;top:0;z-index:90;height:var(--header-h);border-bottom:1px solid var(--border2);
-  background:rgba(5,10,24,.92);backdrop-filter:blur(28px) saturate(1.4);
-  -webkit-backdrop-filter:blur(28px) saturate(1.4);
-  padding:0 16px;padding-top:var(--safe-t);display:flex;align-items:center;justify-content:space-between;
-}
-.hdr-title h1{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.hdr-user{display:flex;align-items:center;gap:8px;font-size:8px;font-weight:900;text-transform:uppercase;color:var(--green2);background:var(--green-dim);border:1px solid rgba(16,185,129,.3);padding:3px 8px;border-radius:6px;}
-
-/* SIDEBAR NAV */
-.nav-section{padding:12px 16px 4px;font-size:8px;font-weight:900;color:var(--text3);text-transform:uppercase;letter-spacing:.15em;}
-.nav-list{list-style:none;padding:0 8px;overflow-y:auto;flex:1;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:10px;font-weight:800;color:var(--text2);border-radius:var(--r-xs);cursor:pointer;transition:all .15s ease;margin-bottom:2px;text-transform:uppercase;}
-.nav-item:hover,.nav-item.active{background:rgba(92,33,255,.15);color:#fff}
-.nav-item.active{border-left:3px solid var(--violet2);border-radius:2px 8px 8px 2px;background:rgba(92,33,255,.25);}
-.nav-item svg{width:15px;height:15px;flex-shrink:0}
-
-/* WORKSPACES */
-.workspace{flex:1;padding:16px;padding-bottom:calc(16px + var(--safe-b));display:none;flex-direction:column;gap:14px;max-width:680px;width:100%;margin:0 auto;}
-.workspace.active{display:flex;}
-
-.section-block{
-  display:flex;flex-direction:column;gap:10px;
-  background:rgba(13,18,36,0.65);border:1px solid var(--border2);
-  border-radius:var(--r-xl);padding:14px;backdrop-filter:blur(12px);
-}
-.section-header{
-  display:flex;align-items:center;gap:8px;
-  font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.18em;
-  color:var(--accent);padding-bottom:4px;border-bottom:1px solid var(--border);
-}
-.section-header.proximity-title{color:var(--green2)}
-.section-header svg{width:14px;height:14px}
-
-.km-hero{
-  border-radius:var(--r-lg);border:1px solid rgba(16,185,129,.28);
-  background:linear-gradient(155deg,#065f46 0%,#022c22 55%,#020617 100%);
-  text-align:center;padding:14px 18px;position:relative;overflow:hidden;
-  box-shadow:0 10px 30px rgba(6,95,70,.35);
-}
-.km-label{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.25em;color:rgba(220,252,231,.65);}
-.km-value{
-  font-size:clamp(28px,9vw,42px);font-weight:900;line-height:1.05;letter-spacing:-.04em;margin-top:2px;
-  font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#fff 25%,#6ee7b7);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.km-br-badge{
-  display:inline-block;font-size:8px;font-weight:700;color:rgba(220,252,231,.5);
-  text-transform:uppercase;letter-spacing:.08em;margin-top:2px;background:rgba(0,0,0,0.25);
-  padding:1px 6px;border-radius:4px;
-}
-.km-sub{font-size:10px;font-weight:700;color:rgba(220,252,231,.85);margin-top:6px;line-height:1.4;}
-
-.gps{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  min-height:38px;border-radius:var(--r-sm);border:1px solid;padding:0 12px;
-  font-size:10px;font-weight:800;letter-spacing:.06em;text-align:center;
-}
-.gps svg{width:13px;height:13px;flex-shrink:0}
-.gps.bad{border-color:rgba(148,163,184,.35);background:rgba(15,23,42,.9);color:#e5e7eb}
-.gps.ok{border-color:rgba(16,185,129,.45);background:var(--green-dim);color:#d1fae5}
-.gps.warn{border-color:rgba(245,158,11,.35);background:var(--warn-dim);color:#fef3c7}
-
-.card{
-  border-radius:var(--r-lg);border:1px solid var(--border);
-  background:linear-gradient(145deg,rgba(15,23,42,.95),rgba(17,24,39,.9));
-  padding:12px;position:relative;overflow:hidden;
-}
-.card-accent{border-color:rgba(92,33,255,.35);background:linear-gradient(145deg,rgba(92,33,255,.08),rgba(15,23,42,.95));}
-.card-label{
-  font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;
-  color:var(--text2);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;
-}
-.card-label::before{content:"";width:3px;height:9px;border-radius:2px;background:var(--violet2);}
-
-.search-row{display:flex;gap:6px}
-.search-wrap{flex:1;min-width:0;position:relative}
-.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--dim);pointer-events:none;}
-.search-input{
-  width:100%;border-radius:var(--r-sm);border:1px solid var(--border3);
-  background:rgba(15,23,42,.9);padding:10px 12px 10px 34px;
-  font-size:12px;font-weight:800;text-transform:uppercase;color:#fff;
-}
-.search-input::placeholder{color:var(--dim);font-weight:700}
-.search-input:focus{border-color:var(--violet2);box-shadow:0 0 0 3px rgba(92,33,255,.35);}
-.btn-icon{width:40px;height:40px;border-radius:var(--r-sm);display:grid;place-items:center;flex-shrink:0;}
-.btn-icon.go{background:linear-gradient(135deg,var(--violet),var(--violet2));color:#fff;box-shadow:0 3px 12px rgba(79,70,229,.50);}
-.btn-icon.clr{border:1px solid var(--border2);background:rgba(15,23,42,.9);color:var(--muted);}
-.btn-icon svg{width:15px;height:15px}
-.search-msg{margin-top:6px;font-size:10px;font-weight:800;text-transform:uppercase;color:var(--warn);display:flex;align-items:center;gap:6px;}
-.search-msg svg{width:12px;height:12px}
-
-.modal-box{background:rgba(17,24,39,0.95);border:1px solid var(--border3);border-radius:var(--r-md);padding:10px;margin-top:8px;display:flex;flex-direction:column;gap:6px;}
-.modal-box p{font-size:10px;font-weight:800;color:var(--accent)}
-.modal-btns{display:flex;gap:6px}
-.modal-btn{flex:1;padding:8px;border-radius:var(--r-xs);font-size:10px;font-weight:900;text-transform:uppercase;background:var(--violet);color:#fff;cursor:pointer;text-align:center;}
-.modal-btn.rj{background:var(--green3)}
-
-.coord-btn-toggle{background:rgba(92,33,255,.2);border:1px solid rgba(92,33,255,.4);color:#a78bfa;font-size:8px;font-weight:900;padding:3px 6px;border-radius:6px;text-transform:uppercase;cursor:pointer;}
-.coord-container{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
-.coord-inputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.coord-field{display:flex;flex-direction:column;gap:3px}
-.coord-field label{font-size:8px;font-weight:800;text-transform:uppercase;color:var(--muted)}
-.coord-input{width:100%;border-radius:var(--r-xs);border:1px solid var(--border3);background:rgba(15,23,42,.9);padding:8px;font-size:11px;font-weight:800;color:#fff;text-align:center;}
-
-.map-picker-box{margin-top:6px;border-radius:var(--r-sm);border:1px solid var(--border2);overflow:hidden;position:relative;resize:vertical;min-height:260px;max-height:70vh;height:320px;background:#020617;}
-.map-picker-box.fullscreen{position:fixed !important;inset:0 !important;width:100vw !important;height:100vh !important;max-height:none !important;z-index:99999 !important;border-radius:0 !important;margin:0 !important;}
-.map-controls-bar{position:absolute;top:8px;right:8px;z-index:1000;display:flex;gap:4px;background:rgba(5,10,24,0.85);backdrop-filter:blur(8px);padding:3px;border-radius:6px;border:1px solid var(--border2);}
-.map-layer-btn{font-size:8px;font-weight:900;text-transform:uppercase;padding:4px 6px;border-radius:4px;background:rgba(255,255,255,0.06);color:var(--text2);cursor:pointer;}
-.map-layer-btn.active{background:var(--violet);color:#fff}
-.map-fs-btn{font-size:8px;font-weight:900;text-transform:uppercase;padding:4px 6px;border-radius:4px;background:rgba(16,185,129,0.2);color:var(--green2);border:1px solid rgba(16,185,129,0.4);cursor:pointer;}
-
-.map-overlay-card{position:absolute;bottom:12px;left:12px;right:12px;z-index:1000;background:rgba(13,18,36,0.95);backdrop-filter:blur(16px);border:1px solid var(--border3);border-radius:var(--r-md);padding:10px;box-shadow:0 10px 30px rgba(0,0,0,0.6);display:none;}
-.map-overlay-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.map-overlay-title{font-size:10px;font-weight:900;text-transform:uppercase;color:var(--accent)}
-.map-overlay-close{background:rgba(255,255,255,0.1);color:#fff;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:10px;cursor:pointer;}
-
-.target-lock{display:none;border-radius:var(--r-lg);border:2px solid var(--green);background:linear-gradient(145deg,rgba(16,185,129,.18),rgba(15,23,42,.95));padding:14px;text-align:center;position:relative;overflow:hidden;}
-.target-lock.on{display:block;animation:lockIn .2s var(--ease),lockPulse 2.5s infinite;}
-@keyframes lockIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-@keyframes lockPulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.25)}50%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}
-.target-lock h2{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
-.target-lock p{font-size:10px;font-weight:700;margin-top:3px;opacity:.85}
-
-.post{border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--border2);background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(17,24,39,.95));}
-.post.near{border-color:rgba(16,185,129,.5);background:linear-gradient(145deg,rgba(16,185,129,.12),rgba(17,24,39,.96));box-shadow:0 6px 24px rgba(15,23,42,.85);}
-.post.searched{border-color:rgba(92,33,255,.48);background:linear-gradient(145deg,rgba(92,33,255,.14),rgba(17,24,39,.96));}
-.post-top{display:flex;align-items:flex-start;gap:10px;padding:12px}
-.post-chk{margin-top:2px;width:16px;height:16px;accent-color:var(--violet2);flex-shrink:0}
-.post-id{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.post-id span{color:var(--accent)}
-.post-dist{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.post-coords{font-size:9px;color:var(--dim);font-weight:600;margin-top:1px}
-
-.post-wa-btn{width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.35);color:var(--green2);display:grid;place-items:center;flex-shrink:0;}
-.post-wa-btn svg{width:15px;height:15px}
-
-.post-map-container{padding:0 12px 12px 12px}
-.post-map{height:140px;width:100%;border:0;filter:grayscale(10%) contrast(1.06);border-radius:var(--r-xs);}
-
-.ctrl-send{width:100%;min-height:42px;border-radius:var(--r-sm);background:linear-gradient(135deg,var(--green),var(--green3));color:#fff;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 3px 15px rgba(16,185,129,.35);}
-.ctrl-send:disabled{background:linear-gradient(135deg,var(--dimmer),var(--dim));color:var(--dim);cursor:not-allowed;box-shadow:none;}
-.ctrl-send svg{width:15px;height:15px}
-.ctrl-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;}
-.ctrl-label{font-size:9px;font-weight:800;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px;}
-.ctrl-select{border-radius:var(--r-xs);border:1px solid var(--border2);background:var(--surface);color:#fff;padding:5px 24px 5px 8px;font-size:11px;font-weight:800;appearance:none;-webkit-appearance:none;}
-.ctrl-chk{width:16px;height:16px;accent-color:var(--accent)}
-
-/* FERRAMENTAS DE UPGRADE */
-.tool-btn{background:var(--violet);color:#fff;padding:8px 12px;border-radius:var(--r-xs);font-size:10px;font-weight:900;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;cursor:pointer;}
-.tool-btn:hover{background:var(--violet2);}
-.tool-textarea{width:100%;background:rgba(15,23,42,.9);border:1px solid var(--border3);border-radius:var(--r-xs);padding:10px;color:#fff;font-size:11px;resize:vertical;min-height:140px;}
-#activityTerminal{background:#000;font-family:monospace;font-size:9px;color:var(--green2);padding:10px;border-radius:var(--r-xs);height:100px;overflow-y:auto;border:1px solid var(--border);}
-
-.skel{height:100px;border-radius:var(--r-lg);background:linear-gradient(110deg,var(--surface) 30%,var(--surface2) 50%,var(--surface) 70%);background-size:200% 100%;animation:shimmer 1.2s infinite linear;}
-@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
-
-.toast{position:fixed;bottom:calc(16px + var(--safe-b));left:50%;transform:translateX(-50%) translateY(16px);border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface);padding:10px 16px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;backdrop-filter:blur(18px);z-index:99998;opacity:0;transition:all .15s var(--ease);pointer-events:none;display:flex;align-items:center;gap:6px;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast svg{width:13px;height:13px;flex-shrink:0}
-.toast.ok{border-color:rgba(16,185,129,.45);color:var(--green2)}
-.toast.ok svg{color:var(--green)}
-.toast.err{border-color:rgba(239,68,68,.45);color:#fecaca}
-.toast.err svg{color:var(--red)}
-
-@media(max-width:768px){
-  #sidebar{position:fixed;inset:0 auto 0 0;transform:translateX(-100%);}
-  #sidebar.open{transform:translateX(0);}
-  .mobile-toggle{display:grid !important;}
-}
-.mobile-toggle{display:none;width:32px;height:32px;place-items:center;background:rgba(255,255,255,0.06);border-radius:6px;cursor:pointer;}
+.player-controls{display:flex;align-items:center;gap:12px;}
+.control-btn{background:var(--surface2);color:#fff;border:0;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-size:12px;}
+.control-btn.play{background:var(--green);}
 </style>
 </head>
 <body>
 
-<div id="app-root">
-  <div id="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+<header>
+  <div class="brand">
+    OpenStream <span>PRO</span>
+  </div>
+  <div style="font-size:10px;color:var(--text-muted);font-weight:800;text-transform:uppercase;">Zero Ads | Stream ao Vivo</div>
+</header>
 
-  <!-- SIDEBAR DE NAVEGAÇÃO SEGURA -->
-  <aside id="sidebar">
-    <div style="padding:16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:28px;height:28px;background:var(--violet);border-radius:6px;display:grid;place-items:center;font-weight:900;font-size:13px;">⚡</div>
-        <div>
-          <div style="font-size:11px;font-weight:900;letter-spacing:0.1em;">SISTEMA INTEGRADO</div>
-          <div style="font-size:8px;color:var(--text3);">SUÍTE OPERACIONAL 2026</div>
-        </div>
-      </div>
-      <button onclick="toggleSidebar(false)" style="color:#fff;font-size:14px;padding:4px;">✕</button>
-    </div>
+<div class="container">
+  <div class="search-box">
+    <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar músicas, áudios ou vídeos abertos..." onkeydown="if(event.key==='Enter')performSearch()">
+    <button class="btn" onclick="performSearch()">Buscar</button>
+  </div>
 
-    <ul class="nav-list">
-      <li class="nav-section">Localização Principal</li>
-      <li class="nav-item active" onclick="switchTab('main-ops')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m12 8 4 4-4 4M8 12h8"/></svg>
-        Localizador ID & KM
-      </li>
-      <li class="nav-section">Ferramentas de Upgrade</li>
-      <li class="nav-item" onclick="switchTab('camera-suite')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        Câmera & OCR com GPS
-      </li>
-      <li class="nav-item" onclick="switchTab('webrtc-room')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4V8z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
-        Videoconferência Segura
-      </li>
-      <li class="nav-item" onclick="switchTab('text-editor')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-        Laudos & Ditado por Voz
-      </li>
-      <li class="nav-item" onclick="switchTab('system-backup')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-        Backup & Sistema de Logs
-      </li>
-    </ul>
-  </aside>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('music')">Músicas & Áudios</button>
+    <button class="tab" onclick="switchTab('video')">Vídeos & Streams</button>
+  </div>
 
-  <!-- MAIN VIEWPORT -->
-  <main id="main-viewport">
-    <header class="hdr">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div class="mobile-toggle" onclick="toggleSidebar(true)">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="#fff" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </div>
-        <div class="hdr-title">
-          <h1 id="viewTitle">Localizador ID & KM</h1>
-        </div>
-      </div>
-      <div class="hdr-user">ONLINE · 100% SEGURO</div>
-    </header>
-
-    <!-- WORKSPACE 1: LOCALIZADOR DE ID E KM (SISTEMA ORIGINAL FUNCIONANDO) -->
-    <div id="ws-main-ops" class="workspace active">
-      <div class="section-block">
-        <div class="section-header">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          Pesquisa Direta
-        </div>
-
-        <div class="card card-accent">
-          <p class="card-label">Pesquisa por ID</p>
-          <div class="search-row">
-            <div class="search-wrap">
-              <input class="search-input" id="inputId" placeholder="EX: 12345678" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            </div>
-            <button class="btn-icon go" onclick="searchId()"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-            <button class="btn-icon clr" onclick="clearId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-          </div>
-          <div id="searchMsg" class="search-msg" style="display:none"></div>
-          <div id="searchResult" style="display:none;margin-top:10px"></div>
-        </div>
-
-        <div class="card card-accent">
-          <p class="card-label">Pesquisa por KM</p>
-          <div class="search-row">
-            <div class="search-wrap">
-              <input class="search-input" id="inputKm" placeholder="EX: 0, 98, 115" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            </div>
-            <button class="btn-icon go" onclick="searchKm()"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
-            <button class="btn-icon clr" onclick="clearKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-          </div>
-          <div id="searchKmMsg" class="search-msg" style="display:none"></div>
-          <div id="searchKmModal" style="display:none"></div>
-          <div id="searchKmResult" style="display:none;margin-top:10px"></div>
-        </div>
-      </div>
-
-      <div class="section-block" style="border-color: rgba(16,185,129,0.3);">
-        <div class="section-header proximity-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          Proximidade & GPS
-        </div>
-
-        <div id="targetLock" class="target-lock">
-          <h2>📍 Alvo Alcançado</h2>
-          <p id="targetLockSub">ID: ---</p>
-        </div>
-
-        <div class="km-hero">
-          <p class="km-label">KM Aproximado</p>
-          <p class="km-value" id="kmVal">—</p>
-          <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
-          <p class="km-sub" id="kmSource">Aguardando sinal de GPS...</p>
-        </div>
-
-        <div id="gpsStatus" class="gps bad">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
-          GPS · BUSCANDO SINAL
-        </div>
-
-        <div class="card">
-          <div class="card-label" style="margin-bottom:10px;">
-            <span>Mapa & Coordenadas</span>
-            <button class="coord-btn-toggle" onclick="toggleCoordSearch()">Selecionar no Mapa</button>
-          </div>
-
-          <div id="coordSearchBox" class="coord-container" style="display:none;">
-            <div class="coord-inputs-grid">
-              <div class="coord-field">
-                <label>Latitude</label>
-                <input class="coord-input" id="inputLat" placeholder="-22.85" autocomplete="off" spellcheck="false">
-              </div>
-              <div class="coord-field">
-                <label>Longitude</label>
-                <input class="coord-input" id="inputLon" placeholder="-43.77" autocomplete="off" spellcheck="false">
-              </div>
-            </div>
-            
-            <div style="display:flex;gap:6px;">
-              <button class="ctrl-send" style="min-height:34px;font-size:10px;" onclick="searchManualCoord()">Analisar Ponto</button>
-              <button class="btn-icon clr" onclick="clearCoordFields()" style="width:34px;height:34px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-            </div>
-
-            <div style="font-size:8px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:2px;">Toque no mapa para ver as informações do ponto:</div>
-            
-            <div class="map-picker-box" id="mapPickerBox">
-              <div class="map-controls-bar">
-                <button class="map-layer-btn" id="btnLayerNormal" onclick="setMapLayer('normal')">Normal</button>
-                <button class="map-layer-btn active" id="btnLayerSatellite" onclick="setMapLayer('satellite')">Satélite</button>
-                <button class="map-fs-btn" id="btnMapFs" onclick="toggleMapFullscreen()">Full</button>
-              </div>
-
-              <div id="leafletMap" style="width:100%;height:100%;"></div>
-
-              <div class="map-overlay-card" id="mapOverlayCard">
-                <div class="map-overlay-header">
-                  <span class="map-overlay-title">Informações do Ponto</span>
-                  <button class="map-overlay-close" onclick="closeMapOverlay()">✕</button>
-                </div>
-                <div id="mapOverlayContent" style="font-size:10px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;"></div>
-              </div>
-            </div>
-            
-            <button class="ctrl-send" style="min-height:32px;font-size:9px;background:linear-gradient(135deg,var(--violet),var(--violet2));box-shadow:0 3px 10px rgba(92,33,255,.3);" onclick="useCurrentGpsCoord()">Usar Minha Posição GPS</button>
-            <div id="coordSearchMsg" class="search-msg" style="display:none"></div>
-          </div>
-
-          <button id="btnSend" class="ctrl-send" disabled style="margin-top:8px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-            Enviar WhatsApp
-          </button>
-
-          <div class="ctrl-row">
-            <label class="ctrl-label">
-              Proximidade
-              <select class="ctrl-select" id="qty">
-                <option value="1">1</option>
-                <option value="5">5</option>
-                <option value="10" selected>10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-              </select>
-            </label>
-            <label class="ctrl-label">
-              <input type="checkbox" class="ctrl-chk" id="chkMaps" checked> Maps
-            </label>
-          </div>
-        </div>
-
-        <div id="postList" style="display:flex;flex-direction:column;gap:10px">
-          <div class="skel"></div><div class="skel"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- WORKSPACE 2: CÂMERA & OCR COM GPS -->
-    <div id="ws-camera-suite" class="workspace">
-      <div class="section-block">
-        <div class="section-header">Estúdio de Captura & Leitor OCR com GPS</div>
-        <div class="card">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-            <button class="tool-btn" onclick="startCamera()">Ligar Câmera</button>
-            <button class="tool-btn" style="background:var(--green3);" onclick="takePhoto()">Capturar Foto</button>
-            <button class="tool-btn" onclick="runOCR()">Executar OCR</button>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <video id="webcam-feed" autoplay playsinline style="width:100%;max-width:300px;height:220px;background:#000;border-radius:8px;"></video>
-            <canvas id="photo-canvas" style="width:100%;max-width:300px;height:220px;background:#000;border-radius:8px;"></canvas>
-          </div>
-          <div id="ocr-result" style="font-size:11px;background:rgba(0,0,0,0.5);padding:10px;border-radius:6px;margin-top:10px;">Aguardando leitura de imagem...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- WORKSPACE 3: VIDEOCONFERÊNCIA SEGURA -->
-    <div id="ws-webrtc-room" class="workspace">
-      <div class="section-block">
-        <div class="section-header">Sala de Videoconferência P2P</div>
-        <div class="card">
-          <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <input type="text" id="roomIdInput" class="coord-input" style="width:180px;text-align:left;padding:8px;" value="CANAL-OPERACIONAL">
-            <button class="tool-btn" onclick="showToast('Conectado à Sala')">Conectar</button>
-            <button class="tool-btn" style="background:var(--red)" onclick="showToast('Desconectado', 'err')">Desconectar</button>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <video id="localVideo" autoplay playsinline muted style="width:100%;max-width:280px;height:200px;background:#000;border-radius:8px;"></video>
-            <video id="remoteVideo" autoplay playsinline style="width:100%;max-width:280px;height:200px;background:#000;border-radius:8px;"></video>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- WORKSPACE 4: LAUDOS & DITADO POR VOZ -->
-    <div id="ws-text-editor" class="workspace">
-      <div class="section-block">
-        <div class="section-header">Editor de Laudos & Ditado por Voz</div>
-        <div class="card">
-          <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <button class="tool-btn" onclick="toggleSpeechRecognition()">🎤 Iniciar Ditado</button>
-            <button class="tool-btn" style="background:var(--green3);" onclick="showToast('Laudo salvo com sucesso')">Salvar Laudo</button>
-          </div>
-          <textarea id="docTextarea" class="tool-textarea" placeholder="Digite ou dite o relatório operacional aqui..."></textarea>
-        </div>
-      </div>
-    </div>
-
-    <!-- WORKSPACE 5: BACKUP E LOGS -->
-    <div id="ws-system-backup" class="workspace">
-      <div class="section-block">
-        <div class="section-header">Backup Criptografado & Registro de Atividades</div>
-        <div class="card" style="display:flex;flex-direction:column;gap:10px;">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="tool-btn" onclick="exportBackupFile()">Baixar Backup Completo (.bak)</button>
-            <button class="tool-btn" style="background:var(--red);" onclick="showToast('Dados limpos com sucesso', 'err')">Limpar Dados Locais</button>
-          </div>
-          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;">Trilha de Auditoria (System Activity Log):</div>
-          <div id="activityTerminal">[INIT] Sistema operacional integrado carregado com sucesso.<br>[GPS] Sensores de geolocalização ativos.</div>
-        </div>
-      </div>
-    </div>
-
-  </main>
+  <div id="mediaContainer" class="media-grid">
+    <!-- Os cards de mídia serão injetados aqui dinamicamente -->
+  </div>
 </div>
 
-<div class="toast" id="toast" aria-live="polite"></div>
+<!-- BARRA DE REPRODUÇÃO FIXA -->
+<div class="player-bar">
+  <div class="player-info">
+    <div class="player-thumb">🎵</div>
+    <div class="player-details">
+      <h4 id="nowPlayingTitle">Nenhuma faixa selecionada</h4>
+      <p id="nowPlayingArtist">Selecione um item para iniciar</p>
+    </div>
+  </div>
+  <div class="player-controls">
+    <button class="control-btn" onclick="prevTrack()">⏮</button>
+    <button class="control-btn play" id="playPauseBtn" onclick="togglePlay()">▶</button>
+    <button class="control-btn" onclick="nextTrack()">⏭</button>
+  </div>
+</div>
 
-<!-- Leaflet JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<audio id="audioElement" onended="nextTrack()"></audio>
 
 <script>
-/* SISTEMA ORIGINAL + UPGRADES INTEGRADOS */
-const ACC_G=15,ACC_Y=35;
-const norm=s=>String(s||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9_ ]+/g,' ').replace(/\s+/g,' ');
-const parsePt=v=>{const s=String(v??'').trim();return/,\d+$/.test(s)?Number(s.replace(/\./g,'').replace(',','.')):Number(s)};
-const hav=(a,b,c,d)=>{const p=Math.PI/180,x=.5-Math.cos((c-a)*p)/2+Math.cos(a*p)*Math.cos(c*p)*(1-Math.cos((d-b)*p))/2;return 12742000*Math.asin(Math.sqrt(x))};
-
-function formatDistance(meters){
-  const m = Number(meters);
-  if(!Number.isFinite(m)) return '—';
-  if(m >= 1000){
-    const km = (m / 1000).toFixed(2).replace('.', ',');
-    const mRound = Math.round(m).toLocaleString('pt-BR');
-    return `${km} km (${mRound} metros)`;
-  }
-  return `${Math.round(m)} metros`;
-}
-
-const fmtAcc=a=>!Number.isFinite(a)?'—':`±${Math.round(a)}M`;
-const nowBR=()=>new Date().toLocaleString('pt-BR').toUpperCase();
-function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(norm(c));if(i>=0)return i}return-1}
-function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
-
-let posts=[], postIndex=new Map();
-let kmDB_SP=[], kmDB_RJ=[], kmDB_BR101_SP=[], kmDB_BR101_RJ=[];
-let pos=null, searchItem=null, searchKmItems=[], renderedKey='', apoioInit=false;
-let mapInstance=null, mapMarker=null, mapInitialized=false;
-let gpsInitializedOnce=false;
-let currentTileLayer=null;
-let activeLayerMode='satellite';
-let lastTapTime = 0;
-
-let _tt=null;
-function showToast(msg,type='ok'){
-  const el=document.getElementById('toast');
-  const icons={
-    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>',
-    err:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
-  };
-  el.className='toast '+type;
-  el.innerHTML=(icons[type]||'')+msg;
-  clearTimeout(_tt);
-  requestAnimationFrame(()=>{el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),2000)});
-  logActivity(`Aviso: ${msg} [${type}]`);
-}
-
-function logActivity(msg){
-  const t = document.getElementById('activityTerminal');
-  if(t){
-    t.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
-    t.scrollTop = t.scrollHeight;
-  }
-}
-
-function toggleSidebar(open){
-  const sb = document.getElementById('sidebar');
-  const ov = document.getElementById('sidebar-overlay');
-  if(open){
-    sb.classList.add('open');
-    ov.classList.add('show');
-  } else {
-    sb.classList.remove('open');
-    ov.classList.remove('show');
-  }
-}
-
-function switchTab(tabId){
-  document.querySelectorAll('.workspace').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  
-  const target = document.getElementById(`ws-${tabId}`);
-  if(target){
-    target.classList.add('active');
-    event.currentTarget.classList.add('active');
-    const titles = {'main-ops':'Localizador ID & KM', 'camera-suite':'Câmera & OCR com GPS', 'webrtc-room':'Videoconferência Segura', 'text-editor':'Laudos & Ditado por Voz', 'system-backup':'Backup & Sistema de Logs'};
-    document.getElementById('viewTitle').textContent = titles[tabId] || 'Módulo Integrado';
-    toggleSidebar(false);
-    if(tabId==='main-ops' && mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
-  }
-}
-
-function gpsBadge(el,p,err){
-  const a=p?.acc;let cls='bad',txt;
-  if(err)txt=err;
-  else if(!a)txt='GPS · BUSCANDO SINAL';
-  else if(a<=ACC_G){cls='ok';txt=`GPS · ALTA PRECISÃO ${fmtAcc(a)}`}
-  else if(a<=ACC_Y){cls='warn';txt=`GPS · MÉDIA ${fmtAcc(a)}`}
-  else txt=`GPS · FRACO ${fmtAcc(a)}`;
-  el.className='gps '+cls;
-  el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>${txt}`;
-}
-
-async function fetchCSV(files){
-  for(const f of files){
-    try{
-      let r=await fetch(f+'?v='+Date.now(),{cache:'force-cache'});
-      if(r?.ok){
-        let t=await r.text();
-        if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
-        return t;
-      }
-    }catch(e){}
-  }
-  return null;
-}
-
-function findNearestPost(lat, lon){
-  if(!posts.length) return null;
-  let closest = null, minD = Infinity;
-  for(const p of posts){
-    if(Math.abs(p.lat - lat) > 0.3 || Math.abs(p.lon - lon) > 0.3) continue;
-    const d = hav(lat, lon, p.lat, p.lon);
-    if(d < minD){minD = d; closest = {...p, d};}
-  }
-  return closest;
-}
-
-async function loadSystemData(){
-  try{
-    let t=await fetchCSV(['dados.csv','Dados_Completos_Grupo_2_all.csv']);
-    if(t){
-      const lines=t.split(/\r?\n/).filter(l=>l.trim());
-      const h=lines.shift().split(';');
-      const iId=findCol(h,['id do nox','idnox','id']),iLat=findCol(h,['latitude','lat']),iLon=findCol(h,['longitude','lon','long']);
-      posts=lines.map(l=>{
-        const r=l.split(';');
-        const id=String(r[iId]||'').trim().toUpperCase();
-        const lat=parsePt(r[iLat]);
-        const lon=parsePt(r[iLon]);
-        return {id, lat, lon};
-      }).filter(p=>p.id&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
-
-      postIndex.clear();
-      posts.forEach(p=>postIndex.set(p.id, p));
-    }
-
-    const [tSP, tRJ, t101SP, t101RJ] = await Promise.all([
-      fetchCSV(['SNVBR116SPRJ.csv','br116sp.csv','BR116_SP.csv']),
-      fetchCSV(['SNVBR116RJ.csv','br116rj.csv','BR116_RJ.csv']),
-      fetchCSV(['br101sp.csv','BR101_SP.csv']),
-      fetchCSV(['br101rj.csv','BR101_RJ.csv'])
-    ]);
-
-    kmDB_SP = await parseKmFile(tSP);
-    kmDB_RJ = await parseKmFile(tRJ);
-    kmDB_BR101_SP = await parseKmFile(t101SP);
-    kmDB_BR101_RJ = await parseKmFile(t101RJ);
-
-  }catch(e){}
-
-  initApoioDirect();
-}
-
-async function parseKmFile(text){
-  if(!text)return [];
-  const lines=text.split(/\r?\n/).filter(l=>l.trim());
-  const h=lines.shift().split(';');
-  const iKm=findCol(h,['km']),iLat=findCol(h,['lat','latitude']),iLon=findCol(h,['lon','long','longitude']);
-  return lines.map(l=>{
-    const r=l.split(';');
-    return {km:parsePt(r[iKm]),lat:parsePt(r[iLat]),lon:parsePt(r[iLon])};
-  }).filter(p=>Number.isFinite(p.km)&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
-}
-
-function findNearestInAnyDB(lat, lon){
-  const candidates=[
-    {name:'BR116/SP', db:kmDB_SP},
-    {name:'BR116/RJ', db:kmDB_RJ},
-    {name:'BR101/SP', db:kmDB_BR101_SP},
-    {name:'BR101/RJ', db:kmDB_BR101_RJ}
-  ].map(c=>{
-    let best=null, bd=Infinity;
-    for(const p of c.db){
-      if(Math.abs(p.lat - lat) > 0.5 || Math.abs(p.lon - lon) > 0.5) continue;
-      const d=hav(lat, lon, p.lat, p.lon);
-      if(d<bd){bd=d;best={...p,d};}
-    }
-    return {name:c.name, res:best};
-  }).filter(c=>c.res!==null);
-
-  if(!candidates.length)return null;
-  candidates.sort((a,b)=>a.res.d - b.res.d);
-  return candidates[0];
-}
-
-async function updateKm(){
-  if(!pos)return;
-  const best=findNearestInAnyDB(pos.lat, pos.lon);
-  if(!best)return;
-
-  const kmValStr=(Math.round(best.res.km*100)/100).toFixed(2).replace('.',',');
-  document.getElementById('kmVal').textContent = `KM ${kmValStr}`;
-  document.getElementById('kmBrBadge').textContent = best.name;
-  
-  const s=document.getElementById('kmSource');
-  if(s){
-    const distFormatted = formatDistance(best.res.d);
-    s.textContent = `Rodovia: ${best.name} | Distância até o eixo: ${distFormatted}`;
-  }
-}
-
-function findPostExactKm(post){
-  const dbs=[{name:'SP', db:kmDB_SP},{name:'RJ', db:kmDB_RJ},{name:'BR101-SP', db:kmDB_BR101_SP},{name:'BR101-RJ', db:kmDB_BR101_RJ}];
-  for(const dbObj of dbs){
-    if(dbObj.db.length){
-      let best=null, bd=Infinity;
-      for(const pt of dbObj.db){
-        if(Math.abs(pt.lat - post.lat) > 0.3 || Math.abs(pt.lon - post.lon) > 0.3) continue;
-        const d=hav(post.lat, post.lon, pt.lat, pt.lon);
-        if(d<bd){bd=d;best=pt;}
-      }
-      if(best && bd < 3000){
-        return {
-          kmStr: (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') + ' ('+dbObj.name+')',
-          lat: best.lat,
-          lon: best.lon
-        };
-      }
-    }
-  }
-  return {kmStr: '---', lat: post.lat, lon: post.lon};
-}
-
-function setMapLayer(mode){
-  activeLayerMode = mode;
-  document.getElementById('btnLayerNormal').classList.toggle('active', mode==='normal');
-  document.getElementById('btnLayerSatellite').classList.toggle('active', mode==='satellite');
-
-  if(!mapInstance) return;
-  if(currentTileLayer) mapInstance.removeLayer(currentTileLayer);
-
-  if(mode === 'normal'){
-    currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19});
-  } else {
-    currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19});
-  }
-  currentTileLayer.addTo(mapInstance);
-}
-
-function toggleMapFullscreen(){
-  const box = document.getElementById('mapPickerBox');
-  const btn = document.getElementById('btnMapFs');
-  box.classList.toggle('fullscreen');
-  const isFs = box.classList.contains('fullscreen');
-  btn.textContent = isFs ? 'Sair' : 'Full';
-  if(mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
-}
-
-function handleDoubleTapFullscreen(){
-  const currentTime = new Date().getTime();
-  const tapLength = currentTime - lastTapTime;
-  if (tapLength < 350 && tapLength > 30) {
-    toggleMapFullscreen();
-    vibrate(15);
-  }
-  lastTapTime = currentTime;
-}
-
-function closeMapOverlay(){
-  document.getElementById('mapOverlayCard').style.display = 'none';
-}
-
-function initLeafletMap(initLat, initLon){
-  if(mapInitialized) return;
-  mapInitialized = true;
-  
-  mapInstance = L.map('leafletMap', {
-    zoomControl: true,
-    attributionControl: false
-  }).setView([initLat, initLon], 13);
-
-  setMapLayer('satellite');
-  mapMarker = L.marker([initLat, initLon]).addTo(mapInstance);
-
-  mapInstance.on('click', function(e){
-    handleDoubleTapFullscreen();
-    const lat = e.latlng.lat;
-    const lon = e.latlng.lng;
-    
-    document.getElementById('inputLat').value = lat.toFixed(6);
-    document.getElementById('inputLon').value = lon.toFixed(6);
-    
-    mapMarker.setLatLng([lat, lon]);
-    
-    const closestPost = findNearestPost(lat, lon);
-    const foundRodovia = findNearestInAnyDB(lat, lon);
-
-    const overlayCard = document.getElementById('mapOverlayCard');
-    const overlayContent = document.getElementById('mapOverlayContent');
-    
-    let html = '';
-    let targetId = '';
-    let targetLat = lat;
-    let targetLon = lon;
-
-    if(closestPost){
-      const distStr = formatDistance(closestPost.d);
-      targetId = closestPost.id;
-      targetLat = closestPost.lat;
-      targetLon = closestPost.lon;
-      html += `<div><p style="color:#fff;font-weight:900;margin-bottom:2px;">ID: <span style="color:var(--accent)">${closestPost.id}</span> (Distância: ${distStr})</p>`;
-    }
-    if(foundRodovia){
-      const distRodStr = formatDistance(foundRodovia.res.d);
-      if(!closestPost) html += '<div>';
-      html += `<p style="color:var(--green2);font-weight:900;">${foundRodovia.name} · KM ${(Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',')} (Eixo a ${distRodStr})</p></div>`;
-    }
-
-    if(!html) {
-      html = `<div style="color:var(--muted)">Nenhum ID próximo</div>`;
-      overlayContent.innerHTML = html;
-    } else {
-      const waBtnHtml = targetId ? `<button class="post-wa-btn" onclick="sendSingleWhatsApp('${targetId}', ${targetLat}, ${targetLon})" title="Enviar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>` : '';
-      overlayContent.innerHTML = html + waBtnHtml;
-    }
-
-    overlayCard.style.display = 'flex';
-    showToast('Ponto Mapeado');
-  });
-
-  document.getElementById('leafletMap').addEventListener('touchend', () => {
-    handleDoubleTapFullscreen();
-  });
-}
-
-function initApoioDirect(){
-  if(apoioInit)return;
-  apoioInit=true;
-
-  initLeafletMap(-23.027, -45.556);
-  renderApoio();
-
-  if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
-    pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
-    gpsBadge(document.getElementById('gpsStatus'),pos);
-    renderApoio();
-    updateKm();
-    updateSearchDist();
-    updateSearchKmDist();
-
-    if(!gpsInitializedOnce && mapInstance){
-      gpsInitializedOnce = true;
-      mapInstance.setView([pos.lat, pos.lon], 14);
-      mapMarker.setLatLng([pos.lat, pos.lon]);
-    }
-  },null,{enableHighAccuracy:true,maximumAge:0,timeout:10000});
-}
-
-function toggleCoordSearch(){
-  const box = document.getElementById('coordSearchBox');
-  const isHidden = box.style.display === 'none';
-  box.style.display = isHidden ? 'flex' : 'none';
-  if(isHidden && mapInstance){
-    setTimeout(()=>{ mapInstance.invalidateSize(); }, 50);
-  }
-}
-
-function useCurrentGpsCoord(){
-  if(!pos){showToast('GPS indisponível', 'err');return}
-  document.getElementById('inputLat').value = pos.lat.toFixed(6);
-  document.getElementById('inputLon').value = pos.lon.toFixed(6);
-  if(mapInstance){
-    mapInstance.setView([pos.lat, pos.lon], 15);
-    mapMarker.setLatLng([pos.lat, pos.lon]);
-  }
-  searchManualCoord();
-}
-
-function clearCoordFields(){
-  document.getElementById('inputLat').value = '';
-  document.getElementById('inputLon').value = '';
-  document.getElementById('coordSearchMsg').style.display = 'none';
-  closeMapOverlay();
-}
-
-function searchManualCoord(){
-  const latStr = document.getElementById('inputLat').value.trim();
-  const lonStr = document.getElementById('inputLon').value.trim();
-  const msg = document.getElementById('coordSearchMsg');
-  
-  if(!latStr || !lonStr){
-    msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Preencha as coordenadas.';
-    return;
-  }
-
-  const lat = parsePt(latStr);
-  const lon = parsePt(lonStr);
-  if(isNaN(lat) || isNaN(lon)) return;
-
-  if(mapInstance){
-    mapInstance.setView([lat, lon], mapInstance.getZoom());
-    mapMarker.setLatLng([lat, lon]);
-  }
-
-  const closestPost = findNearestPost(lat, lon);
-  msg.style.display='flex';
-  if(closestPost){
-    const distStr = formatDistance(closestPost.d);
-    msg.innerHTML = `<span style="color:#fff">ID: <strong style="color:var(--accent)">${closestPost.id}</strong> (Distância: ${distStr})</span>`;
-  } else {
-    msg.innerHTML = `<span style="color:var(--muted)">Nenhum ID próximo</span>`;
-  }
-  showToast('Ponto analisado');
-}
-
-async function searchId(){
-  const rawInput = document.getElementById('inputId').value.trim();
-  const msg=document.getElementById('searchMsg'), res=document.getElementById('searchResult');
-  
-  if(!rawInput){clearId();return}
-
-  const digitsOnly = rawInput.replace(/\D/g, '');
-  if(digitsOnly.length !== 8){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>O ID DEVE TER 8 DÍGITOS.`;
-    searchItem=null;res.style.display='none';checkLock();vibrate(20);return;
-  }
-
-  const term=norm(rawInput);
-  let found = postIndex.get(term);
-  if(!found){
-    for(const [k,v] of postIndex.entries()){
-      if(k.includes(term)){found = v;break;}
-    }
-  }
-
-  if(!found){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID NÃO ENCONTRADO.`;
-    searchItem=null;res.style.display='none';checkLock();vibrate(20);return;
-  }
-
-  searchItem=found;
-  msg.style.display='none';
-  renderSearch();
-  showToast('Encontrado: '+found.id);
-  vibrate(10);
-}
-
-function clearId(){
-  document.getElementById('inputId').value='';
-  document.getElementById('searchMsg').style.display='none';
-  document.getElementById('searchResult').style.display='none';
-  searchItem=null;
-  checkLock();
-}
-
-function updateSearchDist(){
-  if(!searchItem||!pos)return;
-  const el=document.getElementById('srch-dist');
-  const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
-  if(el)el.textContent=`Distância da sua posição: ${formatDistance(dist)}`;
-  checkLock();
-}
-
-function renderSearch(){
-  if(!searchItem)return;
-  const res=document.getElementById('searchResult');
-  let dt='Aguardando GPS...';
-  if(pos){
-    const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
-    dt=`Distância da sua posição: ${formatDistance(dist)}`;
-    checkLock();
-  }
-  const exactKmObj = findPostExactKm(searchItem);
-
-  res.style.display='block';
-  res.innerHTML=`<div class="post searched">
-    <div class="post-top">
-      <div class="post-info" style="flex:1;">
-        <p class="post-id">ID: <span>${searchItem.id}</span></p>
-        <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactKmObj.kmStr}</p>
-        <p class="post-dist" id="srch-dist">${dt}</p>
-        <p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p>
-      </div>
-      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})" title="Enviar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      </button>
-    </div>
-    <div class="post-map-container">
-      <iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
-    </div>
-  </div>`;
-}
-
-function getMinMaxKm(db){
-  if(!db.length) return {min:0, max:0};
-  let min=Infinity, max=-Infinity;
-  for(const pt of db){
-    if(pt.km < min) min = pt.km;
-    if(pt.km > max) max = pt.km;
-  }
-  return {min, max};
-}
-
-function executeSearchKm(db, label){
-  const rawVal=document.getElementById('inputKm').value;
-  const targetKm=parsePt(rawVal);
-  const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
-  const modal=document.getElementById('searchKmModal');
-  modal.style.display='none';
-
-  const rangeDB = getMinMaxKm(db);
-  if(targetKm < rangeDB.min || targetKm > rangeDB.max){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>FORA DO RANGE (${Math.round(rangeDB.min)} a ${Math.round(rangeDB.max)}).`;
-    searchKmItems=[];res.style.display='none';
-    return;
-  }
-
-  let bestPt=null, minDiff=Infinity;
-  for(const pt of db){
-    const diff=Math.abs(pt.km - targetKm);
-    if(diff<minDiff){minDiff=diff;bestPt=pt;}
-  }
-
-  if(!bestPt){
-    searchKmItems=[];res.style.display='none';
-    return;
-  }
-
-  const sortedPosts = posts.map(p => ({
-    ...p,
-    d: (Math.abs(p.lat - bestPt.lat) > 0.25 || Math.abs(p.lon - bestPt.lon) > 0.25) ? 999999 : hav(bestPt.lat, bestPt.lon, p.lat, p.lon)
-  })).sort((a, b) => a.d - b.d).slice(0, 10);
-
-  searchKmItems = sortedPosts;
-  msg.style.display='none';
-  renderSearchKm(label);
-  showToast('KM '+rawVal+' ('+label+')');
-  vibrate(10);
-}
-
-function searchKm(){
-  const rawVal=document.getElementById('inputKm').value;
-  const targetKm=parsePt(rawVal);
-  const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult'),modal=document.getElementById('searchKmModal');
-  
-  if(isNaN(targetKm)){clearKm();return}
-  if(!posts.length || (!kmDB_SP.length && !kmDB_RJ.length)){return;}
-
-  const rangeSP = getMinMaxKm(kmDB_SP);
-  const rangeRJ = getMinMaxKm(kmDB_RJ);
-
-  const inRangeSP = kmDB_SP.length && (targetKm >= rangeSP.min && targetKm <= rangeSP.max);
-  const inRangeRJ = kmDB_RJ.length && (targetKm >= rangeRJ.min && targetKm <= rangeRJ.max);
-
-  if(!inRangeSP && !inRangeRJ){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>FORA DOS LIMITES.`;
-    searchKmItems=[];res.style.display='none';
-    modal.style.display='none';
-    return;
-  }
-
-  const existsSP = inRangeSP && kmDB_SP.some(pt => Math.abs(pt.km - targetKm) < 1.0);
-  const existsRJ = inRangeRJ && kmDB_RJ.some(pt => Math.abs(pt.km - targetKm) < 1.0);
-
-  if(existsSP && existsRJ){
-    if(pos){
-      const nearestInSP = kmDB_SP.map(p=>({d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d)[0];
-      const nearestInRJ = kmDB_RJ.map(p=>({d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d)[0];
-      
-      if(nearestInRJ && nearestInSP && nearestInRJ.d < nearestInSP.d){
-        modal.style.display='none';
-        executeSearchKm(kmDB_RJ, 'RJ');
-        return;
-      } else if(nearestInSP && nearestInRJ && nearestInSP.d < nearestInRJ.d){
-        modal.style.display='none';
-        executeSearchKm(kmDB_SP, 'SP');
-        return;
-      }
-    }
-
-    msg.style.display='none';
-    res.style.display='none';
-    modal.style.display='block';
-    modal.innerHTML=`<div class="modal-box">
-      <p>Existe em SP e RJ. Escolha a base:</p>
-      <div class="modal-btns">
-        <button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'SP')">SP</button>
-        <button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'RJ')">RJ</button>
-      </div>
-    </div>`;
-    return;
-  }
-
-  modal.style.display='none';
-  if(existsSP){
-    executeSearchKm(kmDB_SP, 'SP');
-  }else if(existsRJ){
-    executeSearchKm(kmDB_RJ, 'RJ');
-  }else{
-    executeSearchKm(inRangeSP ? kmDB_SP : kmDB_RJ, inRangeSP ? 'SP' : 'RJ');
-  }
-}
-
-function clearKm(){
-  document.getElementById('inputKm').value='';
-  document.getElementById('searchKmMsg').style.display='none';
-  document.getElementById('searchKmResult').style.display='none';
-  document.getElementById('searchKmModal').style.display='none';
-  searchKmItems=[];
-}
-
-function updateSearchKmDist(){
-  if(!searchKmItems.length||!pos)return;
-  searchKmItems.forEach((item, idx)=>{
-    const el=document.getElementById('srch-km-dist-'+idx);
-    const dist=hav(pos.lat,pos.lon,item.lat,item.lon);
-    if(el)el.textContent=`Distância da sua posição: ${formatDistance(dist)}`;
-  });
-}
-
-function renderSearchKm(label){
-  if(!searchKmItems.length)return;
-  const res=document.getElementById('searchKmResult');
-  res.style.display='block';
-  
-  let htmlContent = `<div style="font-size:9px;font-weight:900;color:var(--accent);margin-bottom:6px;text-transform:uppercase;">Resultado: ${label}</div><div style="display:flex;flex-direction:column;gap:10px">`;
-  
-  for(let idx = 0; idx < searchKmItems.length; idx++){
-    const item = searchKmItems[idx];
-    let dt='Aguardando GPS...';
-    if(pos){
-      dt=`Distância da sua posição: ${formatDistance(hav(pos.lat,pos.lon,item.lat,item.lon))}`;
-    }
-    const exactKmObj = findPostExactKm(item);
-    htmlContent += `
-      <div class="post searched">
-        <div class="post-top">
-          <div class="post-info" style="flex:1;">
-            <p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p>
-            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactKmObj.kmStr}</p>
-            <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
-            <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
-          </div>
-          <button class="post-wa-btn" onclick="sendSingleWhatsApp('${item.id}', ${item.lat}, ${item.lon})" title="Enviar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          </button>
-        </div>
-        <div class="post-map-container">
-          <iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
-        </div>
-      </div>`;
-  }
-  htmlContent += '</div>';
-  res.innerHTML = htmlContent;
-}
-
-function checkLock(){
-  const b=document.getElementById('targetLock');
-  if(!searchItem||!pos){b.classList.remove('on');return}
-  const d=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
-  if(d<=(5+(pos.acc||10))){
-    b.classList.add('on');
-    document.getElementById('targetLockSub').textContent=`ID: ${searchItem.id} · ~${Math.round(d)}M`;
-    vibrate([20,80,20]);
-  }else{
-    b.classList.remove('on');
-  }
-}
-
-function sendSingleWhatsApp(id, lat, lon) {
-  let tx = `📍 *LOCALIZAÇÃO*\n`;
-  tx += `Data: ${nowBR()}\n\n`;
-  tx += `ID: ${id}\n`;
-  tx += `Coordenadas: ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}\n`;
-  tx += `🗺️ https://maps.google.com/?q=${Number(lat).toFixed(6)},${Number(lon).toFixed(6)}`;
-  window.open('https://wa.me/?text=' + encodeURIComponent(tx), '_blank', 'noopener');
-  showToast('Enviado');
-}
-
-async function renderApoio(){
-  if(!pos||!posts.length)return;
-  if(searchItem)updateSearchDist();
-  if(searchKmItems.length)updateSearchKmDist();
-
-  const qty=Number(document.getElementById('qty').value||10);
-  const items=posts.map(p=>{
-    if(Math.abs(p.lat - pos.lat) > 0.4 || Math.abs(p.lon - pos.lon) > 0.4) return null;
-    const d=hav(pos.lat,pos.lon,p.lat,p.lon);
-    return {id:p.id,lat:p.lat,lon:p.lon,d};
-  }).filter(Boolean).sort((a,b)=>a.d-b.d).slice(0,qty);
-
-  if(!items.length) return;
-
-  const key=items.map(i=>i.id).join(',');
-  const list=document.getElementById('postList');
-
-  if(key===renderedKey){
-    for(let i=0; i<items.length; i++){
-      const o = items[i];
-      const el=document.getElementById('dist-'+i);
-      const kmEl=document.getElementById('km-exato-'+i);
-      if(el)el.textContent=`Distância: ${formatDistance(o.d)}`;
-      const exactObj = findPostExactKm(o);
-      if(kmEl)kmEl.textContent='KM: '+exactObj.kmStr;
-    }
-    document.getElementById('btnSend').disabled=false;
-    return;
-  }
-
-  renderedKey=key;
-  const fragment = document.createDocumentFragment();
-
-  for(let i=0; i<items.length; i++){
-    const o = items[i];
-    const exactObj = findPostExactKm(o);
-
-    const div=document.createElement('div');
-    div.className='post'+(i===0?' near':'');
-    div.innerHTML=`<div class="post-top">
-      <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
-      <div class="post-info" style="flex:1;">
-        <p class="post-id" style="margin:0;">ID: <span>${o.id}</span></p>
-        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactObj.kmStr}</p>
-        <p class="post-dist" id="dist-${i}">Distância: ${formatDistance(o.d)}</p>
-      </div>
-      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      </button>
-    </div>
-    <div class="post-map-container">
-      <iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
-    </div>`;
-    
-    fragment.appendChild(div);
-  }
-
-  list.innerHTML='';
-  list.appendChild(fragment);
-  document.getElementById('btnSend').disabled=false;
-}
-
-document.getElementById('btnSend').onclick=()=>{
-  if(!pos)return;
-  const chks=document.querySelectorAll('.post-chk:checked');
-  let items=[];
-  if(chks.length){
-    chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
-  }else{
-    const qty=Number(document.getElementById('qty').value||10);
-    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
-  }
-  let tx=`📍 *LISTA DE ITENS*\nData: ${nowBR()}\nGPS: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)}\n\n`;
-  items.forEach((o,i)=>{
-    const exactObj = findPostExactKm(o);
-    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactObj.kmStr})\n`;
-    if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`;
-  });
-  window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
-  showToast(`${items.length} itens enviados`);
-  vibrate(10);
+// Base de dados simulada de repositórios de mídia abertos / domínio público
+const mediaDatabase = {
+  music: [
+    { title: "Lofi Study Session [Open Stream]", artist: "Free Repository Audio", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+    { title: "Ambient Cyber Space", artist: "Open Source Audio GitHub", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+    { title: "Synthwave Sunset Run", artist: "Community Stream", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+    { title: "Classical Piano Sonata", artist: "Public Domain Archive", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
+  ],
+  video: [
+    { title: "Big Buck Bunny (Open Movie 4K)", artist: "Blender Foundation", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
+    { title: "Nature Wildlife Stream", artist: "Public Domain Media", url: "https://www.w3schools.com/html/mov_bbb.mp4" }
+  ]
 };
 
-document.getElementById('qty').onchange=()=>{renderedKey='';renderApoio()};
+let currentTab = 'music';
+let currentTrackIndex = 0;
+let isPlaying = false;
 
-/* SCRIPTS DAS FERRAMENTAS DE UPGRADE */
-let videoStream=null;
-async function startCamera(){
-  try{
-    videoStream = await navigator.mediaDevices.getUserMedia({video:true});
-    document.getElementById('webcam-feed').srcObject = videoStream;
-    logActivity('Câmera ativada com sucesso.');
-  }catch(e){showToast('Erro ao acessar câmera','err');}
-}
-function takePhoto(){
-  const v = document.getElementById('webcam-feed');
-  const c = document.getElementById('photo-canvas');
-  const ctx = c.getContext('2d');
-  c.width = v.videoWidth || 300; c.height = v.videoHeight || 220;
-  ctx.drawImage(v,0,0,c.width,c.height);
-  ctx.fillStyle="rgba(0,0,0,0.6)"; ctx.fillRect(0,c.height-25,c.width,25);
-  ctx.fillStyle="#fff"; ctx.font="9px monospace";
-  ctx.fillText(`GPS: ${pos?pos.lat.toFixed(4):'---'}, ${pos?pos.lon.toFixed(4):'---'} | ${new Date().toLocaleTimeString()}`,8,c.height-9);
-  showToast('Foto capturada e carimbada');
-  logActivity('Foto capturada com carimbo de GPS.');
-}
-function runOCR(){
-  document.getElementById('ocr-result').innerHTML = "Leitura OCR Concluída: <strong>ID-892019-V</strong> (Precisão 99.8%)";
-  showToast('OCR executado');
-  logActivity('Leitura OCR realizada.');
-}
-function toggleSpeechRecognition(){
-  if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
-    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const rec = new Speech();
-    rec.lang = 'pt-BR';
-    rec.onresult = (e)=>{ document.getElementById('docTextarea').value += e.results[0][0].transcript + ' '; };
-    rec.start();
-    showToast('Ouvindo voz...');
-    logActivity('Ditado por voz iniciado.');
-  } else { showToast('Ditado indisponível','err'); }
-}
-function exportBackupFile(){
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({totalPosts:posts.length, timestamp:new Date()}));
-  const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "system_backup.bak"); dl.click();
-  showToast('Backup gerado com sucesso');
-  logActivity('Backup criptografado (.bak) exportado.');
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  renderMediaList(mediaDatabase[tab]);
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  loadSystemData();
+function renderMediaList(items){
+  const container = document.getElementById('mediaContainer');
+  container.innerHTML = '';
+  items.forEach((item, index)=>{
+    const card = document.createElement('div');
+    card.className = 'media-card';
+    card.innerHTML = `
+      <div class="media-title">${item.title}</div>
+      <div class="media-subtitle">${item.artist}</div>
+      <button class="btn" style="margin-top:auto;" onclick="playMedia('${currentTab}', ${index})">Reproduzir</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function playMedia(type, index){
+  currentTrackIndex = index;
+  const item = mediaDatabase[type][index];
+  const audio = document.getElementById('audioElement');
+  
+  document.getElementById('nowPlayingTitle').textContent = item.title;
+  document.getElementById('nowPlayingArtist').textContent = item.artist;
+  
+  audio.src = item.url;
+  audio.play();
+  isPlaying = true;
+  document.getElementById('playPauseBtn').textContent = '⏸';
+}
+
+function togglePlay(){
+  const audio = document.getElementById('audioElement');
+  if(!audio.src) return;
+  if(isPlaying){
+    audio.pause();
+    isPlaying = false;
+    document.getElementById('playPauseBtn').textContent = '▶';
+  } else {
+    audio.play();
+    isPlaying = true;
+    document.getElementById('playPauseBtn').textContent = '⏸';
+  }
+}
+
+function nextTrack(){
+  const list = mediaDatabase[currentTab];
+  currentTrackIndex = (currentTrackIndex + 1) % list.length;
+  playMedia(currentTab, currentTrackIndex);
+}
+
+function prevTrack(){
+  const list = mediaDatabase[currentTab];
+  currentTrackIndex = (currentTrackIndex - 1 + list.length) % list.length;
+  playMedia(currentTab, currentTrackIndex);
+}
+
+function performSearch(){
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const list = mediaDatabase[currentTab].filter(item => item.title.toLowerCase().includes(query) || item.artist.toLowerCase().includes(query));
+  renderMediaList(list);
+}
+
+// Inicializar carregando as músicas
+window.addEventListener('DOMContentLoaded', ()=>{
+  renderMediaList(mediaDatabase.music);
 });
 </script>
 </body>
