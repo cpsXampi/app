@@ -179,22 +179,6 @@ input,select{font-family:var(--font);outline:none}
   text-transform:uppercase;color:var(--warn);
 }
 
-.modal-box{
-  background:rgba(11,17,36,0.95);
-  border:1px solid var(--border2);
-  border-radius:var(--r-sm);
-  padding:10px;
-  margin-top:6px;
-  display:flex;flex-direction:column;gap:6px;
-}
-.modal-box p{font-size:8px;font-weight:800;color:var(--accent);text-transform:uppercase;}
-.modal-btns{display:flex;gap:6px}
-.modal-btn{
-  flex:1;padding:8px;border-radius:var(--r-xs);font-size:8px;font-weight:900;text-transform:uppercase;
-  background:var(--accent);color:#fff;cursor:pointer;text-align:center;
-}
-.modal-btn.rj{background:#2563eb;color:#fff;}
-
 .coord-container{
   display:flex;flex-direction:column;gap:6px;
 }
@@ -213,16 +197,28 @@ input,select{font-family:var(--font);outline:none}
   margin-top:4px;
 }
 
-.map-box.fullscreen{
-  position:fixed !important;
-  inset:0 !important;
-  width:100vw !important;
-  height:100vh !important;
-  height:100dvh !important;
-  z-index:999999 !important;
-  border-radius:0 !important;
-  border:none !important;
-  margin:0 !important;
+/* Modo Full Screen Absoluto (Oculta todo o resto) */
+body.fs-active .hdr,
+body.fs-active .wrap > .section-block:not(:has(#mapBox)) {
+  display: none !important;
+}
+
+body.fs-active .wrap {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body.fs-active .map-box.fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 999999 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  margin: 0 !important;
 }
 
 .map-ctrls{
@@ -243,7 +239,7 @@ input,select{font-family:var(--font);outline:none}
   box-shadow:0 6px 20px rgba(0,0,0,.7);cursor:pointer;border:1px solid rgba(255,255,255,.4);
   align-items:center;gap:6px;
 }
-.map-box.fullscreen ~ .fs-close-btn{display:inline-flex;}
+body.fs-active .fs-close-btn {display:inline-flex;}
 
 .post{
   border-radius:var(--r-sm);overflow:hidden;
@@ -413,7 +409,7 @@ input,select{font-family:var(--font);outline:none}
     </div>
   </div>
 
-  <button class="fs-close-btn" onclick="toggleFullscreen()">✕ Fechar Tela Cheia (ESC / Duplo Clique)</button>
+  <button class="fs-close-btn" onclick="toggleFullscreen()">✕ Sair do Full Screen</button>
 
   <div class="section-block">
     <div class="km-hero-compact">
@@ -553,7 +549,6 @@ function initSystemStartup(){
   setTimeout(loadSystemDataAsync, 50);
   requestGpsPermission();
 
-  // Atalho global ESC para sair da tela cheia
   window.addEventListener('keydown', e => {
     if(e.key === 'Escape'){
       let box = document.getElementById('mapBox');
@@ -697,7 +692,6 @@ function initMap(lat, lon){
   setMapLayer('sat');
   mapMarker = L.marker([lat, lon]).addTo(mapInstance);
   
-  // Duplo clique no mapa fecha a tela cheia se estiver ativa
   mapInstance.on('dblclick', e => {
     let box = document.getElementById('mapBox');
     if(box.classList.contains('fullscreen')){
@@ -761,7 +755,8 @@ function setMapLayer(mode){
 
 function toggleFullscreen(){
   let box = document.getElementById('mapBox');
-  box.classList.toggle('fullscreen');
+  let isFS = box.classList.toggle('fullscreen');
+  document.body.classList.toggle('fs-active', isFS);
   if(mapInstance) {
     setTimeout(()=>mapInstance.invalidateSize(), 50);
   }
