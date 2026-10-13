@@ -85,16 +85,16 @@ input,select{font-family:var(--font);outline:none}
   box-shadow:0 8px 32px rgba(0,0,0,.4);
 }
 
-/* Botões de Pesquisa Estilo Pílula/Bolinha */
-.menu-pills-row{
-  display:flex;gap:4px;overflow-x:auto;padding-bottom:2px;
+/* Botões de Pesquisa ajustados em grade de 2 linhas para caber na tela */
+.menu-pills-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
 }
 .menu-pill{
-  flex:1;min-width:max-content;padding:6px 10px;border-radius:20px;
+  width:100%;padding:7px 8px;border-radius:var(--r-xs);
   background:var(--surface2);border:1px solid var(--border2);color:var(--text2);
   font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
   display:flex;align-items:center;justify-content:center;gap:4px;
-  transition:all .2s ease;cursor:pointer;
+  transition:all .2s ease;cursor:pointer;text-align:center;
 }
 .menu-pill.active{
   background:var(--accent);color:#fff;border-color:var(--accent);
@@ -203,10 +203,11 @@ input,select{font-family:var(--font);outline:none}
   overflow:hidden;position:relative;height:220px;background:#020617;
   margin-top:4px;
 }
+/* FULLSCREEN REAL E ISOLADO */
 .map-box.fullscreen{
   position:fixed !important;inset:0 !important;width:100vw !important;
   height:100vh !important;height:100dvh !important;z-index:999999 !important;
-  border-radius:0 !important;border:none !important;
+  border-radius:0 !important;border:none !important;margin:0 !important;
 }
 .map-ctrls{
   position:absolute;top:4px;right:4px;z-index:1000;
@@ -217,6 +218,15 @@ input,select{font-family:var(--font);outline:none}
   border-radius:2px;background:rgba(255,255,255,.05);color:var(--text2);cursor:pointer;
 }
 .map-btn.active{background:var(--accent);color:#fff}
+
+/* Botão Flutuante de Fechar Tela Cheia */
+.fs-close-btn{
+  display:none;position:fixed;top:12px;left:12px;z-index:1000000;
+  background:rgba(239,68,68,.9);color:#fff;padding:6px 12px;
+  border-radius:var(--r-xs);font-size:9px;font-weight:900;text-transform:uppercase;
+  box-shadow:0 4px 12px rgba(0,0,0,.5);cursor:pointer;border:1px solid rgba(255,255,255,.3);
+}
+.map-box.fullscreen ~ .fs-close-btn{display:inline-flex;align-items:center;gap:4px;}
 
 .post{
   border-radius:var(--r-sm);overflow:hidden;
@@ -307,9 +317,9 @@ input,select{font-family:var(--font);outline:none}
 
 <div class="wrap">
 
-  <!-- BOTÕES EM FORMATO DE PÍLULA (MENU DE PESQUISA OCULTO/SELETIVO) -->
+  <!-- BOTÕES DE PESQUISA EM GRADE DE DUAS LINHAS -->
   <div class="section-block">
-    <div class="menu-pills-row">
+    <div class="menu-pills-grid">
       <button class="menu-pill" id="pillId" onclick="switchPane('id')">🔍 Pesquisa por ID</button>
       <button class="menu-pill" id="pillKm" onclick="switchPane('km')">🛣️ Pesquisa por KM</button>
       <button class="menu-pill" id="pillCoord" onclick="switchPane('coord')">📍 Coordenada</button>
@@ -383,7 +393,10 @@ input,select{font-family:var(--font);outline:none}
     </div>
   </div>
 
-  <!-- TELA PRINCIPAL: KM EM TEMPO REAL E OS 10 MAIS PRÓXIMOS (PADRÃO 10) -->
+  <!-- BOTÃO FLUTUANTE EXCLUSIVO PARA SAIR DO FULLSCREEN -->
+  <button class="fs-close-btn" onclick="toggleFullscreen()">✕ Fechar Tela Cheia</button>
+
+  <!-- TELA PRINCIPAL: KM EM TEMPO REAL E OS 10 MAIS PRÓXIMOS -->
   <div class="section-block">
     <div class="km-hero-compact">
       <div>
