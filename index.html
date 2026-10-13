@@ -748,7 +748,7 @@ img,video{display:block;max-width:100%}
           <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM, Município e Nox mais próximo
         </label>
 
-        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Mapa Interativo (Normal, Satélite, Híbrido, Full e Clique):</div>
+        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Mapa Interativo (Dois toques para Full / Sair do Full):</div>
         
         <div class="map-picker-box" id="mapPickerBox">
           <div class="map-controls-bar">
@@ -830,6 +830,7 @@ let mapInstance=null, mapMarker=null, mapInitialized=false;
 let gpsInitializedOnce=false;
 let currentTileLayer=null;
 let activeLayerMode='normal';
+let lastTapTime = 0;
 
 let _tt=null;
 function showToast(msg,type='ok'){
@@ -1097,6 +1098,16 @@ function toggleMapFullscreen(){
   if(mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 100);
 }
 
+function handleDoubleTapFullscreen(){
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - lastTapTime;
+  if (tapLength < 350 && tapLength > 30) {
+    toggleMapFullscreen();
+    vibrate(20);
+  }
+  lastTapTime = currentTime;
+}
+
 function closeMapOverlay(){
   document.getElementById('mapOverlayCard').style.display = 'none';
 }
@@ -1115,6 +1126,7 @@ function initLeafletMap(initLat, initLon){
   mapMarker = L.marker([initLat, initLon]).addTo(mapInstance);
 
   mapInstance.on('click', function(e){
+    handleDoubleTapFullscreen();
     const lat = e.latlng.lat;
     const lon = e.latlng.lng;
     
@@ -1123,6 +1135,11 @@ function initLeafletMap(initLat, initLon){
     
     mapMarker.setLatLng([lat, lon]);
     searchManualCoordByLatLon(lat, lon);
+  });
+
+  const mapContainerDom = document.getElementById('leafletMap');
+  mapContainerDom.addEventListener('touchend', (e) => {
+    handleDoubleTapFullscreen();
   });
 }
 
@@ -1622,7 +1639,7 @@ document.getElementById('btnSend').onclick=()=>{
     chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
   }else{
     const qty=Number(document.getElementById('qty').value||10);
-    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
+    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,pos.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
   }
   let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
   items.forEach((o,i)=>{
