@@ -123,15 +123,20 @@ input,select{font-family:var(--font);outline:none}
 }
 
 .gps{
-  display:flex;align-items:center;justify-content:center;gap:4px;
+  display:flex;align-items:center;justify-content:space-between;gap:4px;
   min-height:28px;border-radius:var(--r-xs);
   border:1px solid;padding:0 8px;
   font-size:8px;font-weight:800;letter-spacing:.08em;
-  text-align:center;text-transform:uppercase;
+  text-transform:uppercase;
 }
 .gps.bad{border-color:rgba(100,116,139,.3);background:rgba(11,17,36,.9);color:#e5e7eb}
 .gps.ok{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1);color:#d1fae5}
 .gps.warn{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.1);color:#fef3c7}
+
+.gps-btn-auth{
+  background:var(--accent);color:#fff;border:0;padding:3px 6px;border-radius:3px;
+  font-size:7.5px;font-weight:900;cursor:pointer;text-transform:uppercase;
+}
 
 .card{
   border-radius:var(--r-sm);
@@ -416,7 +421,10 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
       </div>
     </div>
 
-    <div id="gpsStatus" class="gps bad">GPS · BUSCANDO SINAL</div>
+    <div id="gpsStatus" class="gps bad">
+      <span id="gpsText">GPS · BUSCANDO SINAL</span>
+      <button class="gps-btn-auth" onclick="requestGpsPermission()">Autorizar GPS</button>
+    </div>
 
     <div class="card">
       <div class="ctrl-row" style="margin-top:0;">
@@ -496,13 +504,15 @@ function switchPane(type){
   });
 }
 
-function gpsBadge(el,p,err){
+function gpsBadge(p,err){
+  const el=document.getElementById('gpsStatus');
+  const textEl=document.getElementById('gpsText');
   const a=p?.acc;let cls='bad',txt;
-  if(err)txt=err;
-  else if(!a)txt='GPS · BUSCANDO';
+  if(err)txt='GPS · BLOQUEADO / DESLIGADO';
+  else if(!a)txt='GPS · USANDO REFERÊNCIA';
   else if(a<=15) {cls='ok';txt=`GPS · ALTA (±${Math.round(a)}M)`;}
   else {cls='warn';txt=`GPS · MÉDIA (±${Math.round(a)}M)`;}
-  el.className='gps '+cls;el.textContent=txt;
+  el.className='gps '+cls;textEl.textContent=txt;
 }
 
 async function fetchCityName(lat, lon){
@@ -533,7 +543,54 @@ async function fetchCSV(files){
   return null;
 }
 
-async function loadSystemData(){
+function initSystemStartup(){
+  initMap(-22.8512, -43.7744);
+
+  // Fallback imediato para não travar o PC se o GPS demorar
+  pos = {lat: -22.8512, lon: -43.7744, acc: 500};
+  renderApoio();
+  updateKm();
+
+  // Carrega os dados CSV em segundo plano sem bloquear a interface
+  setTimeout(loadSystemDataAsync, 50);
+  
+  // Tenta iniciar o GPS com timeout rápido de 2.5 segundos para desktop
+  requestGpsPermission();
+}
+
+function requestGpsPermission(){
+  if('geolocation' in navigator){
+    navigator.geolocation.getCurrentPosition(
+      p => {
+        pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
+        gpsBadge(pos);
+        renderApoio();
+        updateKm();
+        if(mapInstance && mapMarker){
+          mapInstance.setView([pos.lat, pos.lon], 14);
+          mapMarker.setLatLng([pos.lat, pos.lon]);
+        }
+        showToast('GPS Autorizado e Sintonizado');
+        // Inicia watch contínuo após autorização bem-sucedida
+        navigator.geolocation.watchPosition(upd => {
+          pos={lat:upd.coords.latitude,lon:upd.coords.longitude,acc:upd.coords.accuracy};
+          gpsBadge(pos);
+          renderApoio();
+          updateKm();
+        }, null, {enableHighAccuracy:true, maximumAge:0, timeout:5000});
+      },
+      e => {
+        gpsBadge(null, true);
+        showToast('GPS não autorizado ou indisponível', 'err');
+      },
+      {enableHighAccuracy:true, timeout:2500, maximumAge:0}
+    );
+  } else {
+    gpsBadge(null, true);
+  }
+}
+
+async function loadSystemDataAsync(){
   try{
     let t=await fetchCSV(['dados.csv','Dados_Completos_Grupo_2_all.csv']);
     if(t){
@@ -556,23 +613,10 @@ async function loadSystemData(){
 
     kmDB_SP = await parseKmFile(tSP);
     kmDB_RJ = await parseKmFile(tRJ);
-  }catch(e){}
-
-  initMap(-22.8512, -43.7744);
-  renderApoio();
-
-  if('geolocation' in navigator) navigator.geolocation.watchPosition(async p=>{
-    pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
-    gpsBadge(document.getElementById('gpsStatus'),pos);
+    
     renderApoio();
     updateKm();
-    if(searchItem) updateSearchDist();
-    if(searchKmItems.length) updateSearchKmDist();
-    if(searchCoordItems.length) updateSearchCoordDist();
-    
-    const cityName = await fetchCityName(pos.lat, pos.lon);
-    document.getElementById('cityNameDisplay').textContent = cityName;
-  },null,{enableHighAccuracy:true,maximumAge:0,timeout:5000});
+  }catch(e){}
 }
 
 async function parseKmFile(text){
@@ -1061,7 +1105,7 @@ async function renderApoio(){
   document.getElementById('btnSend').disabled=false;
 }
 
-document.getElementById('btnSend'].onclick=()=>{
+document.getElementById('btnSend').onclick=()=>{
   if(!pos)return;
   let chks=document.querySelectorAll('.post-chk:checked');
   let items=[];
@@ -1082,7 +1126,7 @@ document.getElementById('btnSend'].onclick=()=>{
 
 document.getElementById('qty').onchange=()=>{renderedKey='';renderApoio()};
 
-window.addEventListener('DOMContentLoaded', loadSystemData);
+window.addEventListener('DOMContentLoaded', initSystemStartup);
 </script>
 </body>
 </html>
