@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<!-- Tesseract.js (versão estável otimizada para navegador) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
 <style>
 :root{
   --bg:#070913;
@@ -449,7 +451,7 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
 
 <script>
 const norm=s=>String(s||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9_ ]+/g,' ').replace(/\s+/g,' ');
-const parsePt=v=>{const s=String(v??'').trim();return/,\d+$/.test(s)?Number(s.replace(/\./g,'').replace(',','.')):Number(s)};
+const parsePt=v=>{const s=String(v??'').trim().replace(',','.');return Number(s)};
 const hav=(a,b,c,d)=>{const p=Math.PI/180,x=.5-Math.cos((c-a)*p)/2+Math.cos(a*p)*Math.cos(c*p)*(1-Math.cos((d-b)*p))/2;return 12742000*Math.asin(Math.sqrt(x))};
 
 const formatDist = dist => {
@@ -474,7 +476,7 @@ let cityCache = new Map();
 function showToast(msg,type='ok'){
   const el=document.getElementById('toast');
   el.className='toast '+type;el.textContent=msg;
-  requestAnimationFrame(()=>{el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500)});
+  requestAnimationFrame(()=>{el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000)});
 }
 
 function switchPane(type){
@@ -771,42 +773,40 @@ async function searchManualCoord(){
 async function handleOcrUpload(event) {
   const file = event.target.files[0];
   if(!file) return;
-  showToast('Lendo imagem via OCR...');
+  showToast('Processando OCR local...');
 
   try {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('language', 'eng');
-    formData.append('isOverlayRequired', 'false');
-
-    // Usando a API gratuita de OCR OCR.space com a chave pública 'helloworld'
-    const response = await fetch('https://api.ocr.space/parse/image', {
-      method: 'POST',
-      headers: { 'apikey': 'helloworld' },
-      body: formData
+    // Usando Tesseract.js diretamente no navegador com pré-processamento otimizado
+    const result = await Tesseract.recognize(file, 'eng', {
+      logger: m => {}
     });
 
-    const result = await response.json();
-    if(result && result.ParsedResults && result.ParsedResults.length > 0){
-      const text = result.ParsedResults[0].ParsedText;
-      
-      // Procura por números parecidos com coordenadas (ex: -22.12345 ou 22,12345)
-      const matches = text.match(/-?\d{1,2}[.,]\d{4,}/g);
-      if(matches && matches.length >= 2){
-        let lat = parsePt(matches[0]);
-        let lon = parsePt(matches[1]);
-        if(Number.isFinite(lat) && Number.isFinite(lon)){
-          document.getElementById('inputLat').value = lat;
-          document.getElementById('inputLon').value = lon;
-          showToast('Coordenada lida com sucesso!');
-          searchManualCoord();
-          return;
-        }
+    const text = result.data.text || '';
+    
+    // Expressão regular robusta para extrair latitudes e longitudes (com ou sem o sinal de menos explicitado, assumindo negativo se for SP/RJ)
+    const numbers = text.match(/-?\d{1,2}[.,]\d{4,}/g);
+    
+    if(numbers && numbers.length >= 2){
+      let lat = parsePt(numbers[0]);
+      let lon = parsePt(numbers[1]);
+
+      // Se por acaso vier positivo do OCR, ajusta para negativo padrão da região sudeste do Brasil
+      if(lat > 0) lat = -lat;
+      if(lon > 0) lon = -lon;
+
+      if(Number.isFinite(lat) && Number.isFinite(lon) && lat < -10 && lon < -30){
+        document.getElementById('inputLat').value = lat.toFixed(6);
+        document.getElementById('inputLon').value = lon.toFixed(6);
+        showToast('Coordenadas lidas!');
+        searchManualCoord();
+        event.target.value = '';
+        return;
       }
     }
-    showToast('Texto de coordenada não encontrado', 'err');
+
+    showToast('Não achou coordenadas claras. Tente outra foto.', 'err');
   } catch(e) {
-    showToast('Erro ao processar imagem na API', 'err');
+    showToast('Erro ao ler imagem', 'err');
   } finally {
     event.target.value = '';
   }
@@ -1072,7 +1072,7 @@ async function renderApoio(){
   document.getElementById('btnSend').disabled=false;
 }
 
-document.getElementById('btnSend').onclick=()=>{
+document.getElementById('btnSend'].onclick=()=>{
   if(!pos)return;
   let chks=document.querySelectorAll('.post-chk:checked');
   let items=[];
