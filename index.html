@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b1020">
-<title>Apoio Técnico & Localização</title>
+<title>Apoio Operacional</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -20,15 +20,12 @@
   --border3:rgba(255,255,255,.18);
   --accent:#ffd600;
   --accent2:#ffe44d;
-  --accent3:#c8a800;
-  --accent-dim:rgba(255,214,0,.06);
   --green:#10b981;
   --green2:#34d399;
   --green3:#059669;
   --green-dim:rgba(16,185,129,.10);
   --violet:#5b21ff;
   --violet2:#7c3aed;
-  --violet3:#4c1d95;
   --violet-dim:rgba(92,33,255,.12);
   --red:#ef4444;
   --warn:#f59e0b;
@@ -79,214 +76,96 @@ img,video{display:block;max-width:100%}
 }
 .hdr-in{
   max-width:680px;margin:0 auto;
-  display:flex;align-items:center;gap:12px;height:58px;
+  display:flex;align-items:center;gap:12px;height:52px;
 }
 .hdr-title{flex:1;min-width:0}
 .hdr-title h1{
-  font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;
+  font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.hdr-title p{
-  font-size:10px;color:var(--muted);font-weight:500;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;
-}
-.hdr-badge{
-  width:36px;height:36px;border-radius:var(--r-xs);
-  background:var(--violet-dim);color:var(--violet2);
-  display:grid;place-items:center;flex-shrink:0;
-}
-.hdr-badge svg{width:18px;height:18px}
 
 .wrap{
   max-width:680px;margin:0 auto;
   padding:16px;padding-bottom:var(--safe-b);
-  display:flex;flex-direction:column;gap:16px;
+  display:flex;flex-direction:column;gap:14px;
 }
 
 .section-block{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+  display:flex;flex-direction:column;gap:10px;
   background:rgba(13,18,36,0.65);
   border:1px solid var(--border2);
   border-radius:var(--r-xl);
-  padding:16px;
+  padding:14px;
   backdrop-filter:blur(12px);
 }
 .section-header{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:11px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.18em;
-  color:var(--accent);
-  padding-bottom:4px;
-  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+  font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.18em;
+  color:var(--accent);padding-bottom:4px;border-bottom:1px solid var(--border);
 }
-.section-header.proximity-title{
-  color:var(--green2);
-}
-.section-header svg{width:16px;height:16px}
+.section-header.proximity-title{color:var(--green2)}
+.section-header svg{width:14px;height:14px}
 
 .km-hero{
   border-radius:var(--r-lg);
   border:1px solid rgba(16,185,129,.28);
   background:linear-gradient(155deg,#065f46 0%,#022c22 55%,#020617 100%);
-  text-align:center;
-  padding:16px 20px;
+  text-align:center;padding:14px 18px;
   position:relative;overflow:hidden;
-  box-shadow:0 12px 35px rgba(6,95,70,.35);
-}
-.km-hero::before{
-  content:"";position:absolute;inset:0;
-  background:radial-gradient(circle at 30% 25%,rgba(16,185,129,.18),transparent 55%);
-  pointer-events:none;
+  box-shadow:0 10px 30px rgba(6,95,70,.35);
 }
 .km-label{
-  font-size:10px;font-weight:900;text-transform:uppercase;
+  font-size:9px;font-weight:900;text-transform:uppercase;
   letter-spacing:.25em;color:rgba(220,252,231,.65);position:relative;
 }
 .km-value{
-  font-size:clamp(32px,10vw,48px);font-weight:900;
+  font-size:clamp(28px,9vw,42px);font-weight:900;
   line-height:1.05;letter-spacing:-.04em;margin-top:2px;
   font-variant-numeric:tabular-nums;position:relative;
   background:linear-gradient(180deg,#fff 25%,#6ee7b7);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .km-br-badge{
-  display:inline-block;
-  font-size:9px;
-  font-weight:700;
-  color:rgba(220,252,231,.5);
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  margin-top:2px;
-  position:relative;
-  background:rgba(0,0,0,0.25);
-  padding:1px 6px;
-  border-radius:4px;
+  display:inline-block;font-size:8px;font-weight:700;
+  color:rgba(220,252,231,.5);text-transform:uppercase;letter-spacing:.08em;
+  margin-top:2px;position:relative;background:rgba(0,0,0,0.25);
+  padding:1px 6px;border-radius:4px;
 }
 .km-sub{
-  font-size:10px;font-weight:600;color:rgba(220,252,231,.7);
+  font-size:9px;font-weight:600;color:rgba(220,252,231,.7);
   margin-top:2px;position:relative;
 }
 
 .radar-box{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  margin-top:10px;
-  padding-top:8px;
-  border-top:1px solid rgba(16,185,129,.2);
-  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;margin-top:8px;padding-top:6px;
+  border-top:1px solid rgba(16,185,129,.2);position:relative;
 }
 .compass-badge{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  background:rgba(0,0,0,0.3);
-  padding:4px 10px;
-  border-radius:20px;
-  border:1px solid rgba(16,185,129,0.3);
+  display:flex;align-items:center;gap:6px;
+  background:rgba(0,0,0,0.3);padding:3px 8px;
+  border-radius:20px;border:1px solid rgba(16,185,129,0.3);
 }
 .compass-arrow{
-  width:22px;
-  height:22px;
-  border-radius:50%;
+  width:20px;height:20px;border-radius:50%;
   background:rgba(16,185,129,0.2);
-  display:grid;
-  place-items:center;
-  transition:transform 0.2s ease-out;
-  flex-shrink:0;
+  display:grid;place-items:center;
+  transition:transform 0.2s ease-out;flex-shrink:0;
 }
-.compass-arrow svg{
-  width:14px;
-  height:14px;
-  color:var(--green2);
-}
+.compass-arrow svg{width:12px;height:12px;color:var(--green2)}
 .radar-text{
-  font-size:10px;
-  font-weight:900;
-  color:#a7f3d0;
-  letter-spacing:.05em;
-  text-transform:uppercase;
+  font-size:9px;font-weight:900;color:#a7f3d0;
+  letter-spacing:.05em;text-transform:uppercase;
 }
-
-.weather-line-box{
-  margin-top:8px;
-  padding-top:8px;
-  border-top:1px solid rgba(16,185,129,.2);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  position:relative;
-}
-.weather-line-text{
-  font-size:10px;
-  font-weight:800;
-  color:#d1fae5;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.btn-weather-details{
-  font-size:8px;
-  font-weight:900;
-  text-transform:uppercase;
-  background:rgba(16,185,129,0.25);
-  color:#a7f3d0;
-  border:1px solid rgba(16,185,129,0.4);
-  padding:2px 6px;
-  border-radius:4px;
-  cursor:pointer;
-  flex-shrink:0;
-  transition:all 0.1s ease;
-}
-.btn-weather-details:hover{
-  background:rgba(16,185,129,0.45);
-  color:#fff;
-}
-
-.weather-expanded-box{
-  margin-top:6px;
-  padding-top:6px;
-  border-top:1px dashed rgba(16,185,129,0.2);
-  display:none;
-  flex-direction:column;
-  gap:4px;
-}
-.weather-hourly{
-  display:flex;
-  justify-content:space-between;
-  gap:4px;
-  padding-top:2px;
-}
-.weather-hour-card{
-  flex:1;
-  background:rgba(2,44,34,0.6);
-  border:1px solid rgba(16,185,129,.15);
-  border-radius:6px;
-  padding:3px 2px;
-  text-align:center;
-}
-.weather-hour-card .time{font-size:8px;color:rgba(220,252,231,.7);font-weight:700;}
-.weather-hour-card .icon{font-size:12px;margin:1px 0;}
-.weather-hour-card .temp{font-size:9px;color:#fff;font-weight:900;}
 
 .gps{
   display:flex;align-items:center;justify-content:center;gap:8px;
-  min-height:42px;border-radius:var(--r-sm);
-  border:1px solid;padding:0 14px;
-  font-size:11px;font-weight:800;letter-spacing:.06em;
+  min-height:38px;border-radius:var(--r-sm);
+  border:1px solid;padding:0 12px;
+  font-size:10px;font-weight:800;letter-spacing:.06em;
   text-align:center;transition:all .1s var(--ease);
 }
-.gps svg{width:14px;height:14px;flex-shrink:0}
+.gps svg{width:13px;height:13px;flex-shrink:0}
 .gps.bad{border-color:rgba(148,163,184,.35);background:rgba(15,23,42,.9);color:#e5e7eb}
 .gps.ok{border-color:rgba(16,185,129,.45);background:var(--green-dim);color:#d1fae5}
 .gps.warn{border-color:rgba(245,158,11,.35);background:var(--warn-dim);color:#fef3c7}
@@ -295,33 +174,33 @@ img,video{display:block;max-width:100%}
   border-radius:var(--r-lg);
   border:1px solid var(--border);
   background:linear-gradient(145deg,rgba(15,23,42,.95),rgba(17,24,39,.9));
-  padding:14px;position:relative;overflow:hidden;
+  padding:12px;position:relative;overflow:hidden;
 }
 .card-accent{
   border-color:rgba(92,33,255,.35);
   background:linear-gradient(145deg,rgba(92,33,255,.08),rgba(15,23,42,.95));
 }
 .card-label{
-  font-size:10px;font-weight:900;text-transform:uppercase;
+  font-size:9px;font-weight:900;text-transform:uppercase;
   letter-spacing:.2em;color:var(--text2);
-  margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;
 }
 .card-label::before{
-  content:"";width:3px;height:10px;border-radius:2px;background:var(--violet2);
+  content:"";width:3px;height:9px;border-radius:2px;background:var(--violet2);
 }
 
-.search-row{display:flex;gap:8px}
+.search-row{display:flex;gap:6px}
 .search-wrap{flex:1;min-width:0;position:relative}
 .search-wrap svg{
-  position:absolute;left:13px;top:50%;transform:translateY(-50%);
-  width:15px;height:15px;color:var(--dim);pointer-events:none;
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;color:var(--dim);pointer-events:none;
 }
 .search-input{
   width:100%;border-radius:var(--r-sm);
   border:1px solid var(--border3);
   background:rgba(15,23,42,.9);
-  padding:12px 14px 12px 38px;
-  font-size:13px;font-weight:800;text-transform:uppercase;color:#fff;
+  padding:10px 12px 10px 34px;
+  font-size:12px;font-weight:800;text-transform:uppercase;color:#fff;
   transition:all .1s var(--ease);
 }
 .search-input::placeholder{color:var(--dim);font-weight:700}
@@ -330,43 +209,38 @@ img,video{display:block;max-width:100%}
   box-shadow:0 0 0 3px rgba(92,33,255,.35);
 }
 .btn-icon{
-  width:44px;height:44px;border-radius:var(--r-sm);
+  width:40px;height:40px;border-radius:var(--r-sm);
   display:grid;place-items:center;flex-shrink:0;
   transition:all .08s var(--ease);
 }
 .btn-icon:active{transform:scale(.9)}
 .btn-icon.go{
   background:linear-gradient(135deg,var(--violet),var(--violet2));
-  color:#fff;
-  box-shadow:0 3px 14px rgba(79,70,229,.50);
+  color:#fff;box-shadow:0 3px 12px rgba(79,70,229,.50);
 }
 .btn-icon.clr{
   border:1px solid var(--border2);
-  background:rgba(15,23,42,.9);
-  color:var(--muted);
+  background:rgba(15,23,42,.9);color:var(--muted);
 }
-.btn-icon svg{width:16px;height:16px}
+.btn-icon svg{width:15px;height:15px}
 .search-msg{
-  margin-top:8px;font-size:11px;font-weight:800;
+  margin-top:6px;font-size:10px;font-weight:800;
   text-transform:uppercase;color:var(--warn);
   display:flex;align-items:center;gap:6px;
 }
-.search-msg svg{width:13px;height:13px}
+.search-msg svg{width:12px;height:12px}
 
 .modal-box{
   background:rgba(17,24,39,0.95);
   border:1px solid var(--border3);
   border-radius:var(--r-md);
-  padding:12px;
-  margin-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+  padding:10px;margin-top:8px;
+  display:flex;flex-direction:column;gap:6px;
 }
-.modal-box p{font-size:11px;font-weight:800;color:var(--accent)}
-.modal-btns{display:flex;gap:8px}
+.modal-box p{font-size:10px;font-weight:800;color:var(--accent)}
+.modal-btns{display:flex;gap:6px}
 .modal-btn{
-  flex:1;padding:10px;border-radius:var(--r-xs);font-size:11px;font-weight:900;text-transform:uppercase;
+  flex:1;padding:8px;border-radius:var(--r-xs);font-size:10px;font-weight:900;text-transform:uppercase;
   background:var(--violet);color:#fff;cursor:pointer;text-align:center;
 }
 .modal-btn.rj{background:var(--green3)}
@@ -374,179 +248,87 @@ img,video{display:block;max-width:100%}
 .coord-btn-toggle{
   background:rgba(92,33,255,.2);
   border:1px solid rgba(92,33,255,.4);
-  color:#a78bfa;
-  font-size:9px;
-  font-weight:900;
-  padding:4px 8px;
-  border-radius:6px;
-  text-transform:uppercase;
-  cursor:pointer;
-  letter-spacing:.05em;
-  transition:all .1s ease;
+  color:#a78bfa;font-size:8px;font-weight:900;
+  padding:3px 6px;border-radius:6px;
+  text-transform:uppercase;cursor:pointer;letter-spacing:.05em;
 }
-.coord-btn-toggle:hover{background:rgba(92,33,255,.4);color:#fff}
 
 .coord-container{
-  margin-top:10px;
-  padding-top:10px;
+  margin-top:8px;padding-top:8px;
   border-top:1px solid var(--border);
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  display:flex;flex-direction:column;gap:8px;
 }
-
-.coord-inputs-grid{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:8px;
-}
-.coord-field{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-.coord-field label{
-  font-size:9px;
-  font-weight:800;
-  text-transform:uppercase;
-  color:var(--muted);
-}
+.coord-inputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.coord-field{display:flex;flex-direction:column;gap:3px}
+.coord-field label{font-size:8px;font-weight:800;text-transform:uppercase;color:var(--muted)}
 .coord-input{
-  width:100%;
-  border-radius:var(--r-xs);
+  width:100%;border-radius:var(--r-xs);
   border:1px solid var(--border3);
   background:rgba(15,23,42,.9);
-  padding:10px;
-  font-size:12px;
-  font-weight:800;
-  color:#fff;
-  text-align:center;
-}
-.coord-input:focus{
-  border-color:var(--violet2);
-  box-shadow:0 0 0 3px rgba(92,33,255,.35);
+  padding:8px;font-size:11px;font-weight:800;color:#fff;text-align:center;
 }
 
 .map-picker-box{
-  margin-top:8px;
-  border-radius:var(--r-sm);
+  margin-top:6px;border-radius:var(--r-sm);
   border:1px solid var(--border2);
-  overflow:hidden;
-  position:relative;
-  resize:vertical;
-  min-height:300px;
-  max-height:70vh;
-  height:360px;
+  overflow:hidden;position:relative;
+  resize:vertical;min-height:260px;max-height:70vh;height:320px;
   background:#020617;
 }
 .map-picker-box.fullscreen{
-  position:fixed !important;
-  inset:0 !important;
-  width:100vw !important;
-  height:100vh !important;
-  max-height:none !important;
-  z-index:99999 !important;
-  border-radius:0 !important;
-  margin:0 !important;
+  position:fixed !important;inset:0 !important;
+  width:100vw !important;height:100vh !important;
+  max-height:none !important;z-index:99999 !important;
+  border-radius:0 !important;margin:0 !important;
 }
 
 .map-controls-bar{
-  position:absolute;
-  top:10px;
-  right:10px;
-  z-index:1000;
-  display:flex;
-  gap:6px;
-  background:rgba(5,10,24,0.85);
-  backdrop-filter:blur(8px);
-  padding:4px;
-  border-radius:8px;
-  border:1px solid var(--border2);
+  position:absolute;top:8px;right:8px;z-index:1000;
+  display:flex;gap:4px;
+  background:rgba(5,10,24,0.85);backdrop-filter:blur(8px);
+  padding:3px;border-radius:6px;border:1px solid var(--border2);
 }
 .map-layer-btn{
-  font-size:9px;
-  font-weight:900;
-  text-transform:uppercase;
-  padding:5px 8px;
-  border-radius:6px;
-  background:rgba(255,255,255,0.06);
-  color:var(--text2);
-  cursor:pointer;
-  transition:all 0.1s ease;
+  font-size:8px;font-weight:900;text-transform:uppercase;
+  padding:4px 6px;border-radius:4px;
+  background:rgba(255,255,255,0.06);color:var(--text2);cursor:pointer;
 }
-.map-layer-btn.active{
-  background:var(--violet);
-  color:#fff;
-}
+.map-layer-btn.active{background:var(--violet);color:#fff}
 .map-fs-btn{
-  font-size:9px;
-  font-weight:900;
-  text-transform:uppercase;
-  padding:5px 8px;
-  border-radius:6px;
-  background:rgba(16,185,129,0.2);
-  color:var(--green2);
-  cursor:pointer;
-  border:1px solid rgba(16,185,129,0.4);
+  font-size:8px;font-weight:900;text-transform:uppercase;
+  padding:4px 6px;border-radius:4px;
+  background:rgba(16,185,129,0.2);color:var(--green2);
+  border:1px solid rgba(16,185,129,0.4);cursor:pointer;
 }
 
 .map-overlay-card{
-  position:absolute;
-  bottom:16px;
-  left:16px;
-  right:16px;
-  z-index:1000;
-  background:rgba(13,18,36,0.95);
-  backdrop-filter:blur(16px);
-  border:1px solid var(--border3);
-  border-radius:var(--r-md);
-  padding:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.6);
-  display:none;
+  position:absolute;bottom:12px;left:12px;right:12px;z-index:1000;
+  background:rgba(13,18,36,0.95);backdrop-filter:blur(16px);
+  border:1px solid var(--border3);border-radius:var(--r-md);
+  padding:10px;box-shadow:0 10px 30px rgba(0,0,0,0.6);display:none;
 }
 .map-overlay-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:6px;
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
 }
-.map-overlay-title{
-  font-size:11px;
-  font-weight:900;
-  text-transform:uppercase;
-  color:var(--accent);
-}
+.map-overlay-title{font-size:10px;font-weight:900;text-transform:uppercase;color:var(--accent)}
 .map-overlay-close{
-  background:rgba(255,255,255,0.1);
-  color:#fff;
-  width:24px;
-  height:24px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  font-size:12px;
-  cursor:pointer;
+  background:rgba(255,255,255,0.1);color:#fff;width:20px;height:20px;
+  border-radius:50%;display:grid;place-items:center;font-size:10px;cursor:pointer;
 }
 
 .target-lock{
   display:none;border-radius:var(--r-lg);
   border:2px solid var(--green);
   background:linear-gradient(145deg,rgba(16,185,129,.18),rgba(15,23,42,.95));
-  padding:16px;text-align:center;position:relative;overflow:hidden;
+  padding:14px;text-align:center;position:relative;overflow:hidden;
 }
 .target-lock.on{
-  display:block;
-  animation:lockIn .2s var(--ease),lockPulse 2.5s infinite;
+  display:block;animation:lockIn .2s var(--ease),lockPulse 2.5s infinite;
 }
 @keyframes lockIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 @keyframes lockPulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.25)}50%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}
-.target-lock h2{
-  font-size:13px;font-weight:900;text-transform:uppercase;
-  letter-spacing:.06em;position:relative;
-}
-.target-lock p{
-  font-size:11px;font-weight:700;margin-top:4px;opacity:.85;position:relative;
-}
+.target-lock h2{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.target-lock p{font-size:10px;font-weight:700;margin-top:3px;opacity:.85}
 
 .post{
   border-radius:var(--r-lg);overflow:hidden;
@@ -562,94 +344,78 @@ img,video{display:block;max-width:100%}
   border-color:rgba(92,33,255,.48);
   background:linear-gradient(145deg,rgba(92,33,255,.14),rgba(17,24,39,.96));
 }
-.post-top{display:flex;align-items:flex-start;gap:12px;padding:14px}
-.post-chk{margin-top:2px;width:18px;height:18px;accent-color:var(--violet2);flex-shrink:0}
+.post-top{display:flex;align-items:flex-start;gap:10px;padding:12px}
+.post-chk{margin-top:2px;width:16px;height:16px;accent-color:var(--violet2);flex-shrink:0}
 .post-id{
-  font-size:12px;font-weight:900;text-transform:uppercase;
+  font-size:11px;font-weight:900;text-transform:uppercase;
   letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .post-id span{color:var(--accent)}
-.post-dist{
-  font-size:10px;font-weight:700;text-transform:uppercase;
-  color:var(--muted);margin-top:3px;
-}
-.post-coords{
-  font-size:10px;color:var(--dim);font-weight:600;margin-top:2px;
-}
+.post-dist{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.post-coords{font-size:9px;color:var(--dim);font-weight:600;margin-top:1px}
 
 .post-wa-btn{
-  width:34px;height:34px;border-radius:9px;
+  width:32px;height:32px;border-radius:8px;
   background:rgba(16,185,129,.15);
   border:1px solid rgba(16,185,129,.35);
-  color:var(--green2);
-  display:grid;place-items:center;flex-shrink:0;
-  transition:all .08s var(--ease);
+  color:var(--green2);display:grid;place-items:center;flex-shrink:0;
 }
-.post-wa-btn:active{transform:scale(.9);background:rgba(16,185,129,.3)}
-.post-wa-btn svg{width:16px;height:16px}
+.post-wa-btn svg{width:15px;height:15px}
 
-.post-map-container{padding:0 14px 14px 14px;}
+.post-map-container{padding:0 12px 12px 12px}
 .post-map{
-  height:150px;width:100%;border:0;
+  height:140px;width:100%;border:0;
   filter:grayscale(10%) contrast(1.06);
   border-radius:var(--r-xs);
-  box-shadow:inset 0 0 10px rgba(0,0,0,.5);
 }
 
 .ctrl-send{
-  width:100%;min-height:46px;border-radius:var(--r-sm);
+  width:100%;min-height:42px;border-radius:var(--r-sm);
   background:linear-gradient(135deg,var(--green),var(--green3));
-  color:#fff;font-size:12px;font-weight:900;
+  color:#fff;font-size:11px;font-weight:900;
   text-transform:uppercase;letter-spacing:.07em;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:all .08s var(--ease);
-  box-shadow:0 3px 18px rgba(16,185,129,.40);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  box-shadow:0 3px 15px rgba(16,185,129,.35);
 }
 .ctrl-send:disabled{
   background:linear-gradient(135deg,var(--dimmer),var(--dim));
   color:var(--dim);cursor:not-allowed;box-shadow:none;
 }
-.ctrl-send:active:not(:disabled){transform:scale(.98)}
-.ctrl-send svg{width:16px;height:16px}
+.ctrl-send svg{width:15px;height:15px}
 .ctrl-row{
   display:flex;align-items:center;justify-content:space-between;
-  gap:16px;margin-top:10px;
+  gap:12px;margin-top:8px;
 }
 .ctrl-label{
-  font-size:10px;font-weight:800;text-transform:uppercase;
-  color:var(--muted);display:flex;align-items:center;gap:8px;
+  font-size:9px;font-weight:800;text-transform:uppercase;
+  color:var(--muted);display:flex;align-items:center;gap:6px;
 }
 .ctrl-select{
   border-radius:var(--r-xs);border:1px solid var(--border2);
   background:var(--surface);color:#fff;
-  padding:7px 28px 7px 10px;font-size:12px;font-weight:800;
+  padding:5px 24px 5px 8px;font-size:11px;font-weight:800;
   appearance:none;-webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 8px center;
 }
-.ctrl-chk{width:18px;height:18px;accent-color:var(--accent)}
+.ctrl-chk{width:16px;height:16px;accent-color:var(--accent)}
 
 .skel{
-  height:120px;border-radius:var(--r-lg);
+  height:100px;border-radius:var(--r-lg);
   background:linear-gradient(110deg,var(--surface) 30%,var(--surface2) 50%,var(--surface) 70%);
-  background-size:200% 100%;
-  animation:shimmer 1.2s infinite linear;
+  background-size:200% 100%;animation:shimmer 1.2s infinite linear;
 }
 @keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
 
 .toast{
-  position:fixed;bottom:calc(18px + var(--safe-b));left:50%;
+  position:fixed;bottom:calc(16px + var(--safe-b));left:50%;
   transform:translateX(-50%) translateY(16px);
   border-radius:var(--r-sm);border:1px solid var(--border2);
-  background:var(--surface);
-  padding:12px 20px;font-size:11px;font-weight:800;
-  text-transform:uppercase;letter-spacing:.04em;
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-  z-index:99998;opacity:0;transition:all .15s var(--ease);
-  pointer-events:none;display:flex;align-items:center;gap:8px;
+  background:var(--surface);padding:10px 16px;
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
+  backdrop-filter:blur(18px);z-index:99998;opacity:0;transition:all .15s var(--ease);
+  pointer-events:none;display:flex;align-items:center;gap:6px;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast svg{width:14px;height:14px;flex-shrink:0}
+.toast svg{width:13px;height:13px;flex-shrink:0}
 .toast.ok{border-color:rgba(16,185,129,.45);color:var(--green2)}
 .toast.ok svg{color:var(--green)}
 .toast.err{border-color:rgba(239,68,68,.45);color:#fecaca}
@@ -661,137 +427,112 @@ img,video{display:block;max-width:100%}
 <header class="hdr">
   <div class="hdr-in">
     <div class="hdr-title">
-      <h1>Apoio Técnico & Localização</h1>
-      <p>Busca Exata · Divisas Rigorosas Dutra (Vale do Paraíba)</p>
+      <h1>Apoio Operacional</h1>
     </div>
-    <span class="hdr-badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
-      </svg>
-    </span>
   </div>
 </header>
 
 <div class="wrap">
 
-  <!-- ==================== SEÇÃO 1: PESQUISA (ID E KM) ==================== -->
+  <!-- SEÇÃO 1: PESQUISA -->
   <div class="section-block">
     <div class="section-header">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      Pesquisa Hiper-Velocidade (ID ou KM)
+      Pesquisa Direta
     </div>
 
     <div class="card card-accent">
-      <p class="card-label">Pesquisa ID-NX (Hash Index Instantâneo)</p>
+      <p class="card-label">Pesquisa por ID</p>
       <div class="search-row">
         <div class="search-wrap">
           <input class="search-input" id="inputId" placeholder="EX: 12345678" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
-        <button class="btn-icon go" onclick="searchId()" aria-label="Buscar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-          </svg>
-        </button>
-        <button class="btn-icon clr" onclick="clearId()" aria-label="Limpar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 6 6 18M6 6l12 12"/>
-          </svg>
-        </button>
+        <button class="btn-icon go" onclick="searchId()"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+        <button class="btn-icon clr" onclick="clearId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <div id="searchMsg" class="search-msg" style="display:none"></div>
-      <div id="searchResult" style="display:none;margin-top:12px"></div>
+      <div id="searchResult" style="display:none;margin-top:10px"></div>
     </div>
 
     <div class="card card-accent">
-      <p class="card-label">Pesquisa por KM (Busca Vetorizada Instantânea)</p>
+      <p class="card-label">Pesquisa por KM</p>
       <div class="search-row">
         <div class="search-wrap">
           <input class="search-input" id="inputKm" placeholder="EX: 98, 99, 115" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         </div>
-        <button class="btn-icon go" onclick="searchKm()" aria-label="Buscar KM"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
-        <button class="btn-icon clr" onclick="clearKm()" aria-label="Limpar KM"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <button class="btn-icon go" onclick="searchKm()"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
+        <button class="btn-icon clr" onclick="clearKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <div id="searchKmMsg" class="search-msg" style="display:none"></div>
       <div id="searchKmModal" style="display:none"></div>
-      <div id="searchKmResult" style="display:none;margin-top:12px"></div>
+      <div id="searchKmResult" style="display:none;margin-top:10px"></div>
     </div>
   </div>
 
-  <!-- ==================== SEÇÃO 2: PROXIMIDADE E GPS ATUAL ==================== -->
+  <!-- SEÇÃO 2: GPS E PROXIMIDADE -->
   <div class="section-block" style="border-color: rgba(16,185,129,0.3);">
     <div class="section-header proximity-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-      Proximidade & GPS Atual
+      Proximidade & GPS
     </div>
 
     <div id="targetLock" class="target-lock">
-      <h2>📍 Você está no poste!</h2>
-      <p id="targetLockSub">ID ALVO: --- | DISTÂNCIA &lt; 5M</p>
+      <h2>📍 Alvo Alcançado</h2>
+      <p id="targetLockSub">ID: ---</p>
     </div>
 
     <div class="km-hero">
-      <p class="km-label">KM aproximado & Município exato</p>
+      <p class="km-label">KM Aproximado</p>
       <p class="km-value" id="kmVal">—</p>
       <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
-      <p class="km-sub" id="kmSource">Aguardando coordenadas GPS...</p>
+      <p class="km-sub" id="kmSource">Aguardando GPS...</p>
       
       <div class="radar-box">
         <div class="compass-badge">
           <div class="compass-arrow" id="mainCompassArrow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
           </div>
-          <span class="radar-text" id="mainRadarText">Radar Direcional</span>
+          <span class="radar-text" id="mainRadarText">Direção</span>
         </div>
       </div>
-
-      <div id="weatherContainer" class="weather-line-box" style="display:none;"></div>
     </div>
 
     <div id="gpsStatus" class="gps bad">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
       GPS · BUSCANDO SINAL
     </div>
 
     <div class="card">
-      <div class="card-label" style="margin-bottom:12px;">
-        <span>Ferramentas de Lista</span>
-        <button class="coord-btn-toggle" onclick="toggleCoordSearch()">Pesq. Coordenadas / Mapa</button>
+      <div class="card-label" style="margin-bottom:10px;">
+        <span>Mapa & Coordenadas</span>
+        <button class="coord-btn-toggle" onclick="toggleCoordSearch()">Selecionar no Mapa</button>
       </div>
 
       <div id="coordSearchBox" class="coord-container" style="display:none;">
         <div class="coord-inputs-grid">
           <div class="coord-field">
             <label>Latitude</label>
-            <input class="coord-input" id="inputLat" placeholder="-22.8512" autocomplete="off" spellcheck="false">
+            <input class="coord-input" id="inputLat" placeholder="-22.85" autocomplete="off" spellcheck="false">
           </div>
           <div class="coord-field">
             <label>Longitude</label>
-            <input class="coord-input" id="inputLon" placeholder="-43.7123" autocomplete="off" spellcheck="false">
+            <input class="coord-input" id="inputLon" placeholder="-43.77" autocomplete="off" spellcheck="false">
           </div>
         </div>
         
-        <div style="display:flex;gap:8px;">
-          <button class="ctrl-send" style="min-height:38px;font-size:11px;" onclick="searchManualCoord()">Calcular por Coordenada</button>
-          <button class="btn-icon clr" onclick="clearCoordFields()" title="Limpar Campos" style="width:38px;height:38px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <div style="display:flex;gap:6px;">
+          <button class="ctrl-send" style="min-height:34px;font-size:10px;" onclick="searchManualCoord()">Analisar Ponto</button>
+          <button class="btn-icon clr" onclick="clearCoordFields()" style="width:34px;height:34px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
 
-        <label class="ctrl-label" style="margin-top:2px;">
-          <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM, Município e Nox mais próximo
-        </label>
-
-        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Mapa Interativo (Satélite padrão · 2 toques para Full):</div>
+        <div style="font-size:8px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:2px;">Toque no mapa para ver o município:</div>
         
         <div class="map-picker-box" id="mapPickerBox">
           <div class="map-controls-bar">
             <button class="map-layer-btn" id="btnLayerNormal" onclick="setMapLayer('normal')">Normal</button>
             <button class="map-layer-btn active" id="btnLayerSatellite" onclick="setMapLayer('satellite')">Satélite</button>
-            <button class="map-layer-btn" id="btnLayerHybrid" onclick="setMapLayer('hybrid')">Híbrido</button>
             <button class="map-fs-btn" id="btnMapFs" onclick="toggleMapFullscreen()">Full</button>
           </div>
 
@@ -799,25 +540,22 @@ img,video{display:block;max-width:100%}
 
           <div class="map-overlay-card" id="mapOverlayCard">
             <div class="map-overlay-header">
-              <span class="map-overlay-title" id="mapOverlayTitle">Informações do Ponto</span>
+              <span class="map-overlay-title">Município Exato (PEI)</span>
               <button class="map-overlay-close" onclick="closeMapOverlay()">✕</button>
             </div>
-            <div id="mapOverlayContent" style="font-size:11px;color:#fff;"></div>
+            <div id="mapOverlayContent" style="font-size:10px;color:#fff;"></div>
           </div>
         </div>
         
-        <button class="ctrl-send" style="min-height:36px;font-size:10px;background:linear-gradient(135deg,var(--violet),var(--violet2));box-shadow:0 3px 12px rgba(92,33,255,.3);" onclick="useCurrentGpsCoord()">Usar Minha Posição GPS Atual</button>
-
+        <button class="ctrl-send" style="min-height:32px;font-size:9px;background:linear-gradient(135deg,var(--violet),var(--violet2));box-shadow:0 3px 10px rgba(92,33,255,.3);" onclick="useCurrentGpsCoord()">Usar Minha Posição GPS</button>
         <div id="coordSearchMsg" class="search-msg" style="display:none"></div>
-        <div id="coordSearchResult" style="display:none;margin-top:8px"></div>
       </div>
 
-      <button id="btnSend" class="ctrl-send" disabled style="margin-top:10px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
-        </svg>
-        Enviar lista WhatsApp
+      <button id="btnSend" class="ctrl-send" disabled style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        Enviar WhatsApp
       </button>
+
       <div class="ctrl-row">
         <label class="ctrl-label">
           Proximidade
@@ -827,7 +565,6 @@ img,video{display:block;max-width:100%}
             <option value="10" selected>10</option>
             <option value="20">20</option>
             <option value="50">50</option>
-            <option value="100">100</option>
           </select>
         </label>
         <label class="ctrl-label">
@@ -836,7 +573,7 @@ img,video{display:block;max-width:100%}
       </div>
     </div>
 
-    <div id="postList" style="display:flex;flex-direction:column;gap:12px">
+    <div id="postList" style="display:flex;flex-direction:column;gap:10px">
       <div class="skel"></div><div class="skel"></div>
     </div>
   </div>
@@ -862,7 +599,6 @@ function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
 let posts=[], postIndex=new Map();
 let kmDB_SP=[], kmDB_RJ=[], kmDB_BR101_SP=[], kmDB_BR101_RJ=[];
 let pos=null, searchItem=null, searchKmItems=[], renderedKey='', apoioInit=false;
-let lastWeatherFetch=0;
 let mapInstance=null, mapMarker=null, mapInitialized=false;
 let gpsInitializedOnce=false;
 let currentTileLayer=null;
@@ -888,10 +624,10 @@ function gpsBadge(el,p,err){
   if(err)txt=err;
   else if(!a)txt='GPS · BUSCANDO SINAL';
   else if(a<=ACC_G){cls='ok';txt=`GPS · ALTA PRECISÃO ${fmtAcc(a)}`}
-  else if(a<=ACC_Y){cls='warn';txt=`GPS · PRECISÃO MÉDIA ${fmtAcc(a)}`}
-  else txt=`GPS · Sinal Fraco ${fmtAcc(a)}`;
+  else if(a<=ACC_Y){cls='warn';txt=`GPS · MÉDIA ${fmtAcc(a)}`}
+  else txt=`GPS · FRACO ${fmtAcc(a)}`;
   el.className='gps '+cls;
-  el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>${txt}`;
+  el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>${txt}`;
 }
 
 async function fetchCSV(files){
@@ -908,7 +644,6 @@ async function fetchCSV(files){
   return null;
 }
 
-// MALHA DE POLÍGONOS RIGOROSA PARA VALIDAÇÃO DA COORDENADA EXATA DO PONTO
 const MUNICIPIOS_POLIGONOS = [
   {name: 'Taubaté - SP', minLat: -23.18, maxLat: -22.92, minLon: -45.75, maxLon: -45.38},
   {name: 'Pindamonhangaba - SP', minLat: -23.08, maxLat: -22.72, minLon: -45.65, maxLon: -45.32},
@@ -931,14 +666,11 @@ const MUNICIPIOS_POLIGONOS = [
 ];
 
 async function fetchMunicipio(lat, lon){
-  // 1. Verificação instantânea baseada exclusivamente na coordenada geométrica do ponto exato no mapa
   for(const poly of MUNICIPIOS_POLIGONOS){
     if(lat >= poly.minLat && lat <= poly.maxLat && lon >= poly.minLon && lon <= poly.maxLon){
       return poly.name;
     }
   }
-
-  // 2. Fallback Nominatim de alta precisão
   try{
     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`, {headers: {'Accept-Language': 'pt-BR'}});
     if(r.ok){
@@ -956,29 +688,7 @@ async function fetchMunicipio(lat, lon){
       }
     }
   }catch(e){}
-
-  // 3. Fallback final por menor distância das sedes conhecidas
-  let nearestName = 'Indefinido';
-  let minD = Infinity;
-  const knownPoints = [
-    {name: 'Pindamonhangaba - SP', lat: -22.925, lon: -45.462},
-    {name: 'Taubaté - SP', lat: -23.027, lon: -45.556},
-    {name: 'Roseira - SP', lat: -22.903, lon: -45.304},
-    {name: 'Aparecida - SP', lat: -22.847, lon: -45.228},
-    {name: 'Guaratinguetá - SP', lat: -22.815, lon: -45.192},
-    {name: 'Lorena - SP', lat: -22.730, lon: -45.120},
-    {name: 'Guarulhos - SP', lat: -23.4628, lon: -46.5333},
-    {name: 'São Paulo - SP', lat: -23.5505, lon: -46.6333},
-    {name: 'Itaguaí - RJ', lat: -22.8512, lon: -43.7744},
-    {name: 'Rio de Janeiro - RJ', lat: -22.9068, lon: -43.1729}
-  ];
-
-  for(const kp of knownPoints){
-    const d = hav(lat, lon, kp.lat, kp.lon);
-    if(d < minD){minD = d; nearestName = kp.name;}
-  }
-
-  return minD > 30000 ? 'Indefinido' : nearestName;
+  return 'Indefinido';
 }
 
 function calculateBearing(lat1, lon1, lat2, lon2) {
@@ -1053,88 +763,6 @@ async function parseKmFile(text){
   }).filter(p=>Number.isFinite(p.km)&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
 }
 
-function getWeatherIcon(code){
-  if(code === 0) return '☀️';
-  if(code >= 1 && code <= 3) return '⛅';
-  if(code >= 45 && code <= 48) return '🌫️';
-  if(code >= 51 && code <= 67) return '🌧️';
-  if(code >= 71 && code <= 77) return '❄️';
-  if(code >= 80 && code <= 82) return '🌦️';
-  if(code >= 95 && code <= 99) return '⛈️';
-  return '☁️';
-}
-
-function getWeatherDesc(code){
-  if(code === 0) return 'Céu limpo';
-  if(code >= 1 && code <= 3) return 'Parcialmente nublado';
-  if(code >= 45 && code <= 48) return 'Nevoeiro';
-  if(code >= 51 && code <= 67) return 'Chuvoso';
-  if(code >= 71 && code <= 77) return 'Neve';
-  if(code >= 80 && code <= 82) return 'Pancadas de chuva';
-  if(code >= 95 && code <= 99) return 'Tempestade';
-  return 'Nublado';
-}
-
-function toggleWeatherDetails(boxId){
-  const box = document.getElementById(boxId);
-  if(!box) return;
-  const isHidden = box.style.display === 'none' || !box.style.display;
-  box.style.display = isHidden ? 'flex' : 'none';
-}
-
-async function renderWeatherWidget(lat, lon, containerId, detailsId){
-  const container = document.getElementById(containerId);
-  if(!container) return;
-  container.style.display = 'flex';
-  container.innerHTML = '<div style="font-size:10px;color:#d1fae5;width:100%;text-align:center;">Carregando clima...</div>';
-
-  try{
-    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&forecast_hours=6`);
-    if(r.ok){
-      const data = await r.json();
-      const current = data.current || {};
-      const hourly = data.hourly || {};
-      
-      const lineHtml = `
-        <div class="weather-line-text">
-          <span>${getWeatherIcon(current.weather_code)}</span>
-          <span>Agora: ${Math.round(current.temperature_2m || 0)}°C · ${getWeatherDesc(current.weather_code)}</span>
-        </div>
-        <button class="btn-weather-details" onclick="toggleWeatherDetails('${detailsId}')">Detalhes</button>
-      `;
-
-      let hourlyHtml = '<div class="weather-hourly">';
-      const times = hourly.time || [];
-      const temps = hourly.temperature_2m || [];
-      const codes = hourly.weather_code || [];
-
-      const curHourIdx = times.findIndex(t => new Date(t) >= new Date()) || 0;
-      for(let i = curHourIdx; i <= Math.min(curHourIdx + 4, times.length - 1); i++){
-        let timeLabel = (i === curHourIdx) ? 'Agora' : `+${i - curHourIdx}h`;
-        hourlyHtml += `
-          <div class="weather-hour-card">
-            <div class="time">${timeLabel}</div>
-            <div class="icon">${getWeatherIcon(codes[i])}</div>
-            <div class="temp">${Math.round(temps[i])}°C</div>
-          </div>
-        `;
-      }
-      hourlyHtml += '</div>';
-
-      container.innerHTML = lineHtml + `<div class="weather-expanded-box" id="${detailsId}">${hourlyHtml}</div>`;
-    }
-  }catch(e){
-    container.style.display = 'none';
-  }
-}
-
-async function fetchWeather(lat, lon){
-  const now = Date.now();
-  if(now - lastWeatherFetch < 900000) return;
-  lastWeatherFetch = now;
-  renderWeatherWidget(lat, lon, 'weatherContainer', 'weatherDetailsBox');
-}
-
 function findNearestInAnyDB(lat, lon){
   const candidates=[
     {name:'BR116/SP', db:kmDB_SP},
@@ -1159,18 +787,15 @@ function findNearestInAnyDB(lat, lon){
 async function updateKm(){
   if(!pos)return;
   const best=findNearestInAnyDB(pos.lat, pos.lon);
-  const currentMunicipio = await fetchMunicipio(pos.lat, pos.lon);
-
   if(!best)return;
 
   const kmValStr=(Math.round(best.res.km*100)/100).toFixed(2).replace('.',',');
-  
   document.getElementById('kmVal').textContent = `KM ${kmValStr}`;
   document.getElementById('kmBrBadge').textContent = best.name;
   
   const s=document.getElementById('kmSource');
   if(s){
-    s.textContent=`Município: ${currentMunicipio} · Ref: ${best.name} (Δ ~${Math.round(best.res.d)}m)`;
+    s.textContent=`Ref: ${best.name} (Δ ~${Math.round(best.res.d)}m)`;
   }
 
   const bearing = calculateBearing(pos.lat, pos.lon, best.res.lat, best.res.lon);
@@ -1205,19 +830,14 @@ function setMapLayer(mode){
   activeLayerMode = mode;
   document.getElementById('btnLayerNormal').classList.toggle('active', mode==='normal');
   document.getElementById('btnLayerSatellite').classList.toggle('active', mode==='satellite');
-  document.getElementById('btnLayerHybrid').classList.toggle('active', mode==='hybrid');
 
   if(!mapInstance) return;
   if(currentTileLayer) mapInstance.removeLayer(currentTileLayer);
 
   if(mode === 'normal'){
     currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19});
-  } else if(mode === 'satellite'){
+  } else {
     currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19});
-  } else if(mode === 'hybrid'){
-    const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19});
-    const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {maxZoom: 19, subdomains: 'abcd'});
-    currentTileLayer = L.layerGroup([sat, labels]);
   }
   currentTileLayer.addTo(mapInstance);
 }
@@ -1255,10 +875,9 @@ function initLeafletMap(initLat, initLon){
   }).setView([initLat, initLon], 13);
 
   setMapLayer('satellite');
-
   mapMarker = L.marker([initLat, initLon]).addTo(mapInstance);
 
-  mapInstance.on('click', function(e){
+  mapInstance.on('click', async function(e){
     handleDoubleTapFullscreen();
     const lat = e.latlng.lat;
     const lon = e.latlng.lng;
@@ -1267,11 +886,22 @@ function initLeafletMap(initLat, initLon){
     document.getElementById('inputLon').value = lon.toFixed(6);
     
     mapMarker.setLatLng([lat, lon]);
-    searchManualCoordByLatLon(lat, lon);
+    
+    const muniName = await fetchMunicipio(lat, lon);
+    const overlayCard = document.getElementById('mapOverlayCard');
+    const overlayContent = document.getElementById('mapOverlayContent');
+    
+    let html = `<p style="color:var(--accent);font-weight:900;margin-bottom:2px;">Município: ${muniName}</p>`;
+    const foundRodovia = findNearestInAnyDB(lat, lon);
+    if(foundRodovia){
+      html += `<p style="color:var(--green2);font-weight:900;">${foundRodovia.name} · KM ${(Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',')}</p>`;
+    }
+    overlayContent.innerHTML = html;
+    overlayCard.style.display = 'block';
+    showToast('Município mapeado');
   });
 
-  const mapContainerDom = document.getElementById('leafletMap');
-  mapContainerDom.addEventListener('touchend', (e) => {
+  document.getElementById('leafletMap').addEventListener('touchend', () => {
     handleDoubleTapFullscreen();
   });
 }
@@ -1280,13 +910,12 @@ function initApoioDirect(){
   if(apoioInit)return;
   apoioInit=true;
 
-  initLeafletMap(-23.027, -45.556); // Centrado em Taubaté/Pinda
+  initLeafletMap(-23.027, -45.556);
   renderApoio();
 
   if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
     pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
     gpsBadge(document.getElementById('gpsStatus'),pos);
-    fetchWeather(pos.lat, pos.lon);
     renderApoio();
     updateKm();
     updateSearchDist();
@@ -1304,19 +933,13 @@ function toggleCoordSearch(){
   const box = document.getElementById('coordSearchBox');
   const isHidden = box.style.display === 'none';
   box.style.display = isHidden ? 'flex' : 'none';
-  
   if(isHidden && mapInstance){
-    setTimeout(()=>{
-      mapInstance.invalidateSize();
-    }, 50);
+    setTimeout(()=>{ mapInstance.invalidateSize(); }, 50);
   }
 }
 
 function useCurrentGpsCoord(){
-  if(!pos){
-    showToast('GPS ainda não localizado', 'err');
-    return;
-  }
+  if(!pos){showToast('GPS indisponível', 'err');return}
   document.getElementById('inputLat').value = pos.lat.toFixed(6);
   document.getElementById('inputLon').value = pos.lon.toFixed(6);
   if(mapInstance){
@@ -1330,121 +953,45 @@ function clearCoordFields(){
   document.getElementById('inputLat').value = '';
   document.getElementById('inputLon').value = '';
   document.getElementById('coordSearchMsg').style.display = 'none';
-  document.getElementById('coordSearchResult').style.display = 'none';
   closeMapOverlay();
 }
 
-function searchManualCoord(){
+async function searchManualCoord(){
   const latStr = document.getElementById('inputLat').value.trim();
   const lonStr = document.getElementById('inputLon').value.trim();
   const msg = document.getElementById('coordSearchMsg');
   
   if(!latStr || !lonStr){
     msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Preencha latitude e longitude.';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Preencha as coordenadas.';
     return;
   }
 
   const lat = parsePt(latStr);
   const lon = parsePt(lonStr);
-
-  if(isNaN(lat) || isNaN(lon)){
-    msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Coordenadas inválidas.';
-    return;
-  }
+  if(isNaN(lat) || isNaN(lon)) return;
 
   if(mapInstance){
     mapInstance.setView([lat, lon], mapInstance.getZoom());
     mapMarker.setLatLng([lat, lon]);
   }
 
-  searchManualCoordByLatLon(lat, lon);
-}
-
-async function searchManualCoordByLatLon(lat, lon){
-  const msg = document.getElementById('coordSearchMsg');
-  const res = document.getElementById('coordSearchResult');
-  const overlayCard = document.getElementById('mapOverlayCard');
-  const overlayContent = document.getElementById('mapOverlayContent');
-
   const muniName = await fetchMunicipio(lat, lon);
-  const foundRodovia = findNearestInAnyDB(lat, lon);
-  
-  let isOutOfStandard = false;
-  if(foundRodovia && foundRodovia.res.d > 15000){
-    isOutOfStandard = true;
-  }
-
-  msg.style.display='none';
-  res.style.display='block';
-
-  let html = `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;">`;
-  if(isOutOfStandard){
-    html += `<p style="color:var(--red);font-weight:900;margin-bottom:6px;">⚠️ Ponto fora dos padrões</p>`;
-  }
-  html += `<p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
-
-  let overlayHtml = '';
-  if(isOutOfStandard){
-    overlayHtml += `<p style="color:var(--red);font-weight:900;margin-bottom:4px;">⚠️ Ponto fora dos padrões</p>`;
-  }
-  overlayHtml += `<p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
-
-  if(foundRodovia){
-    const kmValStr = (Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',');
-    html += `<p style="color:var(--green2);font-weight:900;margin-top:2px;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>`;
-    overlayHtml += `<p style="color:var(--green2);font-weight:900;margin-top:2px;">Rodovia: ${foundRodovia.name} · KM: ${kmValStr}</p>`;
-  }
-
-  const doFindNearest = document.getElementById('chkFindNearestPost').checked;
-  if(doFindNearest && posts.length){
-    let closestPost = null, minD = Infinity;
-    for(const p of posts){
-      if(Math.abs(p.lat - lat) > 0.3 || Math.abs(p.lon - lon) > 0.3) continue;
-      const d = hav(lat, lon, p.lat, p.lon);
-      if(d < minD){minD = d; closestPost = p;}
-    }
-    if(closestPost){
-      html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
-        <p style="color:#fff;font-weight:800;">Poste: <span style="color:var(--accent);">${closestPost.id}</span> (~${Math.round(minD)}m)</p>
-        <button class="post-wa-btn" onclick="sendSingleWhatsApp('${closestPost.id}', ${closestPost.lat}, ${closestPost.lon})" title="Enviar este item por WhatsApp">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        </button>
-      </div>`;
-      
-      overlayHtml += `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
-        <p style="color:#fff;font-weight:800;">Poste: <span style="color:var(--accent);">${closestPost.id}</span> (~${Math.round(minD)}m)</p>
-        <button class="post-wa-btn" onclick="sendSingleWhatsApp('${closestPost.id}', ${closestPost.lat}, ${closestPost.lon})" title="Enviar este item por WhatsApp">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        </button>
-      </div>`;
-    }
-  }
-
-  html += `<div id="coordWeatherBox" class="weather-line-box" style="margin-top:8px;"></div></div>`;
-  res.innerHTML = html;
-  
-  overlayHtml += `<div id="mapOverlayWeather" class="weather-line-box" style="margin-top:6px;"></div>`;
-  overlayContent.innerHTML = overlayHtml;
-  overlayCard.style.display = 'block';
-
-  renderWeatherWidget(lat, lon, 'coordWeatherBox', 'coordWeatherDetails');
-  renderWeatherWidget(lat, lon, 'mapOverlayWeather', 'mapWeatherDetails');
-  showToast('Ponto analisado com sucesso');
+  msg.style.display='flex';
+  msg.innerHTML=`<span style="color:var(--accent)">Município: ${muniName}</span>`;
+  showToast('Ponto analisado');
 }
 
 async function searchId(){
   const rawInput = document.getElementById('inputId').value.trim();
-  const msg=document.getElementById('searchMsg'),
-        res=document.getElementById('searchResult');
+  const msg=document.getElementById('searchMsg'), res=document.getElementById('searchResult');
   
   if(!rawInput){clearId();return}
 
   const digitsOnly = rawInput.replace(/\D/g, '');
   if(digitsOnly.length !== 8){
     msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>O ID DEVE CONTER EXATAMENTE 8 DÍGITOS.`;
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>O ID DEVE TER 8 DÍGITOS.`;
     searchItem=null;res.style.display='none';checkLock();vibrate(20);return;
   }
 
@@ -1458,14 +1005,14 @@ async function searchId(){
 
   if(!found){
     msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID "${rawInput}" NÃO ENCONTRADO.`;
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID NÃO ENCONTRADO.`;
     searchItem=null;res.style.display='none';checkLock();vibrate(20);return;
   }
 
   searchItem=found;
   msg.style.display='none';
-  await renderSearch();
-  showToast('Poste encontrado: '+found.id);
+  renderSearch();
+  showToast('Encontrado: '+found.id);
   vibrate(10);
 }
 
@@ -1485,7 +1032,7 @@ function updateSearchDist(){
   checkLock();
 }
 
-async function renderSearch(){
+function renderSearch(){
   if(!searchItem)return;
   const res=document.getElementById('searchResult');
   let dt='Aguardando GPS...';
@@ -1495,28 +1042,24 @@ async function renderSearch(){
     checkLock();
   }
   const exactKmObj = findPostExactKm(searchItem);
-  const muniName = await fetchMunicipio(searchItem.lat, searchItem.lon);
 
   res.style.display='block';
   res.innerHTML=`<div class="post searched">
     <div class="post-top">
       <div class="post-info" style="flex:1;">
-        <p class="post-id">OS / ID: <span>${searchItem.id}</span></p>
-        <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${muniName}</p>
-        <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Referência: ${exactKmObj.kmStr}</p>
+        <p class="post-id">ID: <span>${searchItem.id}</span></p>
+        <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactKmObj.kmStr}</p>
         <p class="post-dist" id="srch-dist">${dt}</p>
         <p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p>
-        <div id="searchWeatherBox" class="weather-line-box" style="margin-top:8px;"></div>
       </div>
-      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})" title="Enviar este item por WhatsApp">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})" title="Enviar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </button>
     </div>
     <div class="post-map-container">
       <iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
     </div>
   </div>`;
-  renderWeatherWidget(searchItem.lat, searchItem.lon, 'searchWeatherBox', 'searchWeatherDetails');
 }
 
 function getMinMaxKm(db){
@@ -1529,7 +1072,7 @@ function getMinMaxKm(db){
   return {min, max};
 }
 
-async function executeSearchKm(db, label){
+function executeSearchKm(db, label){
   const rawVal=document.getElementById('inputKm').value;
   const targetKm=parsePt(rawVal);
   const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
@@ -1539,7 +1082,7 @@ async function executeSearchKm(db, label){
   const rangeDB = getMinMaxKm(db);
   if(targetKm < rangeDB.min || targetKm > rangeDB.max){
     msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} FORA DO RANGE (${Math.round(rangeDB.min)} a ${Math.round(rangeDB.max)}) (${label}).`;
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>FORA DO RANGE (${Math.round(rangeDB.min)} a ${Math.round(rangeDB.max)}).`;
     searchKmItems=[];res.style.display='none';
     return;
   }
@@ -1551,8 +1094,6 @@ async function executeSearchKm(db, label){
   }
 
   if(!bestPt){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} NÃO ENCONTRADO (${label}).`;
     searchKmItems=[];res.style.display='none';
     return;
   }
@@ -1564,8 +1105,8 @@ async function executeSearchKm(db, label){
 
   searchKmItems = sortedPosts;
   msg.style.display='none';
-  await renderSearchKm(label, bestPt);
-  showToast('10 postes mais próximos do KM '+rawVal+' ('+label+')');
+  renderSearchKm(label);
+  showToast('KM '+rawVal+' ('+label+')');
   vibrate(10);
 }
 
@@ -1575,11 +1116,7 @@ function searchKm(){
   const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult'),modal=document.getElementById('searchKmModal');
   
   if(isNaN(targetKm)){clearKm();return}
-  if(!posts.length || (!kmDB_SP.length && !kmDB_RJ.length)){
-    msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Aguardando bases...';
-    return;
-  }
+  if(!posts.length || (!kmDB_SP.length && !kmDB_RJ.length)){return;}
 
   const rangeSP = getMinMaxKm(kmDB_SP);
   const rangeRJ = getMinMaxKm(kmDB_RJ);
@@ -1589,7 +1126,7 @@ function searchKm(){
 
   if(!inRangeSP && !inRangeRJ){
     msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>KM ${rawVal} FORA DOS LIMITES DE TODAS AS BASES.`;
+    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>FORA DOS LIMITES.`;
     searchKmItems=[];res.style.display='none';
     modal.style.display='none';
     return;
@@ -1603,10 +1140,10 @@ function searchKm(){
     res.style.display='none';
     modal.style.display='block';
     modal.innerHTML=`<div class="modal-box">
-      <p>O KM ${rawVal} existe em São Paulo e no Rio de Janeiro. Escolha a base:</p>
+      <p>Existe em SP e RJ. Escolha a base:</p>
       <div class="modal-btns">
-        <button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'BR116-SP')">São Paulo (SP)</button>
-        <button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'BR116-RJ')">Rio de Janeiro (RJ)</button>
+        <button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'SP')">SP</button>
+        <button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'RJ')">RJ</button>
       </div>
     </div>`;
     return;
@@ -1614,11 +1151,11 @@ function searchKm(){
 
   modal.style.display='none';
   if(existsSP){
-    executeSearchKm(kmDB_SP, 'BR116-SP');
+    executeSearchKm(kmDB_SP, 'SP');
   }else if(existsRJ){
-    executeSearchKm(kmDB_RJ, 'BR116-RJ');
+    executeSearchKm(kmDB_RJ, 'RJ');
   }else{
-    executeSearchKm(inRangeSP ? kmDB_SP : kmDB_RJ, inRangeSP ? 'BR116-SP' : 'BR116-RJ');
+    executeSearchKm(inRangeSP ? kmDB_SP : kmDB_RJ, inRangeSP ? 'SP' : 'RJ');
   }
 }
 
@@ -1638,24 +1175,13 @@ function updateSearchKmDist(){
   });
 }
 
-async function renderSearchKm(label, bestPt){
+function renderSearchKm(label){
   if(!searchKmItems.length)return;
   const res=document.getElementById('searchKmResult');
   res.style.display='block';
   
-  // Associa exatamente a coordenada do ponto do KM para extrair o município sem divergência
-  const muniName = bestPt ? await fetchMunicipio(bestPt.lat, bestPt.lon) : '';
-
-  let htmlContent = `<div style="font-size:10px;font-weight:900;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">Resultado para ${label} · Município Exato: ${muniName}</div>`;
+  let htmlContent = `<div style="font-size:9px;font-weight:900;color:var(--accent);margin-bottom:6px;text-transform:uppercase;">Resultado: ${label}</div><div style="display:flex;flex-direction:column;gap:10px">`;
   
-  if(bestPt){
-    htmlContent += `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;margin-bottom:8px;">
-      <p style="color:var(--green2);font-weight:900;">Clima no KM Pesquisado (${label} - ${muniName}):</p>
-      <div id="kmSearchWeatherBox" class="weather-line-box" style="margin-top:6px;"></div>
-    </div>`;
-  }
-
-  htmlContent += `<div style="display:flex;flex-direction:column;gap:12px">`;
   for(let idx = 0; idx < searchKmItems.length; idx++){
     const item = searchKmItems[idx];
     let dt='Aguardando GPS...';
@@ -1663,19 +1189,17 @@ async function renderSearchKm(label, bestPt){
       dt='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
     }
     const exactKmObj = findPostExactKm(item);
-    const itemMuni = await fetchMunicipio(item.lat, item.lon);
     htmlContent += `
       <div class="post searched">
         <div class="post-top">
           <div class="post-info" style="flex:1;">
             <p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p>
-            <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${itemMuni}</p>
-            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKmObj.kmStr}</p>
+            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactKmObj.kmStr}</p>
             <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
             <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
           </div>
-          <button class="post-wa-btn" onclick="sendSingleWhatsApp('${item.id}', ${item.lat}, ${item.lon})" title="Enviar este item por WhatsApp">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <button class="post-wa-btn" onclick="sendSingleWhatsApp('${item.id}', ${item.lat}, ${item.lon})" title="Enviar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
           </button>
         </div>
         <div class="post-map-container">
@@ -1685,10 +1209,6 @@ async function renderSearchKm(label, bestPt){
   }
   htmlContent += '</div>';
   res.innerHTML = htmlContent;
-
-  if(bestPt){
-    renderWeatherWidget(bestPt.lat, bestPt.lon, 'kmSearchWeatherBox', 'kmSearchWeatherDetails');
-  }
 }
 
 function checkLock(){
@@ -1697,7 +1217,7 @@ function checkLock(){
   const d=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
   if(d<=(5+(pos.acc||10))){
     b.classList.add('on');
-    document.getElementById('targetLockSub').textContent=`ID ALVO: ${searchItem.id} · DISTÂNCIA EST. ~${Math.round(d)}M`;
+    document.getElementById('targetLockSub').textContent=`ID: ${searchItem.id} · ~${Math.round(d)}M`;
     vibrate([20,80,20]);
   }else{
     b.classList.remove('on');
@@ -1705,13 +1225,13 @@ function checkLock(){
 }
 
 function sendSingleWhatsApp(id, lat, lon) {
-  let tx = `📍 *LOCALIZAÇÃO DE POSTE*\n`;
-  tx += `Data/Hora: ${nowBR()}\n\n`;
-  tx += `*ID:* ${id}\n`;
+  let tx = `📍 *LOCALIZAÇÃO*\n`;
+  tx += `Data: ${nowBR()}\n\n`;
+  tx += `ID: ${id}\n`;
   tx += `Coordenadas: ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}\n`;
   tx += `🗺️ https://maps.google.com/?q=${Number(lat).toFixed(6)},${Number(lon).toFixed(6)}`;
   window.open('https://wa.me/?text=' + encodeURIComponent(tx), '_blank', 'noopener');
-  showToast(`Poste ${id} enviado para o WhatsApp`);
+  showToast('Enviado');
 }
 
 async function renderApoio(){
@@ -1726,12 +1246,7 @@ async function renderApoio(){
     return {id:p.id,lat:p.lat,lon:p.lon,d};
   }).filter(Boolean).sort((a,b)=>a.d-b.d).slice(0,qty);
 
-  if(!items.length){
-    posts.map(p=>{
-      const d=hav(pos.lat,pos.lon,p.lat,p.lon);
-      return {id:p.id,lat:p.lat,lon:p.lon,d};
-    }).sort((a,b)=>a.d-b.d).slice(0,qty);
-  }
+  if(!items.length) return;
 
   const key=items.map(i=>i.id).join(',');
   const list=document.getElementById('postList');
@@ -1744,7 +1259,7 @@ async function renderApoio(){
       const arrowEl=document.getElementById('arrow-'+i);
       if(el)el.textContent='Distância: '+range(o.d,pos.acc);
       const exactObj = findPostExactKm(o);
-      if(kmEl)kmEl.textContent='KM Exato: '+exactObj.kmStr;
+      if(kmEl)kmEl.textContent='KM: '+exactObj.kmStr;
       
       if(arrowEl){
         const bearing = calculateBearing(pos.lat, pos.lon, o.lat, o.lon);
@@ -1762,7 +1277,6 @@ async function renderApoio(){
   for(let i=0; i<items.length; i++){
     const o = items[i];
     const exactObj = findPostExactKm(o);
-    const muniName = await fetchMunicipio(o.lat, o.lon);
     const bearing = calculateBearing(pos.lat, pos.lon, o.lat, o.lon);
     const relAngle = bearing - deviceHeading;
 
@@ -1772,21 +1286,18 @@ async function renderApoio(){
       <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
       <div class="post-info" style="flex:1;">
         <div style="display:flex;align-items:center;gap:8px;">
-          <p class="post-id" style="margin:0;">Poste: <span>${o.id}</span></p>
-          <div class="compass-badge" style="padding:2px 6px;margin-left:auto;">
-            <div class="compass-arrow" style="width:18px;height:18px;" id="arrow-${i}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          <p class="post-id" style="margin:0;">ID: <span>${o.id}</span></p>
+          <div class="compass-badge" style="padding:2px 5px;margin-left:auto;">
+            <div class="compass-arrow" style="width:16px;height:16px;" id="arrow-${i}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:9px;height:9px;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
             </div>
           </div>
         </div>
-        <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${muniName}</p>
-        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactObj.kmStr}</p>
+        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactObj.kmStr}</p>
         <p class="post-dist" id="dist-${i}">Distância: ${range(o.d,pos.acc)}</p>
       </div>
-      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar este item por WhatsApp">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-        </svg>
+      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </button>
     </div>
     <div class="post-map-container">
@@ -1813,14 +1324,14 @@ document.getElementById('btnSend').onclick=()=>{
     const qty=Number(document.getElementById('qty').value||10);
     items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
   }
-  let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
+  let tx=`📍 *LISTA DE ITENS*\nData: ${nowBR()}\nGPS: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)}\n\n`;
   items.forEach((o,i)=>{
     const exactObj = findPostExactKm(o);
     tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactObj.kmStr})\n`;
     if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`;
   });
   window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
-  showToast(`${items.length} postes enviados`);
+  showToast(`${items.length} itens enviados`);
   vibrate(10);
 };
 
