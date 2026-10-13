@@ -174,6 +174,24 @@ input,select{font-family:var(--font);outline:none}
   text-transform:uppercase;color:var(--warn);
 }
 
+.modal-box{
+  background:rgba(11,17,36,0.98);
+  border:1px solid var(--border2);
+  border-radius:var(--r-xs);
+  padding:10px;
+  margin-top:6px;
+  display:flex;flex-direction:column;gap:6px;
+  box-shadow:0 8px 24px rgba(0,0,0,.6);
+}
+.modal-box p{font-size:8.5px;font-weight:900;color:var(--accent);text-transform:uppercase;}
+.modal-btns{display:flex;gap:6px}
+.modal-btn{
+  flex:1;padding:8px;border-radius:var(--r-xs);font-size:8px;font-weight:900;text-transform:uppercase;
+  background:var(--accent);color:#fff;cursor:pointer;text-align:center;
+  border:1px solid rgba(255,255,255,.2);
+}
+.modal-btn.rj{background:#2563eb;color:#fff;}
+
 .coord-container{
   display:flex;flex-direction:column;gap:6px;
 }
@@ -940,7 +958,7 @@ function executeSearchKm(db, label){
   searchKmItems=sorted;
   msg.style.display='none';
   renderSearchKm(label, bestPt);
-  showToast('Resultados carregados');
+  showToast('Resultados carregados ('+label+')');
 }
 
 function searchKm(){
@@ -973,10 +991,10 @@ function searchKm(){
     res.style.display='none';
     modal.style.display='block';
     modal.innerHTML=`<div class="modal-box">
-      <p>KM ${rawVal} em SP e RJ. Escolha a base:</p>
+      <p>KM ${rawVal} presente em SP e RJ. Escolha a base:</p>
       <div class="modal-btns">
-        <button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'BR116-SP')">São Paulo</button>
-        <button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'BR116-RJ')">Rio de Janeiro</button>
+        <button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'BR116-SP')">KM São Paulo</button>
+        <button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'BR116-RJ')">KM Rio</button>
       </div>
     </div>`;
     return;
@@ -1003,7 +1021,11 @@ async function renderSearchKm(label, bestPt){
   let res=document.getElementById('searchKmResult');
   res.style.display='block';
   
-  let html='<div style="display:flex;flex-direction:column;gap:6px">';
+  let html=`<div style="font-size:7.5px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;justify-content:between;">
+    <span>Base Selecionada: ${label}</span>
+    <button style="color:var(--dim);text-decoration:underline;cursor:pointer;font-size:7px;" onclick="searchKm()">Trocar Base</button>
+  </div><div style="display:flex;flex-direction:column;gap:6px">`;
+
   for(let idx = 0; idx < searchKmItems.length; idx++){
     let item = searchKmItems[idx];
     let dt=pos?'distância até o local: '+formatDist(hav(pos.lat,pos.lon,item.lat,item.lon)):'--';
