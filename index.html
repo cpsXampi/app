@@ -527,7 +527,7 @@ img,video{display:block;max-width:100%}
           <button class="btn-icon clr" onclick="clearCoordFields()" style="width:34px;height:34px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
 
-        <div style="font-size:8px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:2px;">Toque no mapa para ver o município:</div>
+        <div style="font-size:8px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:2px;">Toque no mapa para ver as informações do ponto:</div>
         
         <div class="map-picker-box" id="mapPickerBox">
           <div class="map-controls-bar">
@@ -540,7 +540,7 @@ img,video{display:block;max-width:100%}
 
           <div class="map-overlay-card" id="mapOverlayCard">
             <div class="map-overlay-header">
-              <span class="map-overlay-title">Município Exato (PEI)</span>
+              <span class="map-overlay-title">Informações do Ponto</span>
               <button class="map-overlay-close" onclick="closeMapOverlay()">✕</button>
             </div>
             <div id="mapOverlayContent" style="font-size:10px;color:#fff;"></div>
@@ -689,6 +689,17 @@ async function fetchMunicipio(lat, lon){
     }
   }catch(e){}
   return 'Indefinido';
+}
+
+function findNearestPost(lat, lon){
+  if(!posts.length) return null;
+  let closest = null, minD = Infinity;
+  for(const p of posts){
+    if(Math.abs(p.lat - lat) > 0.3 || Math.abs(p.lon - lon) > 0.3) continue;
+    const d = hav(lat, lon, p.lat, p.lon);
+    if(d < minD){minD = d; closest = {...p, d};}
+  }
+  return closest;
 }
 
 function calculateBearing(lat1, lon1, lat2, lon2) {
@@ -888,17 +899,25 @@ function initLeafletMap(initLat, initLon){
     mapMarker.setLatLng([lat, lon]);
     
     const muniName = await fetchMunicipio(lat, lon);
+    const closestPost = findNearestPost(lat, lon);
+    const foundRodovia = findNearestInAnyDB(lat, lon);
+
     const overlayCard = document.getElementById('mapOverlayCard');
     const overlayContent = document.getElementById('mapOverlayContent');
     
     let html = `<p style="color:var(--accent);font-weight:900;margin-bottom:2px;">Município: ${muniName}</p>`;
-    const foundRodovia = findNearestInAnyDB(lat, lon);
+    
+    if(closestPost){
+      html += `<p style="color:#fff;font-weight:900;margin-bottom:2px;">ID Mais Próximo: <span style="color:var(--accent)">${closestPost.id}</span> (~${Math.round(closestPost.d)}m)</p>`;
+    }
+    
     if(foundRodovia){
       html += `<p style="color:var(--green2);font-weight:900;">${foundRodovia.name} · KM ${(Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',')}</p>`;
     }
+
     overlayContent.innerHTML = html;
     overlayCard.style.display = 'block';
-    showToast('Município mapeado');
+    showToast('Ponto Mapeado');
   });
 
   document.getElementById('leafletMap').addEventListener('touchend', () => {
@@ -977,8 +996,14 @@ async function searchManualCoord(){
   }
 
   const muniName = await fetchMunicipio(lat, lon);
+  const closestPost = findNearestPost(lat, lon);
+
   msg.style.display='flex';
-  msg.innerHTML=`<span style="color:var(--accent)">Município: ${muniName}</span>`;
+  let txt = `<span style="color:var(--accent)">Município: ${muniName}</span>`;
+  if(closestPost){
+    txt += ` · <span style="color:#fff">ID: ${closestPost.id} (~${Math.round(closestPost.d)}m)</span>`;
+  }
+  msg.innerHTML = txt;
   showToast('Ponto analisado');
 }
 
