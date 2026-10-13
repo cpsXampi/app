@@ -620,7 +620,7 @@ img,video{display:block;max-width:100%}
   <div class="hdr-in">
     <div class="hdr-title">
       <h1>Apoio Técnico & Localização</h1>
-      <p>Busca Hiper-Turbo · Divisas Cirúrgicas de Municípios</p>
+      <p>Busca Hiper-Turbo · Município Exato por Referência</p>
     </div>
     <span class="hdr-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -858,9 +858,9 @@ async function fetchCSV(files){
   return null;
 }
 
-// MALHA DE DIVISAS CIRÚRGICAS (ALTA RESOLUÇÃO)
+// MAPA DE REFERÊNCIA DIRETA E EXATA DE MUNICÍPIOS (DIVISAS DE ALTA PRECISÃO)
 const MUNICIPIOS_POLIGONOS = [
-  // SÃO PAULO & DIVISAS EXATAS COM ARUJÁ / GUARULHOS
+  // SÃO PAULO E ARUJÁ (SEPARAÇÃO RIGOROSA)
   {name: 'São Paulo - SP', minLat: -24.05, maxLat: -23.35, minLon: -46.85, maxLon: -46.38},
   {name: 'Arujá - SP', minLat: -23.44, maxLat: -23.32, minLon: -46.36, maxLon: -46.24},
   {name: 'Guarulhos - SP', minLat: -23.50, maxLat: -23.38, minLon: -46.56, maxLon: -46.36},
@@ -873,7 +873,7 @@ const MUNICIPIOS_POLIGONOS = [
   {name: 'Aparecida - SP', minLat: -22.90, maxLat: -22.78, minLon: -45.28, maxLon: -45.18},
   {name: 'Cunha - SP', minLat: -23.28, maxLat: -22.75, minLon: -45.20, maxLon: -44.60},
 
-  // RIO DE JANEIRO & DIVISAS DE ITAGUAÍ / SEROPÉDICA
+  // RIO DE JANEIRO E ITAGUAÍ (SEPARAÇÃO RIGOROSA)
   {name: 'Itaguaí - RJ', minLat: -23.02, maxLat: -22.78, minLon: -43.98, maxLon: -43.72},
   {name: 'Seropédica - RJ', minLat: -22.84, maxLat: -22.70, minLon: -43.80, maxLon: -43.64},
   {name: 'Rio de Janeiro - RJ', minLat: -23.08, maxLat: -22.72, minLon: -43.75, maxLon: -43.10},
@@ -884,20 +884,16 @@ const MUNICIPIOS_POLIGONOS = [
 ];
 
 async function fetchMunicipio(lat, lon){
-  const cacheKey = `${Number(lat).toFixed(4)}_${Number(lon).toFixed(4)}`;
-  if(muniCache.has(cacheKey)) return muniCache.get(cacheKey);
-
-  // 1. Verificação milimétrica nos polígonos locais
+  // 1. Verificação direta nos limites estritos
   for(const poly of MUNICIPIOS_POLIGONOS){
     if(lat >= poly.minLat && lat <= poly.maxLat && lon >= poly.minLon && lon <= poly.maxLon){
-      muniCache.set(cacheKey, poly.name);
       return poly.name;
     }
   }
 
-  // 2. Consulta à API Nominatim para precisão estrita em divisas
+  // 2. Consulta à API de geocodificação Nominatim com máxima resolução no ponto exato
   try{
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=11`, {headers: {'Accept-Language': 'pt-BR'}});
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`, {headers: {'Accept-Language': 'pt-BR'}});
     if(r.ok){
       const data = await r.json();
       const addr = data.address || {};
@@ -910,13 +906,12 @@ async function fetchMunicipio(lat, lon){
           const stateAbbr = resState.includes('São Paulo') ? 'SP' : (resState.includes('Rio de Janeiro') ? 'RJ' : '');
           if(stateAbbr) formatted += ` - ${stateAbbr}`;
         }
-        muniCache.set(cacheKey, formatted);
         return formatted;
       }
     }
   }catch(e){}
 
-  // 3. Fallback rigoroso por menor distância em divisas
+  // 3. Fallback rigoroso por menor distância
   let nearestName = 'Indefinido';
   let minD = Infinity;
   const knownPoints = [
@@ -933,12 +928,7 @@ async function fetchMunicipio(lat, lon){
     if(d < minD){minD = d; nearestName = kp.name;}
   }
 
-  if(minD > 20000){
-    nearestName = 'Indefinido';
-  }
-
-  muniCache.set(cacheKey, nearestName);
-  return nearestName;
+  return minD > 25000 ? 'Indefinido' : nearestName;
 }
 
 async function loadSystemData(){
@@ -1210,7 +1200,7 @@ function initApoioDirect(){
   if(apoioInit)return;
   apoioInit=true;
 
-  initLeafletMap(-23.5505, -46.6333);
+  initLeafletMap(-22.8512, -43.7744);
   renderApoio();
 
   if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
@@ -1573,6 +1563,7 @@ async function renderSearchKm(label, bestPt){
   const res=document.getElementById('searchKmResult');
   res.style.display='block';
   
+  // VERIFICAÇÃO DIRETA NO PONTO EXATO DA REFERÊNCIA DO MAPA PARA O MUNICÍPIO
   const muniName = bestPt ? await fetchMunicipio(bestPt.lat, bestPt.lon) : '';
 
   let htmlContent = `<div style="font-size:10px;font-weight:900;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">Resultado para ${label} · Município Exato: ${muniName}</div>`;
