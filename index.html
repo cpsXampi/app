@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#0b1020">
-<title>Apoio Operacional</title>
+<meta name="theme-color" content="#050816">
+<title>Apoio Operacional Integrado</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -25,6 +25,8 @@
   --violet2:#7c3aed;
   --warn:#f59e0b;
   --warn-dim:rgba(245,158,11,.10);
+  --blue:#3b82f6;
+  --blue-dim:rgba(59,130,246,.12);
   --text:#f3f4f6;
   --text2:#d1d5db;
   --text3:#9ca3af;
@@ -71,11 +73,16 @@ img{display:block;max-width:100%}
 }
 .hdr-in{
   max-width:680px;margin:0 auto;
-  display:flex;align-items:center;gap:12px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;height:52px;
 }
 .hdr-title h1{
   font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.hdr-badge{
+  font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;
+  background:rgba(16,185,129,.15);color:var(--green2);border:1px solid rgba(16,185,129,.3);
+  padding:3px 8px;border-radius:6px;
 }
 
 .wrap{
@@ -99,6 +106,17 @@ img{display:block;max-width:100%}
 }
 .section-header.proximity-title{color:var(--green2)}
 .section-header svg{width:14px;height:14px}
+
+.telemetry-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:2px;
+}
+.telemetry-pill{
+  background:rgba(15,23,42,0.8);border:1px solid var(--border2);
+  border-radius:var(--r-sm);padding:8px 10px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.telemetry-label{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.telemetry-val{font-size:13px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
 
 .km-hero{
   border-radius:var(--r-lg);
@@ -401,12 +419,31 @@ img{display:block;max-width:100%}
     <div class="hdr-title">
       <h1>Apoio Operacional</h1>
     </div>
+    <div class="hdr-badge" id="hdrStatus">PRONTO</div>
   </div>
 </header>
 
 <div class="wrap">
 
-  <!-- SEÇÃO 1: PESQUISA -->
+  <!-- SEÇÃO 1: TELEMETRIA E CLIMA INTEGRADOS -->
+  <div class="section-block">
+    <div class="section-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Telemetria & Clima Integrados
+    </div>
+    <div class="telemetry-grid">
+      <div class="telemetry-pill">
+        <span class="telemetry-label">Velocidade Atual</span>
+        <span class="telemetry-val" id="telSpeed">0 KM/H</span>
+      </div>
+      <div class="telemetry-pill">
+        <span class="telemetry-label">Clima & Condição</span>
+        <span class="telemetry-val" id="telWeather" style="font-size:11px;line-height:1.3">Carregando...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 2: PESQUISA -->
   <div class="section-block">
     <div class="section-header">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -443,7 +480,7 @@ img{display:block;max-width:100%}
     </div>
   </div>
 
-  <!-- SEÇÃO 2: GPS E PROXIMIDADE -->
+  <!-- SEÇÃO 3: GPS E PROXIMIDADE -->
   <div class="section-block" style="border-color: rgba(16,185,129,0.3);">
     <div class="section-header proximity-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -578,6 +615,7 @@ let gpsInitializedOnce=false;
 let currentTileLayer=null;
 let activeLayerMode='satellite';
 let lastTapTime = 0;
+let lastWeatherFetch = 0;
 
 let _tt=null;
 function showToast(msg,type='ok'){
@@ -694,6 +732,38 @@ function findNearestInAnyDB(lat, lon){
   if(!candidates.length)return null;
   candidates.sort((a,b)=>a.res.d - b.res.d);
   return candidates[0];
+}
+
+async function updateWeatherAndTelemetry(lat, lon, speedMs){
+  const speedKmh = Number.isFinite(speedMs) ? Math.max(0, Math.round(speedMs * 3.6)) : 0;
+  document.getElementById('telSpeed').textContent = `${speedKmh} KM/H`;
+
+  const now = Date.now();
+  if(now - lastWeatherFetch < 300000) return; // Cache de 5 min para clima
+  lastWeatherFetch = now;
+
+  try {
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
+    if(res.ok){
+      const data = await res.json();
+      const curr = data.current;
+      if(curr){
+        const temp = Math.round(curr.temperature_2m);
+        const hum = curr.relative_humidity_2m;
+        const wind = Math.round(curr.wind_speed_10m);
+        const code = curr.weather_code;
+        
+        let condText = 'Bom';
+        if([1,2,3].includes(code)) condText = 'Nublado';
+        else if([51,53,55,61,63,65,80,81,82].includes(code)) condText = 'Chuvoso ⚠️';
+        else if([95,96,99].includes(code)) condText = 'Tempestade ⚠️';
+
+        document.getElementById('telWeather').innerHTML = `${temp}°C, ${condText}<br><span style="font-size:90%;color:var(--muted)">Umidade ${hum}% | Vento ${wind}km/h</span>`;
+      }
+    }
+  } catch(e){
+    document.getElementById('telWeather').textContent = 'Online (Sensores Ativos)';
+  }
 }
 
 async function updateKm(){
@@ -846,6 +916,9 @@ function initApoioDirect(){
   if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
     pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
     gpsBadge(document.getElementById('gpsStatus'),pos);
+    document.getElementById('hdrStatus').textContent = 'ONLINE';
+    
+    updateWeatherAndTelemetry(pos.lat, pos.lon, p.coords.speed);
     renderApoio();
     updateKm();
     updateSearchDist();
@@ -856,7 +929,10 @@ function initApoioDirect(){
       mapInstance.setView([pos.lat, pos.lon], 14);
       mapMarker.setLatLng([pos.lat, pos.lon]);
     }
-  },null,{enableHighAccuracy:true,maximumAge:0,timeout:10000});
+  },err=>{
+    gpsBadge(document.getElementById('gpsStatus'), null, 'GPS · ERRO DE SINAL');
+    document.getElementById('hdrStatus').textContent = 'OFFLINE';
+  },{enableHighAccuracy:true,maximumAge:0,timeout:10000});
 }
 
 function toggleCoordSearch(){
@@ -1070,7 +1146,6 @@ function searchKm(){
   const existsSP = inRangeSP && kmDB_SP.some(pt => Math.abs(pt.km - targetKm) < 1.0);
   const existsRJ = inRangeRJ && kmDB_RJ.some(pt => Math.abs(pt.km - targetKm) < 1.0);
 
-  // AUTOMAÇÃO INTELIGENTE POR GPS / PROXIMIDADE
   if(existsSP && existsRJ){
     if(pos){
       const nearestInSP = kmDB_SP.map(p=>({d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d)[0];
@@ -1087,7 +1162,6 @@ function searchKm(){
       }
     }
 
-    // Se não tiver GPS ativo para desambiguar, aí sim exibe o seletor
     msg.style.display='none';
     res.style.display='none';
     modal.style.display='block';
