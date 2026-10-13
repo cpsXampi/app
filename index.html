@@ -289,6 +289,27 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
 }
 .ctrl-chk{width:13px;height:13px;accent-color:var(--accent)}
 
+.btn-discreet{
+  background:rgba(59,130,246,.15);border:1px solid var(--border2);color:var(--accent);
+  padding:4px 8px;border-radius:var(--r-xs);font-size:7.5px;font-weight:900;
+  text-transform:uppercase;cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-top:4px;
+}
+.btn-discreet:hover{background:rgba(59,130,246,.3);}
+
+/* Modal do Mapa Geral */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(7,9,19,.9);z-index:999999;
+  display:none;flex-direction:column;padding:12px;backdrop-filter:blur(10px);
+}
+.modal-overlay.show{display:flex;}
+.modal-header{
+  display:flex;align-items:center;justify-content:between;margin-bottom:8px;
+}
+.modal-close{
+  background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#fecaca;
+  padding:4px 10px;border-radius:var(--r-xs);font-size:8px;font-weight:900;cursor:pointer;
+}
+
 .leaflet-popup-content-wrapper{
   background:rgba(11,17,36,0.96) !important;
   color:#fff !important;
@@ -442,6 +463,20 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
 
 </div>
 
+<!-- Modal do Mapa Geral da Redondeza -->
+<div class="modal-overlay" id="generalMapModal">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <span style="font-size:9px;font-weight:900;color:var(--accent);text-transform:uppercase;" id="modalMapTitle">Mapa Geral da Redondeza</span>
+    <button class="modal-close" onclick="closeGeneralMap()">Fechar ✕</button>
+  </div>
+  <div style="flex:1;border-radius:var(--r-sm);border:1px solid var(--border2);overflow:hidden;position:relative;background:#020617;">
+    <div id="generalLeafletMap" style="width:100%;height:100%;"></div>
+  </div>
+  <div style="margin-top:6px;display:flex;gap:4px;">
+    <button class="ctrl-send" style="width:100%;justify-content:center;" onclick="sendGeneralMapWhatsApp()">Enviar Redondeza no WhatsApp</button>
+  </div>
+</div>
+
 <div class="toast" id="toast" aria-live="polite"></div>
 
 <!-- Leaflet JS -->
@@ -468,6 +503,8 @@ let posts=[], postIndex=new Map();
 let kmDB_SP=[], kmDB_RJ=[];
 let pos=null, searchItem=null, searchKmItems=[], searchCoordItems=[], renderedKey='';
 let mapInstance=null, mapMarker=null, mapLayerObj=null, popupInstance=null;
+let generalMapInstance=null, generalMapMarkers=[];
+let activeGeneralPoints=[];
 let activePane = null;
 let cityCache = new Map();
 
@@ -650,39 +687,6 @@ function initMap(lat, lon){
     document.getElementById('inputLat').value = l.lat.toFixed(6);
     document.getElementById('inputLon').value = l.lng.toFixed(6);
     mapMarker.setLatLng([l.lat, l.lng]);
-
-    const cityName = await fetchCityName(l.lat, l.lng);
-    const nearestKm = findNearestInAnyDB(l.lat, l.lng);
-    let kmStr = '---';
-    if(nearestKm && nearestKm.res){
-      kmStr = `KM ${(Math.round(nearestKm.res.km*100)/100).toFixed(2).replace('.','mö')} (${nearestKm.name})`.replace('mö',',');
-    }
-
-    let nearestPost = null, minPostDist = Infinity;
-    if(posts.length){
-      for(let p of posts){
-        let d = hav(l.lat, l.lng, p.lat, p.lon);
-        if(d < minPostDist){minPostDist = d; nearestPost = p;}
-      }
-    }
-
-    let postIdStr = nearestPost ? nearestPost.id : '---';
-    let distStr = nearestPost ? formatDist(minPostDist) : '---';
-
-    let popupContent = `
-      <div style="font-family:var(--font);color:#fff;padding:2px;min-width:140px;font-size:8px;">
-        <div style="font-weight:900;color:#3b82f6;text-transform:uppercase;margin-bottom:1px;">${cityName}</div>
-        <div style="font-weight:800;color:#d1d5db;">Rodovia: ${kmStr}</div>
-        <div style="font-weight:900;color:#34d399;margin-top:2px;">ID: ${postIdStr}</div>
-        <div style="font-size:6.5px;color:var(--muted);text-transform:lowercase;margin-top:1px;">dist. do ponto ao ID: ${distStr}</div>
-        <button style="margin-top:4px;width:100%;background:#10b981;color:#fff;border:0;padding:2px;border-radius:2px;font-size:7px;font-weight:900;text-transform:uppercase;cursor:pointer;" onclick="sendWhatsApp('${postIdStr}', ${l.lat}, ${l.lng})">WhatsApp</button>
-      </div>
-    `;
-
-    if(popupInstance){
-      mapInstance.removeLayer(popupInstance);
-    }
-    popupInstance = L.popup({maxWidth:180,className:'mini-popup'}).setLatLng([l.lat, l.lng]).setContent(popupContent).openOn(mapInstance);
   });
 }
 
@@ -722,82 +726,52 @@ function clearCoordFields(){
   searchCoordItems=[];
 }
 
-function updateSearchCoordDist(){
-  if(!searchCoordItems.length)return;
-  searchCoordItems.forEach((item, idx)=>{
-    let el=document.getElementById('srch-coord-dist-'+idx);
-    if(el)el.textContent='distância até o local: '+formatDist(hav(item.lat,item.lon,item.clickedLat,item.clickedLon));
+function openGeneralMap(points, title){
+  activeGeneralPoints = points;
+  document.getElementById('modalMapTitle').textContent = title || 'Mapa Geral da Redondeza';
+  document.getElementById('generalMapModal').classList.add('show');
+  
+  setTimeout(()=>{
+    if(!generalMapInstance){
+      generalMapInstance = L.map('generalLeafletMap', {zoomControl:true, attributionControl:false});
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom:19}).addTo(generalMapInstance);
+    } else {
+      generalMapInstance.invalidateSize();
+    }
+
+    generalMapMarkers.forEach(m => generalMapInstance.removeLayer(m));
+    generalMapMarkers = [];
+
+    let latLngs = [];
+    points.forEach((p, idx)=>{
+      let marker = L.marker([p.lat, p.lon]).addTo(generalMapInstance);
+      marker.bindPopup(`<div style="font-size:8px;font-weight:900;">#${idx+1} - ID: ${p.id}<br>KM: ${findPostExactKm(p)}</div>`);
+      generalMapMarkers.push(marker);
+      latLngs.push([p.lat, p.lon]);
+    });
+
+    if(latLngs.length > 0){
+      let bounds = L.latLngBounds(latLngs);
+      generalMapInstance.fitBounds(bounds, {padding:[30,30], maxZoom:18});
+    }
+  }, 100);
+}
+
+function closeGeneralMap(){
+  document.getElementById('generalMapModal').classList.remove('show');
+}
+
+function sendGeneralMapWhatsApp(){
+  if(!activeGeneralPoints.length) return;
+  let tx = `🗺️ *MAPA GERAL DA REDONDEZA*\n\n`;
+  activeGeneralPoints.forEach((o,i)=>{
+    tx+=`${i+1}. ID: ${o.id} (KM: ${findPostExactKm(o)})\n   https://maps.google.com/?q=${o.lat.toFixed(5)},${o.lon.toFixed(5)}\n`;
   });
+  window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
+  showToast('Redondeza enviada');
 }
 
-async function searchManualCoord(){
-  let lat = parsePt(document.getElementById('inputLat').value);
-  let lon = parsePt(document.getElementById('inputLon').value);
-  if(isNaN(lat)||isNaN(lon)){showToast('Coordenada inválida','err');return;}
-  
-  if(mapInstance){
-    mapInstance.setView([lat, lon], 16);
-    mapMarker.setLatLng([lat, lon]);
-  }
-
-  let sorted = posts.map(p=>({
-    ...p, clickedLat: lat, clickedLon: lon, d: (Math.abs(p.lat - lat) > 0.3 || Math.abs(p.lon - lon) > 0.3) ? 999999 : hav(lat, lon, p.lat, p.lon)
-  })).sort((a,b)=>a.d - b.d).slice(0, 10);
-
-  searchCoordItems = sorted;
-
-  let res = document.getElementById('searchCoordResult');
-  res.style.display='block';
-  
-  const cityName = await fetchCityName(lat, lon);
-  const exactKm = findExactKmForCoords(lat, lon);
-
-  let html = `
-    <div class="post card-accent" style="margin-bottom:6px;">
-      <div class="post-top">
-        <div style="flex:1;">
-          <p class="post-id" style="color:var(--text);font-size:9px;">📍 Ponto Selecionado</p>
-          <p class="post-dist" style="color:var(--accent);font-weight:900;text-transform:uppercase;">${cityName}</p>
-          <p class="post-dist" style="color:var(--green2);font-weight:900;text-transform:uppercase;">KM APROXIMADO: ${exactKm}</p>
-          <p class="post-coords">${lat.toFixed(5)}, ${lon.toFixed(5)}</p>
-        </div>
-        <button class="post-wa" onclick="sendWhatsApp('PONTO SELECIONADO', ${lat}, ${lon})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        </button>
-      </div>
-      <div style="padding:0 6px 6px;"><iframe class="post-map" src="https://maps.google.com/maps?q=${lat},${lon}&t=k&z=19&output=embed" loading="lazy"></iframe></div>
-    </div>
-    <div style="font-size:7px;font-weight:900;text-transform:uppercase;color:var(--muted);margin:4px 0 2px 2px;">10 Postes Mais Próximos:</div>
-    <div style="display:flex;flex-direction:column;gap:6px">
-  `;
-
-  for(let idx = 0; idx < searchCoordItems.length; idx++){
-    let item = searchCoordItems[idx];
-    let dt='distância até o local: '+formatDist(item.d);
-    const itemCity = await fetchCityName(item.lat, item.lon);
-    html+=`<div class="post searched">
-      <div class="post-top">
-        <div style="flex:1;">
-          <p class="post-id">#${idx+1} - ID: ${item.id}</p>
-          <p class="post-dist" style="color:var(--accent);font-weight:900;text-transform:uppercase;">${itemCity}</p>
-          <p class="post-dist" style="color:var(--green2);text-transform:uppercase;">KM: ${findPostExactKm(item)}</p>
-          <p class="post-dist" id="srch-coord-dist-${idx}">${dt}</p>
-          <p class="post-coords">${item.lat.toFixed(5)}, ${item.lon.toFixed(5)}</p>
-        </div>
-        <button class="post-wa" onclick="sendWhatsApp('${item.id}', ${item.lat}, ${item.lon})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        </button>
-      </div>
-      <div style="padding:0 6px 6px;"><iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&output=embed" loading="lazy"></iframe></div>
-    </div>`;
-  }
-  html+='</div>';
-  res.innerHTML=html;
-
-  showToast('Resultados carregados');
-}
-
-function searchId(){
+async function searchId(){
   let raw = document.getElementById('inputId').value.trim();
   let msg = document.getElementById('searchMsg'), res = document.getElementById('searchResult');
   if(!raw){clearId();return;}
@@ -821,7 +795,7 @@ function searchId(){
 
   searchItem=found;
   msg.style.display='none';
-  renderSearch();
+  await renderSearch();
   showToast('Encontrado');
 }
 
@@ -846,6 +820,12 @@ async function renderSearch(){
   
   const cityName = await fetchCityName(searchItem.lat, searchItem.lon);
 
+  // Coleta os mais próximos para o mapa geral
+  let qty = Number(document.getElementById('qty').value || 10);
+  let nearby = posts.map(p=>({
+    ...p, d: hav(searchItem.lat, searchItem.lon, p.lat, p.lon)
+  })).sort((a,b)=>a.d - b.d).slice(0, qty);
+
   res.style.display='block';
   res.innerHTML=`<div class="post searched">
     <div class="post-top">
@@ -855,6 +835,7 @@ async function renderSearch(){
         <p class="post-dist" style="color:var(--green2);text-transform:uppercase;">KM: ${findPostExactKm(searchItem)}</p>
         <p class="post-dist" id="srch-dist">${dt}</p>
         <p class="post-coords">${searchItem.lat.toFixed(5)}, ${searchItem.lon.toFixed(5)}</p>
+        <button class="btn-discreet" onclick='openGeneralMap(${JSON.stringify(nearby)}, "Redondeza do ID: ${searchItem.id}")'>🗺️ Gerar Mapa Geral da Redondeza</button>
       </div>
       <button class="post-wa" onclick="sendWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
@@ -900,9 +881,10 @@ function executeSearchKm(db, label){
     searchKmItems=[];res.style.display='none';return;
   }
 
+  let qty = Number(document.getElementById('qty').value || 10);
   let sorted = posts.map(p=>({
     ...p, d: (Math.abs(p.lat - bestPt.lat) > 0.2 || Math.abs(p.lon - bestPt.lon) > 0.2) ? 999999 : hav(bestPt.lat, bestPt.lon, p.lat, p.lon)
-  })).sort((a,b)=>a.d - b.d).slice(0, 10);
+  })).sort((a,b)=>a.d - b.d).slice(0, qty);
 
   searchKmItems=sorted;
   msg.style.display='none';
@@ -965,20 +947,17 @@ function clearKm(){
   searchKmItems=[];
 }
 
-function updateSearchKmDist(){
-  if(!searchKmItems.length||!pos)return;
-  searchKmItems.forEach((item, idx)=>{
-    let el=document.getElementById('srch-km-dist-'+idx);
-    if(el)el.textContent='distância até o local: '+formatDist(hav(pos.lat,pos.lon,item.lat,item.lon));
-  });
-}
-
 async function renderSearchKm(label, bestPt){
   if(!searchKmItems.length)return;
   let res=document.getElementById('searchKmResult');
   res.style.display='block';
   
-  let html='<div style="display:flex;flex-direction:column;gap:6px">';
+  let html=`
+    <div style="margin-bottom:4px;">
+      <button class="btn-discreet" onclick='openGeneralMap(${JSON.stringify(searchKmItems)}, "Redondeza do KM ${document.getElementById('inputKm').value} (${label})")'>🗺️ Gerar Mapa Geral da Redondeza (${searchKmItems.length} pontos)</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+  `;
   for(let idx = 0; idx < searchKmItems.length; idx++){
     let item = searchKmItems[idx];
     let dt=pos?'distância até o local: '+formatDist(hav(pos.lat,pos.lon,item.lat,item.lon)):'--';
@@ -989,7 +968,7 @@ async function renderSearchKm(label, bestPt){
           <p class="post-id">#${idx+1} - ID: ${item.id}</p>
           <p class="post-dist" style="color:var(--accent);font-weight:900;text-transform:uppercase;">${cityName}</p>
           <p class="post-dist" style="color:var(--green2);text-transform:uppercase;">KM: ${findPostExactKm(item)}</p>
-          <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
+          <p class="post-dist">${dt}</p>
           <p class="post-coords">${item.lat.toFixed(5)}, ${item.lon.toFixed(5)}</p>
         </div>
         <button class="post-wa" onclick="sendWhatsApp('${item.id}', ${item.lat}, ${item.lon})">
@@ -1057,7 +1036,7 @@ async function renderApoio(){
   document.getElementById('btnSend').disabled=false;
 }
 
-document.getElementById('btnSend'].onclick=()=>{
+document.getElementById('btnSend').onclick=()=>{
   if(!pos)return;
   let chks=document.querySelectorAll('.post-chk:checked');
   let items=[];
