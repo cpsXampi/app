@@ -8,8 +8,6 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<!-- Tesseract.js OCR -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
 <style>
 :root{
   --bg:#070913;
@@ -773,27 +771,42 @@ async function searchManualCoord(){
 async function handleOcrUpload(event) {
   const file = event.target.files[0];
   if(!file) return;
-  showToast('Lendo imagem (OCR)...');
+  showToast('Lendo imagem via OCR...');
+
   try {
-    const { data: { text } } = await Tesseract.recognize(file, 'eng', {
-      logger: m => {}
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('language', 'eng');
+    formData.append('isOverlayRequired', 'false');
+
+    // Usando a API gratuita de OCR OCR.space com a chave pública 'helloworld'
+    const response = await fetch('https://api.ocr.space/parse/image', {
+      method: 'POST',
+      headers: { 'apikey': 'helloworld' },
+      body: formData
     });
-    
-    const matches = text.match(/-?\d{1,2}[.,]\d{4,}/g);
-    if(matches && matches.length >= 2){
-      let lat = parsePt(matches[0]);
-      let lon = parsePt(matches[1]);
-      if(Number.isFinite(lat) && Number.isFinite(lon)){
-        document.getElementById('inputLat').value = lat;
-        document.getElementById('inputLon').value = lon;
-        showToast('Coordenada lida com sucesso!');
-        searchManualCoord();
-        return;
+
+    const result = await response.json();
+    if(result && result.ParsedResults && result.ParsedResults.length > 0){
+      const text = result.ParsedResults[0].ParsedText;
+      
+      // Procura por números parecidos com coordenadas (ex: -22.12345 ou 22,12345)
+      const matches = text.match(/-?\d{1,2}[.,]\d{4,}/g);
+      if(matches && matches.length >= 2){
+        let lat = parsePt(matches[0]);
+        let lon = parsePt(matches[1]);
+        if(Number.isFinite(lat) && Number.isFinite(lon)){
+          document.getElementById('inputLat').value = lat;
+          document.getElementById('inputLon').value = lon;
+          showToast('Coordenada lida com sucesso!');
+          searchManualCoord();
+          return;
+        }
       }
     }
-    showToast('Não foi possível identificar coordenadas', 'err');
+    showToast('Texto de coordenada não encontrado', 'err');
   } catch(e) {
-    showToast('Erro ao processar imagem', 'err');
+    showToast('Erro ao processar imagem na API', 'err');
   } finally {
     event.target.value = '';
   }
