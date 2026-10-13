@@ -173,6 +173,49 @@ img,video{display:block;max-width:100%}
   margin-top:2px;position:relative;
 }
 
+/* Radar & Compass Arrow Styles */
+.radar-box{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-top:10px;
+  padding-top:8px;
+  border-top:1px solid rgba(16,185,129,.2);
+  position:relative;
+}
+.compass-badge{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:rgba(0,0,0,0.3);
+  padding:4px 10px;
+  border-radius:20px;
+  border:1px solid rgba(16,185,129,0.3);
+}
+.compass-arrow{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:rgba(16,185,129,0.2);
+  display:grid;
+  place-items:center;
+  transition:transform 0.2s ease-out;
+  flex-shrink:0;
+}
+.compass-arrow svg{
+  width:14px;
+  height:14px;
+  color:var(--green2);
+}
+.radar-text{
+  font-size:10px;
+  font-weight:900;
+  color:#a7f3d0;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
 .weather-line-box{
   margin-top:8px;
   padding-top:8px;
@@ -620,7 +663,7 @@ img,video{display:block;max-width:100%}
   <div class="hdr-in">
     <div class="hdr-title">
       <h1>Apoio Técnico & Localização</h1>
-      <p>Busca Hiper-Turbo · Divisas Blindadas (Guarulhos / SP / Arujá)</p>
+      <p>Busca Hiper-Turbo · Radar Direcional Integrado</p>
     </div>
     <span class="hdr-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -697,6 +740,15 @@ img,video{display:block;max-width:100%}
       <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
       <p class="km-sub" id="kmSource">Aguardando coordenadas GPS...</p>
       
+      <div class="radar-box">
+        <div class="compass-badge">
+          <div class="compass-arrow" id="mainCompassArrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </div>
+          <span class="radar-text" id="mainRadarText">Radar Direcional</span>
+        </div>
+      </div>
+
       <div id="weatherContainer" class="weather-line-box" style="display:none;"></div>
     </div>
 
@@ -818,6 +870,7 @@ let gpsInitializedOnce=false;
 let currentTileLayer=null;
 let activeLayerMode='satellite';
 let lastTapTime = 0;
+let deviceHeading = 0;
 
 let _tt=null;
 function showToast(msg,type='ok'){
@@ -857,7 +910,6 @@ async function fetchCSV(files){
   return null;
 }
 
-// POLÍGONOS DE DIVISAS DE ALTA PRECISÃO (BLINDAGEM GUARULHOS x SÃO PAULO x ARUJÁ)
 const MUNICIPIOS_POLIGONOS = [
   {name: 'Guarulhos - SP', minLat: -23.515, maxLat: -23.340, minLon: -46.570, maxLon: -46.350},
   {name: 'São Paulo - SP', minLat: -24.050, maxLat: -23.515, minLon: -46.850, maxLon: -46.380},
@@ -880,14 +932,11 @@ const MUNICIPIOS_POLIGONOS = [
 ];
 
 async function fetchMunicipio(lat, lon){
-  // 1. Verificação geométrica ultra-rápida por polígonos locais restritos
   for(const poly of MUNICIPIOS_POLIGONOS){
     if(lat >= poly.minLat && lat <= poly.maxLat && lon >= poly.minLon && lon <= poly.maxLon){
       return poly.name;
     }
   }
-
-  // 2. Fallback de alta precisão via Nominatim com zoom detalhado
   try{
     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`, {headers: {'Accept-Language': 'pt-BR'}});
     if(r.ok){
@@ -895,7 +944,6 @@ async function fetchMunicipio(lat, lon){
       const addr = data.address || {};
       const resMuni = addr.city || addr.town || addr.municipality || addr.village || addr.county || '';
       const resState = addr.state || '';
-      
       if(resMuni){
         let formatted = resMuni;
         if(resState && !formatted.includes(resState)){
@@ -906,25 +954,31 @@ async function fetchMunicipio(lat, lon){
       }
     }
   }catch(e){}
+  return 'Indefinido';
+}
 
-  // 3. Fallback final por menor distância das sedes conhecidas
-  let nearestName = 'Indefinido';
-  let minD = Infinity;
-  const knownPoints = [
-    {name: 'Guarulhos - SP', lat: -23.4628, lon: -46.5333},
-    {name: 'São Paulo - SP', lat: -23.5505, lon: -46.6333},
-    {name: 'Arujá - SP', lat: -23.3917, lon: -46.3214},
-    {name: 'Itaguaí - RJ', lat: -22.8512, lon: -43.7744},
-    {name: 'Seropédica - RJ', lat: -22.7486, lon: -43.7106},
-    {name: 'Rio de Janeiro - RJ', lat: -22.9068, lon: -43.1729}
-  ];
+function calculateBearing(lat1, lon1, lat2, lon2) {
+  const toRad = deg => deg * Math.PI / 180;
+  const toDeg = rad => rad * 180 / Math.PI;
+  const dLon = toRad(lon2 - lon1);
+  const y = Math.sin(dLon) * Math.cos(toRad(lat2));
+  const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+  let brng = toDeg(Math.atan2(y, x));
+  return (brng + 360) % 360;
+}
 
-  for(const kp of knownPoints){
-    const d = hav(lat, lon, kp.lat, kp.lon);
-    if(d < minD){minD = d; nearestName = kp.name;}
+function setupDeviceOrientation() {
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', (event) => {
+      let heading = event.alpha;
+      if (event.webkitCompassHeading !== undefined) {
+        heading = event.webkitCompassHeading;
+      }
+      if (heading !== null && !isNaN(heading)) {
+        deviceHeading = heading;
+      }
+    }, true);
   }
-
-  return minD > 25000 ? 'Indefinido' : nearestName;
 }
 
 async function loadSystemData(){
@@ -960,6 +1014,7 @@ async function loadSystemData(){
 
   }catch(e){}
 
+  setupDeviceOrientation();
   initApoioDirect();
 }
 
@@ -1093,6 +1148,12 @@ async function updateKm(){
   if(s){
     s.textContent=`Município: ${currentMunicipio} · Ref: ${best.name} (Δ ~${Math.round(best.res.d)}m)`;
   }
+
+  // Atualiza seta do radar principal em relação ao ponto de referência
+  const bearing = calculateBearing(pos.lat, pos.lon, best.res.lat, best.res.lon);
+  const relativeAngle = bearing - deviceHeading;
+  const arrowEl = document.getElementById('mainCompassArrow');
+  if(arrowEl) arrowEl.style.transform = `rotate(${relativeAngle}deg)`;
 }
 
 function findPostExactKm(post){
@@ -1656,9 +1717,16 @@ async function renderApoio(){
       const o = items[i];
       const el=document.getElementById('dist-'+i);
       const kmEl=document.getElementById('km-exato-'+i);
+      const arrowEl=document.getElementById('arrow-'+i);
       if(el)el.textContent='Distância: '+range(o.d,pos.acc);
       const exactObj = findPostExactKm(o);
       if(kmEl)kmEl.textContent='KM Exato: '+exactObj.kmStr;
+      
+      if(arrowEl){
+        const bearing = calculateBearing(pos.lat, pos.lon, o.lat, o.lon);
+        const relAngle = bearing - deviceHeading;
+        arrowEl.style.transform = `rotate(${relAngle}deg)`;
+      }
     }
     document.getElementById('btnSend').disabled=false;
     return;
@@ -1671,12 +1739,22 @@ async function renderApoio(){
     const o = items[i];
     const exactObj = findPostExactKm(o);
     const muniName = await fetchMunicipio(o.lat, o.lon);
+    const bearing = calculateBearing(pos.lat, pos.lon, o.lat, o.lon);
+    const relAngle = bearing - deviceHeading;
+
     const div=document.createElement('div');
     div.className='post'+(i===0?' near':'');
     div.innerHTML=`<div class="post-top">
       <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
       <div class="post-info" style="flex:1;">
-        <p class="post-id">Poste: <span>${o.id}</span></p>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <p class="post-id" style="margin:0;">Poste: <span>${o.id}</span></p>
+          <div class="compass-badge" style="padding:2px 6px;margin-left:auto;">
+            <div class="compass-arrow" style="width:18px;height:18px;" id="arrow-${i}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </div>
+          </div>
+        </div>
         <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${muniName}</p>
         <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactObj.kmStr}</p>
         <p class="post-dist" id="dist-${i}">Distância: ${range(o.d,pos.acc)}</p>
@@ -1690,7 +1768,10 @@ async function renderApoio(){
     <div class="post-map-container">
       <iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
     </div>`;
+    
     fragment.appendChild(div);
+    const arrowEl = div.querySelector('#arrow-'+i);
+    if(arrowEl) arrowEl.style.transform = `rotate(${relAngle}deg)`;
   }
 
   list.innerHTML='';
