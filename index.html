@@ -68,15 +68,6 @@ input,select{font-family:var(--font);outline:none}
   font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.25em;
   color:var(--accent);text-shadow:0 0 12px var(--accent-glow);
 }
-.freq-selector{
-  display:flex;gap:4px;
-}
-.freq-btn{
-  font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;
-  color:var(--accent);background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);
-  padding:4px 6px;border-radius:4px;cursor:pointer;transition:all .2s;
-}
-.freq-btn.active{background:var(--accent);color:#05070f;box-shadow:0 0 10px var(--accent-glow)}
 
 .wrap{
   max-width:680px;margin:0 auto;
@@ -172,6 +163,24 @@ input,select{font-family:var(--font);outline:none}
   margin-top:6px;font-size:9px;font-weight:800;
   text-transform:uppercase;color:var(--warn);
 }
+
+.modal-box{
+  background:rgba(11,15,30,0.95);
+  border:1px solid var(--border2);
+  border-radius:var(--r-sm);
+  padding:10px;
+  margin-top:8px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.modal-box p{font-size:9px;font-weight:800;color:var(--accent);text-transform:uppercase;}
+.modal-btns{display:flex;gap:6px}
+.modal-btn{
+  flex:1;padding:8px;border-radius:var(--r-xs);font-size:9px;font-weight:900;text-transform:uppercase;
+  background:var(--accent);color:#05070f;cursor:pointer;text-align:center;
+}
+.modal-btn.rj{background:var(--green2);color:#05070f;}
 
 .coord-container{
   margin-top:8px;padding-top:8px;
@@ -276,100 +285,9 @@ input,select{font-family:var(--font);outline:none}
 </head>
 <body>
 
-<script>
-let audioCtx = null;
-let ambientNode = null;
-let ambientGain = null;
-let activeFreqHz = 0;
-
-function initAudio(){
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-}
-
-function playClickSound(){
-  try{
-    initAudio();
-    if(!audioCtx) return;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
-    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.08);
-  }catch(e){}
-}
-
-function setFrequency(hz, btnElem){
-  playClickSound();
-  try{
-    initAudio();
-    document.querySelectorAll('.freq-btn').forEach(b => b.classList.remove('active'));
-    
-    if(activeFreqHz === hz){
-      // Desativar se clicar no mesmo
-      if(ambientNode){
-        ambientGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.4);
-        setTimeout(()=>{ ambientNode.stop(); ambientNode.disconnect(); ambientNode = null; }, 400);
-      }
-      activeFreqHz = 0;
-      showToast('Frequência desativada');
-      return;
-    }
-
-    btnElem.classList.add('active');
-    activeFreqHz = hz;
-
-    if(ambientNode){
-      ambientGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
-      setTimeout(()=>{ 
-        ambientNode.stop(); 
-        ambientNode.disconnect(); 
-        startNewFreq(hz);
-      }, 300);
-    } else {
-      startNewFreq(hz);
-    }
-  }catch(e){}
-}
-
-function startNewFreq(hz){
-  ambientNode = audioCtx.createOscillator();
-  ambientGain = audioCtx.createGain();
-  ambientNode.type = 'sine';
-  ambientNode.frequency.setValueAtTime(hz, audioCtx.currentTime);
-  
-  ambientNode.connect(ambientGain);
-  ambientGain.connect(audioCtx.destination);
-  
-  ambientGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
-  ambientGain.gain.exponentialRampToValueAtTime(0.04, audioCtx.currentTime + 1.0);
-  ambientNode.start();
-  showToast(`Frequência ${hz}Hz Ativa`);
-}
-</script>
-
 <header class="hdr">
   <div class="hdr-in">
     <div class="hdr-title">Apoio Técnico</div>
-    <div class="freq-selector">
-      <button class="freq-btn" onclick="setFrequency(174, this)">174Hz</button>
-      <button class="freq-btn" onclick="setFrequency(285, this)">285Hz</button>
-      <button class="freq-btn" onclick="setFrequency(396, this)">396Hz</button>
-      <button class="freq-btn" onclick="setFrequency(417, this)">417Hz</button>
-      <button class="freq-btn" onclick="setFrequency(432, this)">432Hz</button>
-      <button class="freq-btn" onclick="setFrequency(528, this)">528Hz</button>
-      <button class="freq-btn" onclick="setFrequency(639, this)">639Hz</button>
-      <button class="freq-btn" onclick="setFrequency(741, this)">741Hz</button>
-      <button class="freq-btn" onclick="setFrequency(852, this)">852Hz</button>
-      <button class="freq-btn" onclick="setFrequency(963, this)">963Hz</button>
-    </div>
   </div>
 </header>
 
@@ -379,10 +297,10 @@ function startNewFreq(hz){
     <div class="card card-accent">
       <div class="search-row">
         <div class="search-wrap">
-          <input class="search-input" id="inputId" placeholder="ID (8 DÍGITOS)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter'){playClickSound();searchId();}">
+          <input class="search-input" id="inputId" placeholder="ID (8 DÍGITOS)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
         </div>
-        <button class="btn-icon go" onclick="playClickSound();searchId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-        <button class="btn-icon clr" onclick="playClickSound();clearId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <button class="btn-icon go" onclick="searchId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+        <button class="btn-icon clr" onclick="clearId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <div id="searchMsg" class="search-msg" style="display:none"></div>
       <div id="searchResult" style="display:none;margin-top:8px"></div>
@@ -391,10 +309,10 @@ function startNewFreq(hz){
     <div class="card card-accent">
       <div class="search-row">
         <div class="search-wrap">
-          <input class="search-input" id="inputKm" placeholder="KM (EX: 115)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter'){playClickSound();searchKm();}">
+          <input class="search-input" id="inputKm" placeholder="KM (EX: 115)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
         </div>
-        <button class="btn-icon go" onclick="playClickSound();searchKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
-        <button class="btn-icon clr" onclick="playClickSound();clearKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <button class="btn-icon go" onclick="searchKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
+        <button class="btn-icon clr" onclick="clearKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <div id="searchKmMsg" class="search-msg" style="display:none"></div>
       <div id="searchKmModal" style="display:none"></div>
@@ -405,7 +323,7 @@ function startNewFreq(hz){
   <div class="section-block">
     <div class="km-hero">
       <div class="km-value" id="kmVal">—</div>
-      <div><span class="km-br-badge" id="kmBrBadge">SINTONIZANDO...</span></div>
+      <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
       <div id="cityNameDisplay" style="font-size:9px;font-weight:800;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.08em;">---</div>
     </div>
 
@@ -414,7 +332,7 @@ function startNewFreq(hz){
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
         <span style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--muted)">Mapa Operacional</span>
-        <button class="coord-btn-toggle" onclick="playClickSound();toggleCoordSearch()">Coordenadas</button>
+        <button class="coord-btn-toggle" onclick="toggleCoordSearch()">Coordenadas</button>
       </div>
 
       <div id="coordSearchBox" class="coord-container" style="display:none;">
@@ -423,8 +341,8 @@ function startNewFreq(hz){
           <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
         </div>
         <div style="display:flex;gap:4px;">
-          <button class="ctrl-send" style="min-height:30px;font-size:9px;" onclick="playClickSound();searchManualCoord()">Calcular</button>
-          <button class="btn-icon clr" onclick="playClickSound();clearCoordFields()" style="width:30px;height:30px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          <button class="ctrl-send" style="min-height:30px;font-size:9px;" onclick="searchManualCoord()">Calcular</button>
+          <button class="btn-icon clr" onclick="clearCoordFields()" style="width:30px;height:30px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
         
         <div class="map-box" id="mapBox">
@@ -435,12 +353,12 @@ function startNewFreq(hz){
           </div>
           <div id="leafletMap" style="width:100%;height:100%;"></div>
         </div>
-        <button class="ctrl-send" style="min-height:30px;font-size:9px;background:var(--violet);" onclick="playClickSound();useCurrentGps()">Usar GPS Atual</button>
+        <button class="ctrl-send" style="min-height:30px;font-size:9px;background:var(--violet);" onclick="useCurrentGps()">Usar GPS Atual</button>
       </div>
 
-      <button id="btnSend" class="ctrl-send" disabled style="margin-top:8px;" onclick="playClickSound()">
+      <button id="btnSend" class="ctrl-send" disabled style="margin-top:8px;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-        Manifestar via WhatsApp
+        Enviar WhatsApp
       </button>
 
       <div class="ctrl-row">
@@ -492,9 +410,9 @@ function showToast(msg,type='ok'){
 function gpsBadge(el,p,err){
   const a=p?.acc;let cls='bad',txt;
   if(err)txt=err;
-  else if(!a)txt='SINTONIZANDO GPS...';
-  else if(a<=15) {cls='ok';txt=`GPS ALINHADO (±${Math.round(a)}M)`;}
-  else {cls='warn';txt=`GPS CAPTANDO (±${Math.round(a)}M)`;}
+  else if(!a)txt='GPS · BUSCANDO';
+  else if(a<=15) {cls='ok';txt=`GPS · ALTA PREC (±${Math.round(a)}M)`;}
+  else {cls='warn';txt=`GPS · MÉDIA PREC (±${Math.round(a)}M)`;}
   el.className='gps '+cls;el.textContent=txt;
 }
 
@@ -670,7 +588,7 @@ function toggleCoordSearch(){
 }
 
 function useCurrentGps(){
-  if(!pos){showToast('Sinal GPS ausente','err');return;}
+  if(!pos){showToast('GPS sem sinal','err');return;}
   document.getElementById('inputLat').value = pos.lat.toFixed(6);
   document.getElementById('inputLon').value = pos.lon.toFixed(6);
   mapInstance.setView([pos.lat, pos.lon], 16);
@@ -688,13 +606,19 @@ function searchManualCoord(){
   if(isNaN(lat)||isNaN(lon)){showToast('Coordenada inválida','err');return;}
   mapInstance.setView([lat, lon], 16);
   mapMarker.setLatLng([lat, lon]);
-  showToast('Coordenada sintonizada');
+  showToast('Posicionado');
 }
 
+// PESQUISA ID EXIGINDO EXATAMENTE 8 DÍGITOS (SEM LEGENDA)
 function searchId(){
   let raw = document.getElementById('inputId').value.trim();
   let msg = document.getElementById('searchMsg'), res = document.getElementById('searchResult');
   if(!raw){clearId();return;}
+
+  let digitsOnly = raw.replace(/\D/g, '');
+  if(digitsOnly.length !== 8){
+    searchItem=null;res.style.display='none';msg.style.display='none';return;
+  }
 
   let found = postIndex.get(norm(raw));
   if(!found){
@@ -704,14 +628,14 @@ function searchId(){
   }
 
   if(!found){
-    msg.style.display='flex';msg.textContent='Frequência não encontrada';
+    msg.style.display='flex';msg.textContent='Não encontrado';
     searchItem=null;res.style.display='none';return;
   }
 
   searchItem=found;
   msg.style.display='none';
   renderSearch();
-  showToast('Manifestado com sucesso');
+  showToast('Encontrado');
 }
 
 function clearId(){
@@ -730,7 +654,7 @@ function updateSearchDist(){
 async function renderSearch(){
   if(!searchItem)return;
   let res=document.getElementById('searchResult');
-  let dt='Sintonizando GPS...';
+  let dt='Aguardando GPS...';
   if(pos) dt='Dist: '+range(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon));
   
   const cityName = await fetchCityName(searchItem.lat, searchItem.lon);
@@ -745,7 +669,7 @@ async function renderSearch(){
         <p class="post-dist" id="srch-dist">${dt}</p>
         <p class="post-coords">${searchItem.lat.toFixed(5)}, ${searchItem.lon.toFixed(5)}</p>
       </div>
-      <button class="post-wa" onclick="playClickSound();sendWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})">
+      <button class="post-wa" onclick="sendWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </button>
     </div>
@@ -753,27 +677,22 @@ async function renderSearch(){
   </div>`;
 }
 
-function searchKm(){
-  let raw=document.getElementById('inputKm').value;
-  let target=parsePt(raw);
+// PESQUISA KM COM DETECÇÃO DE DUPLICIDADE NAS BASES (SP x RJ)
+function executeSearchKm(db, label){
+  let rawVal=document.getElementById('inputKm').value;
+  let targetKm=parsePt(rawVal);
   let msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
   let modal=document.getElementById('searchKmModal');
   modal.style.display='none';
 
-  if(isNaN(target)){clearKm();return;}
-  if(!posts.length||(!kmDB_SP.length&&!kmDB_RJ.length)){
-    msg.style.display='flex';msg.textContent='Carregando bases';return;
-  }
-
-  let db = kmDB_SP.length ? kmDB_SP : kmDB_RJ;
   let bestPt=null, minDiff=Infinity;
   for(let pt of db){
-    let diff=Math.abs(pt.km - target);
+    let diff=Math.abs(pt.km - targetKm);
     if(diff<minDiff){minDiff=diff;bestPt=pt;}
   }
 
   if(!bestPt){
-    msg.style.display='flex';msg.textContent='KM fora do alcance';
+    msg.style.display='flex';msg.textContent='KM não encontrado';
     searchKmItems=[];res.style.display='none';return;
   }
 
@@ -783,14 +702,53 @@ function searchKm(){
 
   searchKmItems=sorted;
   msg.style.display='none';
-  renderSearchKm();
-  showToast('Frequência de KM sintonizada');
+  renderSearchKm(label, bestPt);
+  showToast('Resultados carregados');
+}
+
+function searchKm(){
+  let rawVal=document.getElementById('inputKm').value;
+  let targetKm=parsePt(rawVal);
+  let msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult'),modal=document.getElementById('searchKmModal');
+  
+  if(isNaN(targetKm)){clearKm();return;}
+  if(!posts.length||(!kmDB_SP.length&&!kmDB_RJ.length)){
+    msg.style.display='flex';msg.textContent='Aguardando bases';return;
+  }
+
+  let existsSP = kmDB_SP.some(pt => Math.abs(pt.km - targetKm) < 1.0);
+  let existsRJ = kmDB_RJ.some(pt => Math.abs(pt.km - targetKm) < 1.0);
+
+  if(existsSP && existsRJ){
+    msg.style.display='none';
+    res.style.display='none';
+    modal.style.display='block';
+    modal.innerHTML=`<div class="modal-box">
+      <p>KM ${rawVal} existe em SP e RJ. Escolha a base:</p>
+      <div class="modal-btns">
+        <button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'BR116-SP')">São Paulo</button>
+        <button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'BR116-RJ')">Rio de Janeiro</button>
+      </div>
+    </div>`;
+    return;
+  }
+
+  modal.style.display='none';
+  if(existsSP){
+    executeSearchKm(kmDB_SP, 'BR116-SP');
+  }else if(existsRJ){
+    executeSearchKm(kmDB_RJ, 'BR116-RJ');
+  }else{
+    let db = kmDB_SP.length ? kmDB_SP : kmDB_RJ;
+    executeSearchKm(db, kmDB_SP.length ? 'BR116-SP' : 'BR116-RJ');
+  }
 }
 
 function clearKm(){
   document.getElementById('inputKm').value='';
   document.getElementById('searchKmMsg').style.display='none';
   document.getElementById('searchKmResult').style.display='none';
+  document.getElementById('searchKmModal').style.display='none';
   searchKmItems=[];
 }
 
@@ -802,7 +760,7 @@ function updateSearchKmDist(){
   });
 }
 
-async function renderSearchKm(){
+async function renderSearchKm(label, bestPt){
   if(!searchKmItems.length)return;
   let res=document.getElementById('searchKmResult');
   res.style.display='block';
@@ -821,7 +779,7 @@ async function renderSearchKm(){
           <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
           <p class="post-coords">${item.lat.toFixed(5)}, ${item.lon.toFixed(5)}</p>
         </div>
-        <button class="post-wa" onclick="playClickSound();sendWhatsApp('${item.id}', ${item.lat}, ${item.lon})">
+        <button class="post-wa" onclick="sendWhatsApp('${item.id}', ${item.lat}, ${item.lon})">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
         </button>
       </div>
@@ -873,7 +831,7 @@ async function renderApoio(){
         <p class="post-dist" style="color:var(--green2);">KM: ${findPostExactKm(o)}</p>
         <p class="post-dist" id="dist-${i}">Dist: ${range(o.d)}</p>
       </div>
-      <button class="post-wa" onclick="playClickSound();sendWhatsApp('${o.id}', ${o.lat}, ${o.lon})">
+      <button class="post-wa" onclick="sendWhatsApp('${o.id}', ${o.lat}, ${o.lon})">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </button>
     </div>
@@ -894,15 +852,15 @@ document.getElementById('btnSend').onclick=()=>{
     chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
   }else{
     let qty=Number(document.getElementById('qty').value||10);
-    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,pos.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty);
+    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty);
   }
-  let tx=`📍 *MANIFESTAÇÃO DE OPERAÇÃO*\nData: ${nowBR()}\n\n`;
+  let tx=`📍 *LISTA*\nData: ${nowBR()}\n\n`;
   items.forEach((o,i)=>{
     tx+=`${i+1}. ID: ${o.id} (KM: ${findPostExactKm(o)})\n`;
     if(document.getElementById('chkMaps').checked) tx+=`   https://maps.google.com/?q=${o.lat.toFixed(5)},${o.lon.toFixed(5)}\n`;
   });
   window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
-  showToast('Manifestado com sucesso');
+  showToast('Enviado');
 };
 
 document.getElementById('qty').onchange=()=>{renderedKey='';renderApoio()};
