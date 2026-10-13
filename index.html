@@ -29,23 +29,7 @@
   --r-xs:4px;--r-sm:8px;--r-md:12px;
   --safe-b:max(env(safe-area-inset-bottom,0px),12px);
   --safe-t:env(safe-area-inset-top,0px);
-  --container-max: 760px;
 }
-
-/* Modo Desktop expandido ativado por clique */
-body.desktop-mode {
-  --container-max: 1320px;
-}
-body.desktop-mode .wrap {
-  display: grid !important;
-  grid-template-columns: 420px 1fr !important;
-  gap: 16px !important;
-  align-items: start !important;
-}
-body.desktop-mode .map-box {
-  height: 380px !important;
-}
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
 body{
@@ -77,27 +61,18 @@ input,select{font-family:var(--font);outline:none}
   box-shadow:0 4px 20px rgba(0,0,0,.6);
 }
 .hdr-in{
-  max-width:var(--container-max);margin:0 auto;
+  max-width:760px;margin:0 auto;
   display:flex;align-items:center;justify-content:space-between;height:44px;
-  transition:max-width .3s ease;
 }
 .hdr-title{
   font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.25em;
   color:var(--accent);text-shadow:0 0 10px var(--accent-glow);
 }
 
-.view-toggle-btn{
-  background:rgba(59,130,246,.15);border:1px solid var(--border2);color:var(--text2);
-  padding:4px 8px;border-radius:var(--r-xs);font-size:8px;font-weight:900;text-transform:uppercase;
-  cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .2s ease;
-}
-.view-toggle-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
-
 .wrap{
-  max-width:var(--container-max);margin:0 auto;
+  max-width:760px;margin:0 auto;
   padding:12px;padding-bottom:var(--safe-b);
   display:flex;flex-direction:column;gap:12px;
-  transition:max-width .3s ease;
 }
 
 .section-block{
@@ -160,11 +135,6 @@ input,select{font-family:var(--font);outline:none}
 .gps.bad{border-color:rgba(100,116,139,.3);background:rgba(11,17,36,.9);color:#e5e7eb}
 .gps.ok{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1);color:#d1fae5}
 .gps.warn{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.1);color:#fef3c7}
-
-.gps-btn-auth{
-  background:var(--accent);color:#fff;border:0;padding:3px 8px;border-radius:3px;
-  font-size:7.5px;font-weight:900;cursor:pointer;text-transform:uppercase;
-}
 
 .card{
   border-radius:var(--r-sm);
@@ -349,12 +319,7 @@ body.fs-active .fs-close-btn {display:inline-flex;}
 
 <header class="hdr">
   <div class="hdr-in">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div class="hdr-title">Apoio Técnico</div>
-      <button class="view-toggle-btn" id="viewToggleBtn" onclick="toggleDesktopMode()">
-        <span id="viewToggleIcon">💻</span> <span id="viewToggleText">Modo PC</span>
-      </button>
-    </div>
+    <div class="hdr-title">Apoio Técnico</div>
     <div style="font-size:9px;font-weight:900;color:var(--accent);" id="topKmLive">—</div>
   </div>
 </header>
@@ -454,7 +419,6 @@ body.fs-active .fs-close-btn {display:inline-flex;}
 
     <div id="gpsStatus" class="gps bad">
       <span id="gpsText">GPS · BUSCANDO SINAL</span>
-      <button class="gps-btn-auth" onclick="requestGpsPermission()">Autorizar GPS</button>
     </div>
 
     <div class="card">
@@ -510,14 +474,6 @@ let mapInstance=null, mapMarker=null, mapLayerObj=null, popupInstance=null;
 let activePane = null;
 let cityCache = new Map();
 
-function toggleDesktopMode(){
-  let isDesktop = document.body.classList.toggle('desktop-mode');
-  document.getElementById('viewToggleIcon').textContent = isDesktop ? '📱' : '💻';
-  document.getElementById('viewToggleText').textContent = isDesktop ? 'Modo Celular' : 'Modo PC';
-  if(mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
-  showToast(isDesktop ? 'Modo PC Ativado' : 'Modo Celular Ativado');
-}
-
 function showToast(msg,type='ok'){
   const el=document.getElementById('toast');
   el.className='toast '+type;el.textContent=msg;
@@ -546,7 +502,7 @@ function gpsBadge(p,err){
   const a=p?.acc;let cls='bad',txt;
   if(err)txt='GPS · BLOQUEADO / DESLIGADO';
   else if(!a)txt='GPS · USANDO REFERÊNCIA';
-  else if(a<=15) {cls='ok',txt=`GPS · ALTA (±${Math.round(a)}M)`;}
+  else if(a<=15) {cls='ok';txt=`GPS · ALTA (±${Math.round(a)}M)`;}
   else {cls='warn';txt=`GPS · MÉDIA (±${Math.round(a)}M)`;}
   el.className='gps '+cls;textEl.textContent=txt;
 }
@@ -585,7 +541,7 @@ function initSystemStartup(){
   renderApoio();
   updateKm();
   setTimeout(loadSystemDataAsync, 50);
-  requestGpsPermission();
+  startAutoGps();
 
   window.addEventListener('keydown', e => {
     if(e.key === 'Escape'){
@@ -597,7 +553,7 @@ function initSystemStartup(){
   });
 }
 
-function requestGpsPermission(){
+function startAutoGps(){
   if('geolocation' in navigator){
     navigator.geolocation.getCurrentPosition(
       p => {
@@ -609,7 +565,6 @@ function requestGpsPermission(){
           mapInstance.setView([pos.lat, pos.lon], 14);
           mapMarker.setLatLng([pos.lat, pos.lon]);
         }
-        showToast('GPS Autorizado e Sintonizado');
         navigator.geolocation.watchPosition(upd => {
           pos={lat:upd.coords.latitude,lon:upd.coords.longitude,acc:upd.coords.accuracy};
           gpsBadge(pos);
@@ -619,9 +574,8 @@ function requestGpsPermission(){
       },
       e => {
         gpsBadge(null, true);
-        showToast('GPS não autorizado ou indisponível', 'err');
       },
-      {enableHighAccuracy:true, timeout:2500, maximumAge:0}
+      {enableHighAccuracy:true, timeout:5000, maximumAge:0}
     );
   } else {
     gpsBadge(null, true);
