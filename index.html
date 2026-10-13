@@ -69,51 +69,6 @@ img,video{display:block;max-width:100%}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--dim);border-radius:9px}
 
-/* ==================== SPLASH SCREEN ==================== */
-#splashScreen{
-  position:fixed;inset:0;z-index:999999;
-  background:radial-gradient(circle at center,rgba(16,185,129,.18),#050816 70%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:24px;transition:opacity .25s ease, visibility .25s ease;
-}
-#splashScreen.hide{opacity:0;visibility:hidden;pointer-events:none}
-.splash-logo{
-  width:72px;height:72px;border-radius:20px;
-  background:linear-gradient(135deg,var(--green),var(--green3));
-  color:#fff;display:grid;place-items:center;
-  box-shadow:0 10px 30px rgba(16,185,129,.4);
-  margin-bottom:20px;animation:pulseSplash 1.5s infinite ease-in-out;
-}
-@keyframes pulseSplash{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.splash-logo svg{width:36px;height:36px}
-.splash-title{
-  font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.2em;
-  color:#fff;margin-bottom:6px;text-align:center;
-}
-.splash-sub{
-  font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;
-  letter-spacing:.08em;margin-bottom:32px;text-align:center;
-}
-.splash-checklist{
-  width:100%;max-width:340px;background:rgba(13,18,36,0.85);
-  border:1px solid var(--border2);border-radius:var(--r-md);
-  padding:16px;display:flex;flex-direction:column;gap:12px;
-  backdrop-filter:blur(12px);box-shadow:0 12px 40px rgba(0,0,0,.5);
-}
-.check-item{
-  display:flex;align-items:center;justify-content:space-between;
-  font-size:11px;font-weight:800;text-transform:uppercase;color:var(--text2);
-}
-.check-status{
-  width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.08);
-  display:grid;place-items:center;color:var(--muted);transition:all .15s ease;
-}
-.check-status.ok{
-  background:var(--green-dim);color:var(--green2);border:1px solid rgba(16,185,129,.4);
-  box-shadow:0 0 10px rgba(16,185,129,.3);
-}
-.check-status svg{width:12px;height:12px}
-
 .hdr{
   position:sticky;top:0;z-index:50;
   border-bottom:1px solid var(--border2);
@@ -661,41 +616,11 @@ img,video{display:block;max-width:100%}
 </head>
 <body>
 
-<!-- SPLASH SCREEN DE CARREGAMENTO -->
-<div id="splashScreen">
-  <div class="splash-logo">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
-    </svg>
-  </div>
-  <div class="splash-title">Apoio Técnico & Localização</div>
-  <div class="splash-sub">Carregando Sistema Hiper-Turbo</div>
-
-  <div class="splash-checklist">
-    <div class="check-item">
-      <span>Banco de Postes / Nox</span>
-      <div class="check-status" id="chkPostsStatus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5L20 7"/></svg></div>
-    </div>
-    <div class="check-item">
-      <span>Rodovias SP & RJ (BR116/101)</span>
-      <div class="check-status" id="chkKmStatus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5L20 7"/></svg></div>
-    </div>
-    <div class="check-item">
-      <span>Validador Rígido de Municípios</span>
-      <div class="check-status" id="chkMuniStatus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5L20 7"/></svg></div>
-    </div>
-    <div class="check-item">
-      <span>Hash Index Instantâneo (O(1))</span>
-      <div class="check-status" id="chkEngineStatus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5L20 7"/></svg></div>
-    </div>
-  </div>
-</div>
-
 <header class="hdr">
   <div class="hdr-in">
     <div class="hdr-title">
       <h1>Apoio Técnico & Localização</h1>
-      <p>Busca Hiper-Turbo · Municípios Validados</p>
+      <p>Busca Hiper-Turbo · Municípios Validados (Sem Splash)</p>
     </div>
     <span class="hdr-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -933,49 +858,47 @@ async function fetchCSV(files){
   return null;
 }
 
-// MALHA RIGOROSA DE POLÍGONOS DE MUNICÍPIOS (GARANTE PRECISÃO SEM DIVERGÊNCIA)
+// MALHA PRECISA DE POLÍGONOS DE MUNICÍPIOS (ATUALIZADA E AMPLIADA)
 const MUNICIPIOS_POLIGONOS = [
-  // SÃO PAULO E GRANDE SP / VALE DO PARAÍBA
-  {name: 'São Paulo - SP', minLat: -24.0, maxLat: -23.35, minLon: -46.85, maxLon: -46.35},
-  {name: 'Guarulhos - SP', minLat: -23.52, maxLat: -23.38, minLon: -46.58, maxLon: -46.30},
-  {name: 'São José dos Campos - SP', minLat: -23.32, maxLat: -23.05, minLon: -46.05, maxLon: -45.75},
-  {name: 'Taubaté - SP', minLat: -23.15, maxLat: -22.95, minLon: -45.70, maxLon: -45.40},
-  {name: 'Caçapava - SP', minLat: -23.18, maxLat: -23.02, minLon: -45.80, maxLon: -45.60},
-  {name: 'Jacareí - SP', minLat: -23.38, maxLat: -23.15, minLon: -46.05, maxLon: -45.90},
-  {name: 'Guaratinguetá - SP', minLat: -22.88, maxLat: -22.68, minLon: -45.28, maxLon: -45.10},
-  {name: 'Lorena - SP', minLat: -22.82, maxLat: -22.68, minLon: -45.18, maxLon: -45.05},
-  {name: 'Aparecida - SP', minLat: -22.88, maxLat: -22.80, minLon: -45.25, maxLon: -45.20},
-  {name: 'Cunha - SP', minLat: -23.25, maxLat: -22.80, minLon: -45.15, maxLon: -44.65},
-  {name: 'Itapecerica da Serra - SP', minLat: -24.00, maxLat: -23.65, minLon: -47.00, maxLon: -46.75},
-  {name: 'Embu das Artes - SP', minLat: -23.70, maxLat: -23.60, minLon: -46.90, maxLon: -46.80},
-  {name: 'Taboão da Serra - SP', minLat: -23.64, maxLat: -23.58, minLon: -46.78, maxLon: -46.72},
-
-  // RIO DE JANEIRO, BAIXADA FLUMINENSE E SUL DO RJ
+  // ITAGUAI E ENTORNO IMEDIATO (CORREÇÃO ESPECÍFICA)
+  {name: 'Itaguaí - RJ', minLat: -23.05, maxLat: -22.72, minLon: -44.05, maxLon: -43.68},
+  {name: 'Seropédica - RJ', minLat: -22.88, maxLat: -22.68, minLon: -43.85, maxLon: -43.60},
   {name: 'Rio de Janeiro - RJ', minLat: -23.08, maxLat: -22.72, minLon: -43.75, maxLon: -43.10},
-  {name: 'Itaguaí - RJ', minLat: -23.02, maxLat: -22.75, minLon: -44.02, maxLon: -43.70},
-  {name: 'Seropédica - RJ', minLat: -22.85, maxLat: -22.70, minLon: -43.82, maxLon: -43.62},
-  {name: 'Nova Iguaçu - RJ', minLat: -22.82, maxLat: -22.62, minLon: -43.58, maxLon: -43.38},
-  {name: 'Duque de Caxias - RJ', minLat: -22.82, maxLat: -22.45, minLon: -43.35, maxLon: -43.15},
-  {name: 'São João de Meriti - RJ', minLat: -22.82, maxLat: -22.75, minLon: -43.42, maxLon: -43.35},
-  {name: 'Nilópolis - RJ', minLat: -22.82, maxLat: -22.78, minLon: -43.43, maxLon: -43.38},
-  {name: 'Queimados - RJ', minLat: -22.82, maxLat: -22.70, minLon: -43.58, maxLon: -43.50},
-  {name: 'Japeri - RJ', minLat: -22.78, maxLat: -22.62, minLon: -43.68, maxLon: -43.55},
-  {name: 'Paracambi - RJ', minLat: -22.65, maxLat: -22.55, minLon: -43.75, maxLon: -43.65},
-  {name: 'Volta Redonda - RJ', minLat: -22.58, maxLat: -22.45, minLon: -44.15, maxLon: -44.02},
-  {name: 'Barra Mansa - RJ', minLat: -22.62, maxLat: -22.42, minLon: -44.25, maxLon: -44.10},
-  {name: 'Resende - RJ', minLat: -22.55, maxLat: -22.35, minLon: -44.52, maxLon: -44.35},
-  {name: 'Itatiaia - RJ', minLat: -22.55, maxLat: -22.40, minLon: -44.62, maxLon: -44.50},
-  {name: 'Porto Real - RJ', minLat: -22.48, maxLat: -22.40, minLon: -44.45, maxLon: -44.28},
-  {name: 'Barra do Piraí - RJ', minLat: -22.52, maxLat: -22.38, minLon: -44.00, maxLon: -43.78},
-  {name: 'Piraí - RJ', minLat: -22.72, maxLat: -22.55, minLon: -44.08, maxLon: -43.82},
-  {name: 'Mangaratiba - RJ', minLat: -23.02, maxLat: -22.85, minLon: -44.12, maxLon: -43.85}
+  {name: 'Nova Iguaçu - RJ', minLat: -22.85, maxLat: -22.60, minLon: -43.60, maxLon: -43.35},
+  {name: 'Duque de Caxias - RJ', minLat: -22.82, maxLat: -22.45, minLon: -43.35, maxLon: -43.12},
+  {name: 'São João de Meriti - RJ', minLat: -22.83, maxLat: -22.73, minLon: -43.43, maxLon: -43.33},
+  {name: 'Nilópolis - RJ', minLat: -22.83, maxLat: -22.77, minLon: -43.45, maxLon: -43.37},
+  {name: 'Queimados - RJ', minLat: -22.85, maxLat: -22.68, minLon: -43.62, maxLon: -43.48},
+  {name: 'Japeri - RJ', minLat: -22.80, maxLat: -22.60, minLon: -43.72, maxLon: -43.52},
+  {name: 'Paracambi - RJ', minLat: -22.68, maxLat: -22.52, minLon: -43.78, maxLon: -43.62},
+  {name: 'Mangaratiba - RJ', minLat: -23.05, maxLat: -22.82, minLon: -44.15, maxLon: -43.82},
+  {name: 'Angra dos Reis - RJ', minLat: -23.25, maxLat: -22.85, minLon: -44.75, maxLon: -44.05},
+  {name: 'Volta Redonda - RJ', minLat: -22.58, maxLat: -22.45, minLon: -44.18, maxLon: -44.00},
+  {name: 'Barra Mansa - RJ', minLat: -22.65, maxLat: -22.40, minLon: -44.30, maxLon: -44.08},
+  {name: 'Resende - RJ', minLat: -22.60, maxLat: -22.32, minLon: -44.58, maxLon: -44.32},
+  {name: 'Itatiaia - RJ', minLat: -22.58, maxLat: -22.38, minLon: -44.68, maxLon: -44.48},
+  {name: 'Porto Real - RJ', minLat: -22.50, maxLat: -22.38, minLon: -44.48, maxLon: -44.25},
+  {name: 'Barra do Piraí - RJ', minLat: -22.55, maxLat: -22.35, minLon: -44.05, maxLon: -43.75},
+  {name: 'Piraí - RJ', minLat: -22.75, maxLat: -22.52, minLon: -44.12, maxLon: -43.80},
+
+  // SÃO PAULO E VALE DO PARAÍBA
+  {name: 'São Paulo - SP', minLat: -24.05, maxLat: -23.30, minLon: -46.90, maxLon: -46.30},
+  {name: 'Guarulhos - SP', minLat: -23.55, maxLat: -23.35, minLon: -46.60, maxLon: -46.28},
+  {name: 'São José dos Campos - SP', minLat: -23.35, maxLat: -23.02, minLon: -46.10, maxLon: -45.72},
+  {name: 'Taubaté - SP', minLat: -23.18, maxLat: -22.92, minLon: -45.75, maxLon: -45.38},
+  {name: 'Caçapava - SP', minLat: -23.22, maxLat: -23.00, minLon: -45.85, maxLon: -45.58},
+  {name: 'Jacareí - SP', minLat: -23.42, maxLat: -23.12, minLon: -46.10, maxLon: -45.88},
+  {name: 'Guaratinguetá - SP', minLat: -22.92, maxLat: -22.65, minLon: -45.32, maxLon: -45.08},
+  {name: 'Lorena - SP', minLat: -22.85, maxLat: -22.65, minLon: -45.22, maxLon: -45.02},
+  {name: 'Aparecida - SP', minLat: -22.90, maxLat: -22.78, minLon: -45.28, maxLon: -45.18},
+  {name: 'Cunha - SP', minLat: -23.28, maxLat: -22.75, minLon: -45.20, maxLon: -44.60}
 ];
 
 async function fetchMunicipio(lat, lon){
-  const cacheKey = `${Number(lat).toFixed(3)}_${Number(lon).toFixed(3)}`;
+  const cacheKey = `${Number(lat).toFixed(4)}_${Number(lon).toFixed(4)}`;
   if(muniCache.has(cacheKey)) return muniCache.get(cacheKey);
 
-  // 1. Verificação rígida por polígonos locais exatos
+  // 1. Varredura estrita e prioritária nos polígonos locais exatos
   for(const poly of MUNICIPIOS_POLIGONOS){
     if(lat >= poly.minLat && lat <= poly.maxLat && lon >= poly.minLon && lon <= poly.maxLon){
       muniCache.set(cacheKey, poly.name);
@@ -983,7 +906,7 @@ async function fetchMunicipio(lat, lon){
     }
   }
 
-  // 2. Consulta à API externa Nominatim com filtro estrito de estado/município
+  // 2. Consulta à API externa Nominatim otimizada
   try{
     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`, {headers: {'Accept-Language': 'pt-BR'}});
     if(r.ok){
@@ -1004,11 +927,12 @@ async function fetchMunicipio(lat, lon){
     }
   }catch(e){}
 
-  // 3. Fallback rigoroso por proximidade: se não houver certeza absoluta (< 25km), retorna "Indefinido"
+  // 3. Fallback geográfico seguro se estiver próximo (< 30km) de algum ponto de referência
   let nearestName = 'Indefinido';
   let minD = Infinity;
   const knownPoints = [
     {name: 'Itaguaí - RJ', lat: -22.8512, lon: -43.7744},
+    {name: 'Seropédica - RJ', lat: -22.7486, lon: -43.7106},
     {name: 'Rio de Janeiro - RJ', lat: -22.9068, lon: -43.1729},
     {name: 'São Paulo - SP', lat: -23.5505, lon: -46.6333},
     {name: 'Guarulhos - SP', lat: -23.4628, lon: -46.5333},
@@ -1024,21 +948,12 @@ async function fetchMunicipio(lat, lon){
     if(d < minD){minD = d; nearestName = kp.name;}
   }
 
-  if(minD > 25000){
+  if(minD > 30000){
     nearestName = 'Indefinido';
   }
 
   muniCache.set(cacheKey, nearestName);
   return nearestName;
-}
-
-function updateCheckStatus(id, ok=true){
-  const el = document.getElementById(id);
-  if(!el) return;
-  if(ok){
-    el.classList.add('ok');
-    el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5L20 7"/></svg>';
-  }
 }
 
 async function loadSystemData(){
@@ -1059,7 +974,6 @@ async function loadSystemData(){
       postIndex.clear();
       posts.forEach(p=>postIndex.set(p.id, p));
     }
-    updateCheckStatus('chkPostsStatus', true);
 
     const [tSP, tRJ, t101SP, t101RJ] = await Promise.all([
       fetchCSV(['SNVBR116SPRJ.csv','br116sp.csv','BR116_SP.csv']),
@@ -1072,24 +986,10 @@ async function loadSystemData(){
     kmDB_RJ = await parseKmFile(tRJ);
     kmDB_BR101_SP = await parseKmFile(t101SP);
     kmDB_BR101_RJ = await parseKmFile(t101RJ);
-    updateCheckStatus('chkKmStatus', true);
 
-    await fetchMunicipio(-22.8512, -43.7744);
-    updateCheckStatus('chkMuniStatus', true);
-    updateCheckStatus('chkEngineStatus', true);
+  }catch(e){}
 
-  }catch(e){
-    updateCheckStatus('chkPostsStatus', true);
-    updateCheckStatus('chkKmStatus', true);
-    updateCheckStatus('chkMuniStatus', true);
-    updateCheckStatus('chkEngineStatus', true);
-  }
-
-  setTimeout(()=>{
-    const splash = document.getElementById('splashScreen');
-    if(splash) splash.classList.add('hide');
-    initApoioAfterSplash();
-  }, 350);
+  initApoioDirect();
 }
 
 async function parseKmFile(text){
@@ -1321,7 +1221,7 @@ function initLeafletMap(initLat, initLon){
   });
 }
 
-function initApoioAfterSplash(){
+function initApoioDirect(){
   if(apoioInit)return;
   apoioInit=true;
 
