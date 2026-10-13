@@ -296,22 +296,18 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
 }
 .btn-discreet:hover{background:rgba(59,130,246,.3);}
 
-/* Estilo dos Marcadores Numerados com ID no Mapa */
-.custom-map-marker {
-  background: var(--accent);
-  border: 2px solid #fff;
+/* Estilo do Marcador de ID Completo no Mapa */
+.custom-id-marker {
+  background: #0b1124;
+  border: 2px solid var(--accent);
   color: #fff;
   font-weight: 900;
-  font-size: 8px;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-}
-.custom-map-marker span {
-  transform: rotate(45deg);
+  font-size: 7.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  text-align: center;
 }
 
 /* Modal do Mapa dos Arredores */
@@ -759,23 +755,22 @@ function openGeneralMap(points, title){
 
     let latLngs = [];
     points.forEach((p, idx)=>{
-      let num = idx + 1;
       let customIcon = L.divIcon({
         className: 'custom-div-icon',
-        html: `<div class="custom-map-marker" style="width:24px;height:24px;"><span>${num}</span></div>`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 24]
+        html: `<div class="custom-id-marker">📍 ${p.id}</div>`,
+        iconSize: [80, 24],
+        iconAnchor: [40, 12]
       });
 
       let marker = L.marker([p.lat, p.lon], {icon: customIcon}).addTo(generalMapInstance);
-      marker.bindPopup(`<div style="font-size:8px;font-weight:900;color:#fff;">#${num} - ID: ${p.id}<br>KM: ${findPostExactKm(p)}</div>`);
+      marker.bindPopup(`<div style="font-size:8px;font-weight:900;color:#fff;">#${idx+1} - ID: ${p.id}<br>KM: ${findPostExactKm(p)}</div>`);
       generalMapMarkers.push(marker);
       latLngs.push([p.lat, p.lon]);
     });
 
     if(latLngs.length > 0){
       let bounds = L.latLngBounds(latLngs);
-      generalMapInstance.fitBounds(bounds, {padding:[40,40], maxZoom:18});
+      generalMapInstance.fitBounds(bounds, {padding:[50,50], maxZoom:18});
     }
   }, 100);
 }
@@ -786,13 +781,13 @@ function closeGeneralMap(){
 
 function sendVisualMapWhatsApp(){
   if(!activeGeneralPoints.length) return;
-  let tx = `🗺️ *PRANCHA VISUAL - MAPA DOS ARREDORES*\nData: ${nowBR()}\n\n`;
+  let tx = `🗺️ *PRANCHA DOS ARREDORES (TOP 10)*\nData: ${nowBR()}\n\n`;
   activeGeneralPoints.forEach((o,i)=>{
-    tx+=`🔹 *[${i+1}] ID: ${o.id}*\n   KM: ${findPostExactKm(o)}\n   Coord: ${o.lat.toFixed(5)}, ${o.lon.toFixed(5)}\n\n`;
+    tx+=`📌 *[${i+1}] ID: ${o.id}*\n   KM: ${findPostExactKm(o)}\n   Coord: ${o.lat.toFixed(5)}, ${o.lon.toFixed(5)}\n\n`;
   });
-  tx += `*(Mapa consolidado gerado pelo Sistema de Apoio Técnico)*`;
+  tx += `*(Mapa dos Arredores gerado pelo Sistema de Apoio Técnico)*`;
   window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
-  showToast('Prancha visual enviada');
+  showToast('Prancha dos arredores enviada');
 }
 
 async function searchId(){
