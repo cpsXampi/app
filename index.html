@@ -202,7 +202,6 @@ input,select{font-family:var(--font);outline:none}
   margin-top:4px;
 }
 
-/* FULLSCREEN ISOLADO: Oculta TODO o resto da página */
 body.fs-active .hdr,
 body.fs-active .wrap > .section-block:not(:has(#mapBox)),
 body.fs-active .wrap > .section-block:has(#kmVal) {
@@ -252,7 +251,6 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
 .post-top{display:flex;align-items:flex-start;gap:6px;padding:8px}
 .post-chk{margin-top:2px;width:13px;height:13px;accent-color:var(--accent);flex-shrink:0}
 .post-id{font-size:9px;font-weight:900;text-transform:uppercase;color:var(--accent);letter-spacing:.05em}
-/* DISTÂNCIA DISCRETA E PEQUENA EM MINÚSCULO */
 .post-dist{font-size:6.5px;font-weight:600;text-transform:lowercase;color:var(--muted);margin-top:1px}
 .post-coords{font-size:7px;color:var(--dim);font-weight:600}
 
@@ -663,10 +661,11 @@ function initMap(lat, lon){
     let distStr = nearestPost ? formatDist(minPostDist) : '---';
 
     let popupContent = `
-      <div style="font-family:var(--font);color:#fff;padding:2px;min-width:130px;font-size:8px;">
+      <div style="font-family:var(--font);color:#fff;padding:2px;min-width:140px;font-size:8px;">
         <div style="font-weight:900;color:#3b82f6;text-transform:uppercase;margin-bottom:1px;">${cityName}</div>
         <div style="font-weight:800;color:#d1d5db;">Rodovia: ${kmStr}</div>
-        <div style="font-weight:900;color:#34d399;">ID: ${postIdStr} (distância até o local: ${distStr})</div>
+        <div style="font-weight:900;color:#34d399;margin-top:2px;">ID: ${postIdStr}</div>
+        <div style="font-size:6.5px;color:var(--muted);text-transform:lowercase;margin-top:1px;">dist. do ponto ao ID: ${distStr}</div>
         <button style="margin-top:4px;width:100%;background:#10b981;color:#fff;border:0;padding:2px;border-radius:2px;font-size:7px;font-weight:900;text-transform:uppercase;cursor:pointer;" onclick="sendWhatsApp('${postIdStr}', ${l.lat}, ${l.lng})">WhatsApp</button>
       </div>
     `;
@@ -952,7 +951,7 @@ async function renderApoio(){
   list.innerHTML='';
   list.appendChild(frag);
   document.getElementById('btnSend').disabled=false;
-}
+};
 
 document.getElementById('btnSend').onclick=()=>{
   if(!pos)return;
