@@ -8,8 +8,6 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<!-- Tesseract.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
 <style>
 :root{
   --bg:#070913;
@@ -197,6 +195,9 @@ input,select{font-family:var(--font);outline:none}
   width:100%;border-radius:var(--r-xs);border:1px solid var(--border2);
   background:rgba(7,9,19,.9);padding:6px;font-size:10px;font-weight:800;color:#fff;text-align:center;
 }
+.coord-input::placeholder{
+  font-size:7.5px;font-weight:600;color:var(--muted);text-transform:lowercase;opacity:0.7;
+}
 
 .map-box{
   border-radius:var(--r-xs);border:1px solid var(--border2);
@@ -363,16 +364,13 @@ body.fs-active .wrap > .section-block:has(#kmVal) {
     <!-- PAINEL: COORDENADA -->
     <div class="collapsible-pane" id="paneCoord">
       <div class="card card-accent">
-        <div style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">
           <span>Coordenada Manual</span>
-          <label style="background:rgba(59,130,246,.2);border:1px solid var(--border2);padding:2px 6px;border-radius:3px;font-size:7px;cursor:pointer;color:var(--text);display:inline-flex;align-items:center;gap:3px;">
-            📷 LER COORDENADAS VIA OCR <input type="file" accept="image/*" capture="environment" id="ocrInput" style="display:none" onchange="handleOcrUpload(event)">
-          </label>
         </div>
         <div class="coord-container">
           <div class="coord-inputs">
-            <input class="coord-input" id="inputLat" placeholder="LAT" autocomplete="off" spellcheck="false">
-            <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
+            <input class="coord-input" id="inputLat" placeholder="latitude" autocomplete="off" spellcheck="false">
+            <input class="coord-input" id="inputLon" placeholder="longitude" autocomplete="off" spellcheck="false">
           </div>
           <div style="display:flex;gap:3px;">
             <button class="btn-icon go" style="flex:1;height:28px;border-radius:var(--r-xs);font-size:8px;" onclick="searchManualCoord()">Calcular</button>
@@ -799,78 +797,6 @@ async function searchManualCoord(){
   showToast('Resultados carregados');
 }
 
-// Conversor universal avançado para qualquer formato de coordenada decifrado pelo OCR
-function parseUniversalCoordinate(text) {
-  // Remove espaços extras e normaliza pontos/vírgulas
-  let cleanText = text.replace(/[^\d.,\-°'"NSEWnsew\s]/g, ' ').replace(/\s+/g, ' ').trim();
-
-  // Tenta encontrar pares de números decimais (com ou sem sinal, com ponto ou vírgula)
-  let regexDec = /(-?\d{1,2}[.,]\d{4,})/g;
-  let matches = cleanText.match(regexDec);
-
-  if (matches && matches.length >= 2) {
-    let lat = parsePt(matches[0]);
-    let lon = parsePt(matches[1]);
-
-    // Aplicação inteligente de sinais para o Brasil (Sudeste) caso venham positivos
-    if (lat > 0 && (cleanText.includes('S') || lat < 30)) lat = -lat;
-    if (lon > 0 && (cleanText.includes('W') || lon > 30)) lon = -lon;
-    if (lat > 0 && lat < 30 && !cleanText.includes('N')) lat = -lat;
-    if (lon > 0 && lon > 30 && !cleanText.includes('E')) lon = -lon;
-
-    if (Number.isFinite(lat) && Number.isFinite(lon) && lat < -10 && lon < -30) {
-      return { lat, lon };
-    }
-  }
-
-  // Tenta extrair qualquer sequência numérica longa caso o regex decimal direto falhe
-  let allNums = cleanText.match(/-?\d+[.,]?\d*/g);
-  if (allNums && allNums.length >= 2) {
-    let nums = allNums.map(n => parsePt(n)).filter(n => Number.isFinite(n));
-    for (let i = 0; i < nums.length - 1; i++) {
-      let l1 = nums[i];
-      let l2 = nums[i + 1];
-      if (l1 > 0 && l1 < 35) l1 = -l1;
-      if (l2 > 0 && l2 > 30) l2 = -l2;
-      if (l1 < -10 && l2 < -30) {
-        return { lat: l1, lon: l2 };
-      }
-    }
-  }
-
-  return null;
-}
-
-async function handleOcrUpload(event) {
-  const file = event.target.files[0];
-  if(!file) return;
-  showToast('Decodificando coordenadas...');
-
-  try {
-    const result = await Tesseract.recognize(file, 'eng', {
-      logger: m => {}
-    });
-
-    const text = result.data.text || '';
-    const coord = parseUniversalCoordinate(text);
-    
-    if(coord){
-      document.getElementById('inputLat').value = coord.lat.toFixed(6);
-      document.getElementById('inputLon').value = coord.lon.toFixed(6);
-      showToast('Coordenada decodificada com sucesso!');
-      searchManualCoord();
-      event.target.value = '';
-      return;
-    }
-
-    showToast('Não foi possível decodificar. Tente uma foto mais nítida.', 'err');
-  } catch(e) {
-    showToast('Erro ao ler imagem', 'err');
-  } finally {
-    event.target.value = '';
-  }
-}
-
 function searchId(){
   let raw = document.getElementById('inputId').value.trim();
   let msg = document.getElementById('searchMsg'), res = document.getElementById('searchResult');
@@ -1131,7 +1057,7 @@ async function renderApoio(){
   document.getElementById('btnSend').disabled=false;
 }
 
-document.getElementById('btnSend').onclick=()=>{
+document.getElementById('btnSend'].onclick=()=>{
   if(!pos)return;
   let chks=document.querySelectorAll('.post-chk:checked');
   let items=[];
