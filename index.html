@@ -173,7 +173,6 @@ img,video{display:block;max-width:100%}
   margin-top:2px;position:relative;
 }
 
-/* Radar & Compass Arrow Styles */
 .radar-box{
   display:flex;
   align-items:center;
@@ -663,7 +662,7 @@ img,video{display:block;max-width:100%}
   <div class="hdr-in">
     <div class="hdr-title">
       <h1>Apoio Técnico & Localização</h1>
-      <p>Busca Hiper-Turbo · Radar Direcional Integrado</p>
+      <p>Busca Hiper-Turbo · Divisas Dutra SP/RJ de Alta Precisão</p>
     </div>
     <span class="hdr-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -710,7 +709,7 @@ img,video{display:block;max-width:100%}
       <p class="card-label">Pesquisa por KM (Busca Vetorizada Instantânea)</p>
       <div class="search-row">
         <div class="search-wrap">
-          <input class="search-input" id="inputKm" placeholder="EX: 115 ou 115.5" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
+          <input class="search-input" id="inputKm" placeholder="EX: 98, 99, 115" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         </div>
         <button class="btn-icon go" onclick="searchKm()" aria-label="Buscar KM"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
@@ -735,7 +734,7 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="km-hero">
-      <p class="km-label">KM aproximado & Município atual</p>
+      <p class="km-label">KM aproximado & Município exato</p>
       <p class="km-value" id="kmVal">—</p>
       <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
       <p class="km-sub" id="kmSource">Aguardando coordenadas GPS...</p>
@@ -863,7 +862,6 @@ function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
 let posts=[], postIndex=new Map();
 let kmDB_SP=[], kmDB_RJ=[], kmDB_BR101_SP=[], kmDB_BR101_RJ=[];
 let pos=null, searchItem=null, searchKmItems=[], renderedKey='', apoioInit=false;
-let currentMunicipio='';
 let lastWeatherFetch=0;
 let mapInstance=null, mapMarker=null, mapInitialized=false;
 let gpsInitializedOnce=false;
@@ -910,33 +908,84 @@ async function fetchCSV(files){
   return null;
 }
 
+// TABELA OFICIAL DE FAIXAS DE QUILÔMETROS POR MUNICÍPIO NA VIA DUTRA (BR-116 SP) E CONEXÕES
+const DUTRA_KM_MUNICIPIOS = [
+  {min: 0, max: 14.5, name: 'São Paulo - SP'},
+  {min: 14.5, max: 22.0, name: 'Guarulhos - SP'},
+  {min: 22.0, max: 34.0, name: 'Arujá - SP'},
+  {min: 34.0, max: 47.0, name: 'Santa Isabel - SP'},
+  {min: 47.0, max: 76.0, name: 'Guararema - SP'},
+  {min: 76.0, max: 105.0, name: 'Jacareí - SP'},
+  {min: 105.0, max: 135.0, name: 'São José dos Campos - SP'},
+  {min: 135.0, max: 153.0, name: 'Caçapava - SP'},
+  {min: 153.0, max: 186.0, name: 'Taubaté - SP'},
+  {min: 186.0, max: 198.0, name: 'Pindamonhangaba - SP'}, // Ex: KM 98 e 99 = Pinda
+  {min: 198.0, max: 206.0, name: 'Roseira - SP'},
+  {min: 206.0, max: 218.0, name: 'Aparecida - SP'},
+  {min: 218.0, max: 232.0, name: 'Guaratinguetá - SP'},
+  {min: 232.0, max: 242.0, name: 'Canas - SP'},
+  {min: 242.0, max: 260.0, name: 'Lorena - SP'},
+  {min: 260.0, max: 300.0, name: 'Queluz - SP'},
+  {min: 300.0, max: 315.0, name: 'Lavrinhas - SP'},
+  {min: 315.0, max: 335.0, name: 'Cruzeiro - SP'},
+  {min: 335.0, max: 360.0, name: 'Cachoeira Paulista - SP'},
+  {min: 360.0, max: 410.0, name: 'Piquete / Itajubá - SP'},
+  // Trechos do Rio de Janeiro (BR-116 RJ)
+  {min: 500, max: 530, name: 'Resende - RJ'},
+  {min: 530, max: 560, name: 'Itatiaia - RJ'},
+  {min: 560, max: 590, name: 'Porto Real - RJ'},
+  {min: 590, max: 620, name: 'Barra Mansa - RJ'},
+  {min: 620, max: 650, name: 'Volta Redonda - RJ'},
+  {min: 650, max: 700, name: 'Seropédica - RJ'},
+  {min: 700, max: 740, name: 'Rio de Janeiro - RJ'}
+];
+
 const MUNICIPIOS_POLIGONOS = [
+  {name: 'Pindamonhangaba - SP', minLat: -23.08, maxLat: -22.75, minLon: -45.65, maxLon: -45.35},
+  {name: 'Taubaté - SP', minLat: -23.18, maxLat: -22.92, minLon: -45.75, maxLon: -45.38},
+  {name: 'Roseira - SP', minLat: -22.95, maxLat: -22.82, minLon: -45.38, maxLon: -45.25},
+  {name: 'Aparecida - SP', minLat: -22.90, maxLat: -22.78, minLon: -45.28, maxLon: -45.18},
+  {name: 'Guaratinguetá - SP', minLat: -22.92, maxLat: -22.65, minLon: -45.32, maxLon: -45.08},
+  {name: 'Canas - SP', minLat: -22.72, maxLat: -22.60, minLon: -45.08, maxLon: -44.95},
+  {name: 'Lorena - SP', minLat: -22.85, maxLat: -22.65, minLon: -45.22, maxLon: -45.02},
   {name: 'Guarulhos - SP', minLat: -23.515, maxLat: -23.340, minLon: -46.570, maxLon: -46.350},
   {name: 'São Paulo - SP', minLat: -24.050, maxLat: -23.515, minLon: -46.850, maxLon: -46.380},
   {name: 'Arujá - SP', minLat: -23.440, maxLat: -23.300, minLon: -46.360, maxLon: -46.220},
   {name: 'São José dos Campos - SP', minLat: -23.35, maxLat: -23.02, minLon: -46.10, maxLon: -45.72},
-  {name: 'Taubaté - SP', minLat: -23.18, maxLat: -22.92, minLon: -45.75, maxLon: -45.38},
   {name: 'Caçapava - SP', minLat: -23.22, maxLat: -23.00, minLon: -45.85, maxLon: -45.58},
   {name: 'Jacareí - SP', minLat: -23.42, maxLat: -23.12, minLon: -46.10, maxLon: -45.88},
-  {name: 'Guaratinguetá - SP', minLat: -22.92, maxLat: -22.65, minLon: -45.32, maxLon: -45.08},
-  {name: 'Lorena - SP', minLat: -22.85, maxLat: -22.65, minLon: -45.22, maxLon: -45.02},
-  {name: 'Aparecida - SP', minLat: -22.90, maxLat: -22.78, minLon: -45.28, maxLon: -45.18},
-  {name: 'Cunha - SP', minLat: -23.28, maxLat: -22.75, minLon: -45.20, maxLon: -44.60},
   {name: 'Itaguaí - RJ', minLat: -23.02, maxLat: -22.78, minLon: -43.98, maxLon: -43.72},
   {name: 'Seropédica - RJ', minLat: -22.84, maxLat: -22.70, minLon: -43.80, maxLon: -43.64},
   {name: 'Rio de Janeiro - RJ', minLat: -23.08, maxLat: -22.72, minLon: -43.75, maxLon: -43.10},
-  {name: 'Nova Iguaçu - RJ', minLat: -22.82, maxLat: -22.62, minLon: -43.56, maxLon: -43.38},
-  {name: 'Duque de Caxias - RJ', minLat: -22.80, maxLat: -22.48, minLon: -43.32, maxLon: -43.15},
   {name: 'Volta Redonda - RJ', minLat: -22.56, maxLat: -22.47, minLon: -44.14, maxLon: -44.04},
   {name: 'Resende - RJ', minLat: -22.52, maxLat: -22.38, minLon: -44.50, maxLon: -44.38}
 ];
 
-async function fetchMunicipio(lat, lon){
+function getMunicipioByKm(kmValue){
+  // Se for uma busca baseada diretamente no KM da rodovia
+  for(const faixa of DUTRA_KM_MUNICIPIOS){
+    if(kmValue >= faixa.min && kmValue <= faixa.max){
+      return faixa.name;
+    }
+  }
+  return null;
+}
+
+async function fetchMunicipio(lat, lon, kmVal = null){
+  // 1. Se tivermos o KM exato da rodovia, priorizamos a tabela oficial da Dutra (Elimina qualquer divergência)
+  if(Number.isFinite(kmVal)){
+    const resKm = getMunicipioByKm(kmVal);
+    if(resKm) return resKm;
+  }
+
+  // 2. Verificação geométrica de alta precisão por polígonos locais restritos
   for(const poly of MUNICIPIOS_POLIGONOS){
     if(lat >= poly.minLat && lat <= poly.maxLat && lon >= poly.minLon && lon <= poly.maxLon){
       return poly.name;
     }
   }
+
+  // 3. Fallback Nominatim
   try{
     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`, {headers: {'Accept-Language': 'pt-BR'}});
     if(r.ok){
@@ -954,7 +1003,29 @@ async function fetchMunicipio(lat, lon){
       }
     }
   }catch(e){}
-  return 'Indefinido';
+
+  // 4. Fallback final por menor distância das sedes conhecidas
+  let nearestName = 'Indefinido';
+  let minD = Infinity;
+  const knownPoints = [
+    {name: 'Pindamonhangaba - SP', lat: -22.925, lon: -45.462},
+    {name: 'Taubaté - SP', lat: -23.027, lon: -45.556},
+    {name: 'Roseira - SP', lat: -22.903, lon: -45.304},
+    {name: 'Aparecida - SP', lat: -22.847, lon: -45.228},
+    {name: 'Guaratinguetá - SP', lat: -22.815, lon: -45.192},
+    {name: 'Lorena - SP', lat: -22.730, lon: -45.120},
+    {name: 'Guarulhos - SP', lat: -23.4628, lon: -46.5333},
+    {name: 'São Paulo - SP', lat: -23.5505, lon: -46.6333},
+    {name: 'Itaguaí - RJ', lat: -22.8512, lon: -43.7744},
+    {name: 'Rio de Janeiro - RJ', lat: -22.9068, lon: -43.1729}
+  ];
+
+  for(const kp of knownPoints){
+    const d = hav(lat, lon, kp.lat, kp.lon);
+    if(d < minD){minD = d; nearestName = kp.name;}
+  }
+
+  return minD > 25000 ? 'Indefinido' : nearestName;
 }
 
 function calculateBearing(lat1, lon1, lat2, lon2) {
@@ -1135,7 +1206,7 @@ function findNearestInAnyDB(lat, lon){
 async function updateKm(){
   if(!pos)return;
   const best=findNearestInAnyDB(pos.lat, pos.lon);
-  currentMunicipio = await fetchMunicipio(pos.lat, pos.lon);
+  const currentMunicipio = await fetchMunicipio(pos.lat, pos.lon, best ? best.res.km : null);
 
   if(!best)return;
 
@@ -1149,7 +1220,6 @@ async function updateKm(){
     s.textContent=`Município: ${currentMunicipio} · Ref: ${best.name} (Δ ~${Math.round(best.res.d)}m)`;
   }
 
-  // Atualiza seta do radar principal em relação ao ponto de referência
   const bearing = calculateBearing(pos.lat, pos.lon, best.res.lat, best.res.lon);
   const relativeAngle = bearing - deviceHeading;
   const arrowEl = document.getElementById('mainCompassArrow');
@@ -1168,6 +1238,7 @@ function findPostExactKm(post){
       }
       if(best && bd < 3000){
         return {
+          kmVal: best.km,
           kmStr: (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') + ' ('+dbObj.name+')',
           lat: best.lat,
           lon: best.lon
@@ -1175,7 +1246,7 @@ function findPostExactKm(post){
       }
     }
   }
-  return {kmStr: '---', lat: post.lat, lon: post.lon};
+  return {kmVal: null, kmStr: '---', lat: post.lat, lon: post.lon};
 }
 
 function setMapLayer(mode){
@@ -1257,7 +1328,7 @@ function initApoioDirect(){
   if(apoioInit)return;
   apoioInit=true;
 
-  initLeafletMap(-23.4628, -46.5333);
+  initLeafletMap(-22.925, -45.462); // Centrado em Pinda/Taubaté
   renderApoio();
 
   if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
@@ -1345,8 +1416,8 @@ async function searchManualCoordByLatLon(lat, lon){
   const overlayCard = document.getElementById('mapOverlayCard');
   const overlayContent = document.getElementById('mapOverlayContent');
 
-  const muniName = await fetchMunicipio(lat, lon);
   const foundRodovia = findNearestInAnyDB(lat, lon);
+  const muniName = await fetchMunicipio(lat, lon, foundRodovia ? foundRodovia.res.km : null);
   
   let isOutOfStandard = false;
   if(foundRodovia && foundRodovia.res.d > 15000){
@@ -1472,7 +1543,7 @@ async function renderSearch(){
     checkLock();
   }
   const exactKmObj = findPostExactKm(searchItem);
-  const muniName = await fetchMunicipio(searchItem.lat, searchItem.lon);
+  const muniName = await fetchMunicipio(searchItem.lat, searchItem.lon, exactKmObj.kmVal);
 
   res.style.display='block';
   res.innerHTML=`<div class="post searched">
@@ -1620,7 +1691,7 @@ async function renderSearchKm(label, bestPt){
   const res=document.getElementById('searchKmResult');
   res.style.display='block';
   
-  const muniName = bestPt ? await fetchMunicipio(bestPt.lat, bestPt.lon) : '';
+  const muniName = bestPt ? await fetchMunicipio(bestPt.lat, bestPt.lon, bestPt.km) : '';
 
   let htmlContent = `<div style="font-size:10px;font-weight:900;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">Resultado para ${label} · Município Exato: ${muniName}</div>`;
   
@@ -1639,7 +1710,7 @@ async function renderSearchKm(label, bestPt){
       dt='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
     }
     const exactKmObj = findPostExactKm(item);
-    const itemMuni = await fetchMunicipio(item.lat, item.lon);
+    const itemMuni = await fetchMunicipio(item.lat, item.lon, exactKmObj.kmVal);
     htmlContent += `
       <div class="post searched">
         <div class="post-top">
@@ -1738,7 +1809,7 @@ async function renderApoio(){
   for(let i=0; i<items.length; i++){
     const o = items[i];
     const exactObj = findPostExactKm(o);
-    const muniName = await fetchMunicipio(o.lat, o.lon);
+    const muniName = await fetchMunicipio(o.lat, o.lon, exactObj.kmVal);
     const bearing = calculateBearing(pos.lat, pos.lon, o.lat, o.lon);
     const relAngle = bearing - deviceHeading;
 
@@ -1777,7 +1848,7 @@ async function renderApoio(){
   list.innerHTML='';
   list.appendChild(fragment);
   document.getElementById('btnSend').disabled=false;
-}
+};
 
 document.getElementById('btnSend').onclick=()=>{
   if(!pos)return;
