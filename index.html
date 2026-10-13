@@ -620,7 +620,7 @@ img,video{display:block;max-width:100%}
   <div class="hdr-in">
     <div class="hdr-title">
       <h1>Apoio Técnico & Localização</h1>
-      <p>Busca Hiper-Turbo · Município Exato por Referência</p>
+      <p>Busca Hiper-Turbo · Divisas Blindadas (Guarulhos / SP / Arujá)</p>
     </div>
     <span class="hdr-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -810,7 +810,6 @@ function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
 
 let posts=[], postIndex=new Map();
 let kmDB_SP=[], kmDB_RJ=[], kmDB_BR101_SP=[], kmDB_BR101_RJ=[];
-let muniCache=new Map();
 let pos=null, searchItem=null, searchKmItems=[], renderedKey='', apoioInit=false;
 let currentMunicipio='';
 let lastWeatherFetch=0;
@@ -858,12 +857,11 @@ async function fetchCSV(files){
   return null;
 }
 
-// MAPA DE REFERÊNCIA DIRETA E EXATA DE MUNICÍPIOS (DIVISAS DE ALTA PRECISÃO)
+// POLÍGONOS DE DIVISAS DE ALTA PRECISÃO (BLINDAGEM GUARULHOS x SÃO PAULO x ARUJÁ)
 const MUNICIPIOS_POLIGONOS = [
-  // SÃO PAULO E ARUJÁ (SEPARAÇÃO RIGOROSA)
-  {name: 'São Paulo - SP', minLat: -24.05, maxLat: -23.35, minLon: -46.85, maxLon: -46.38},
-  {name: 'Arujá - SP', minLat: -23.44, maxLat: -23.32, minLon: -46.36, maxLon: -46.24},
-  {name: 'Guarulhos - SP', minLat: -23.50, maxLat: -23.38, minLon: -46.56, maxLon: -46.36},
+  {name: 'Guarulhos - SP', minLat: -23.515, maxLat: -23.340, minLon: -46.570, maxLon: -46.350},
+  {name: 'São Paulo - SP', minLat: -24.050, maxLat: -23.515, minLon: -46.850, maxLon: -46.380},
+  {name: 'Arujá - SP', minLat: -23.440, maxLat: -23.300, minLon: -46.360, maxLon: -46.220},
   {name: 'São José dos Campos - SP', minLat: -23.35, maxLat: -23.02, minLon: -46.10, maxLon: -45.72},
   {name: 'Taubaté - SP', minLat: -23.18, maxLat: -22.92, minLon: -45.75, maxLon: -45.38},
   {name: 'Caçapava - SP', minLat: -23.22, maxLat: -23.00, minLon: -45.85, maxLon: -45.58},
@@ -872,8 +870,6 @@ const MUNICIPIOS_POLIGONOS = [
   {name: 'Lorena - SP', minLat: -22.85, maxLat: -22.65, minLon: -45.22, maxLon: -45.02},
   {name: 'Aparecida - SP', minLat: -22.90, maxLat: -22.78, minLon: -45.28, maxLon: -45.18},
   {name: 'Cunha - SP', minLat: -23.28, maxLat: -22.75, minLon: -45.20, maxLon: -44.60},
-
-  // RIO DE JANEIRO E ITAGUAÍ (SEPARAÇÃO RIGOROSA)
   {name: 'Itaguaí - RJ', minLat: -23.02, maxLat: -22.78, minLon: -43.98, maxLon: -43.72},
   {name: 'Seropédica - RJ', minLat: -22.84, maxLat: -22.70, minLon: -43.80, maxLon: -43.64},
   {name: 'Rio de Janeiro - RJ', minLat: -23.08, maxLat: -22.72, minLon: -43.75, maxLon: -43.10},
@@ -884,14 +880,14 @@ const MUNICIPIOS_POLIGONOS = [
 ];
 
 async function fetchMunicipio(lat, lon){
-  // 1. Verificação direta nos limites estritos
+  // 1. Verificação geométrica ultra-rápida por polígonos locais restritos
   for(const poly of MUNICIPIOS_POLIGONOS){
     if(lat >= poly.minLat && lat <= poly.maxLat && lon >= poly.minLon && lon <= poly.maxLon){
       return poly.name;
     }
   }
 
-  // 2. Consulta à API de geocodificação Nominatim com máxima resolução no ponto exato
+  // 2. Fallback de alta precisão via Nominatim com zoom detalhado
   try{
     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`, {headers: {'Accept-Language': 'pt-BR'}});
     if(r.ok){
@@ -911,13 +907,13 @@ async function fetchMunicipio(lat, lon){
     }
   }catch(e){}
 
-  // 3. Fallback rigoroso por menor distância
+  // 3. Fallback final por menor distância das sedes conhecidas
   let nearestName = 'Indefinido';
   let minD = Infinity;
   const knownPoints = [
+    {name: 'Guarulhos - SP', lat: -23.4628, lon: -46.5333},
     {name: 'São Paulo - SP', lat: -23.5505, lon: -46.6333},
     {name: 'Arujá - SP', lat: -23.3917, lon: -46.3214},
-    {name: 'Guarulhos - SP', lat: -23.4628, lon: -46.5333},
     {name: 'Itaguaí - RJ', lat: -22.8512, lon: -43.7744},
     {name: 'Seropédica - RJ', lat: -22.7486, lon: -43.7106},
     {name: 'Rio de Janeiro - RJ', lat: -22.9068, lon: -43.1729}
@@ -1200,7 +1196,7 @@ function initApoioDirect(){
   if(apoioInit)return;
   apoioInit=true;
 
-  initLeafletMap(-22.8512, -43.7744);
+  initLeafletMap(-23.4628, -46.5333);
   renderApoio();
 
   if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
@@ -1563,7 +1559,6 @@ async function renderSearchKm(label, bestPt){
   const res=document.getElementById('searchKmResult');
   res.style.display='block';
   
-  // VERIFICAÇÃO DIRETA NO PONTO EXATO DA REFERÊNCIA DO MAPA PARA O MUNICÍPIO
   const muniName = bestPt ? await fetchMunicipio(bestPt.lat, bestPt.lon) : '';
 
   let htmlContent = `<div style="font-size:10px;font-weight:900;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">Resultado para ${label} · Município Exato: ${muniName}</div>`;
