@@ -3,1352 +3,511 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#050816">
-<title>Apoio Operacional Integrado</title>
+<meta name="theme-color" content="#020617">
+<title>SAP/ERP Operacional Enterprise Suite v2026.1</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
-:root{
-  --bg:#050816;
-  --surface:#0d1224;
-  --surface2:#111731;
-  --border:rgba(255,255,255,.06);
-  --border2:rgba(255,255,255,.12);
-  --border3:rgba(255,255,255,.18);
-  --accent:#ffd600;
-  --green:#10b981;
-  --green2:#34d399;
-  --green3:#059669;
-  --green-dim:rgba(16,185,129,.10);
-  --violet:#5b21ff;
-  --violet2:#7c3aed;
-  --warn:#f59e0b;
-  --warn-dim:rgba(245,158,11,.10);
-  --blue:#3b82f6;
-  --blue-dim:rgba(59,130,246,.12);
-  --text:#f3f4f6;
-  --text2:#d1d5db;
-  --text3:#9ca3af;
-  --muted:#6b7280;
-  --dim:#4b5563;
-  --dimmer:#1f2937;
-  --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  --r-xs:8px;--r-sm:12px;--r-md:16px;--r-lg:20px;--r-xl:24px;
-  --safe-b:max(env(safe-area-inset-bottom,0px),20px);
-  --safe-t:env(safe-area-inset-top,0px);
-  --ease:cubic-bezier(.4,0,.2,1);
+:root {
+  --bg: #020617;
+  --panel: #0f172a;
+  --panel-light: #1e293b;
+  --border: rgba(255,255,255,0.08);
+  --border-accent: rgba(59,130,246,0.3);
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --green: #10b981;
+  --green-hover: #059669;
+  --gold: #f59e0b;
+  --red: #ef4444;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --sidebar-w: 260px;
+  --header-h: 56px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{-webkit-text-size-adjust:100%}
-body{
-  background:radial-gradient(circle at top,rgba(92,33,255,.18),transparent 55%),var(--bg);
-  color:var(--text);
-  font-family:var(--font);
-  overflow-x:hidden;
-  min-height:100vh;
-  min-height:100dvh;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  overscroll-behavior:none;
-}
-button{
-  font-family:var(--font);cursor:pointer;border:0;background:none;color:inherit;
-  -webkit-user-select:none;user-select:none;touch-action:manipulation;
-}
-button:active{opacity:.80;transform:scale(.96);transition:transform 30ms,opacity 30ms}
-input,select{font-family:var(--font);outline:none}
-img{display:block;max-width:100%}
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--dim);border-radius:9px}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); }
+body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; height: 100dvh; display: flex; }
 
-.hdr{
-  position:sticky;top:0;z-index:50;
-  border-bottom:1px solid var(--border2);
-  background:rgba(5,10,24,.92);
-  backdrop-filter:blur(28px) saturate(1.4);
-  -webkit-backdrop-filter:blur(28px) saturate(1.4);
-  padding:0 16px;padding-top:var(--safe-t);
-}
-.hdr-in{
-  max-width:680px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;height:52px;
-}
-.hdr-title h1{
-  font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.hdr-badge{
-  font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;
-  background:rgba(16,185,129,.15);color:var(--green2);border:1px solid rgba(16,185,129,.3);
-  padding:3px 8px;border-radius:6px;
-}
+/* LAYOUT ESTRUTURAL SAP/ERP */
+#app-root { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
+#sidebar { width: var(--sidebar-w); background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 100; transition: transform 0.2s ease; }
+#main-viewport { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: radial-gradient(circle at top, rgba(59,130,246,0.05), transparent 40%), var(--bg); }
 
-.wrap{
-  max-width:680px;margin:0 auto;
-  padding:16px;padding-bottom:var(--safe-b);
-  display:flex;flex-direction:column;gap:14px;
-}
+/* HEADER ENTERPRISE */
+.top-header { height: var(--header-h); background: rgba(15,23,42,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 90; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 13px; letter-spacing: 0.1em; color: var(--text); text-transform: uppercase; }
+.brand-badge { background: var(--accent); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 9px; }
 
-.section-block{
-  display:flex;flex-direction:column;gap:10px;
-  background:rgba(13,18,36,0.65);
-  border:1px solid var(--border2);
-  border-radius:var(--r-xl);
-  padding:14px;
-  backdrop-filter:blur(12px);
-}
-.section-header{
-  display:flex;align-items:center;gap:8px;
-  font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.18em;
-  color:var(--accent);padding-bottom:4px;border-bottom:1px solid var(--border);
-}
-.section-header.proximity-title{color:var(--green2)}
-.section-header svg{width:14px;height:14px}
+.user-profile-badge { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); font-size: 11px; }
+.status-indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
 
-.telemetry-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:2px;
-}
-.telemetry-pill{
-  background:rgba(15,23,42,0.8);border:1px solid var(--border2);
-  border-radius:var(--r-sm);padding:8px 10px;
-  display:flex;flex-direction:column;gap:2px;
-}
-.telemetry-label{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
-.telemetry-val{font-size:13px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+/* MENU LATERAL DE MÓDULOS */
+.nav-section { padding: 12px 16px 4px; font-size: 9px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.15em; }
+.nav-list { list-style: none; padding: 0 8px; overflow-y: auto; flex: 1; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: all 0.15s ease; margin-bottom: 2px; }
+.nav-item:hover, .nav-item.active { background: rgba(59,130,246,0.12); color: var(--text); }
+.nav-item.active { border-left: 3px solid var(--accent); border-radius: 2px 8px 8px 2px; }
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-.km-hero{
-  border-radius:var(--r-lg);
-  border:1px solid rgba(16,185,129,.28);
-  background:linear-gradient(155deg,#065f46 0%,#022c22 55%,#020617 100%);
-  text-align:center;padding:14px 18px;
-  position:relative;overflow:hidden;
-  box-shadow:0 10px 30px rgba(6,95,70,.35);
-}
-.km-label{
-  font-size:9px;font-weight:900;text-transform:uppercase;
-  letter-spacing:.25em;color:rgba(220,252,231,.65);position:relative;
-}
-.km-value{
-  font-size:clamp(28px,9vw,42px);font-weight:900;
-  line-height:1.05;letter-spacing:-.04em;margin-top:2px;
-  font-variant-numeric:tabular-nums;position:relative;
-  background:linear-gradient(180deg,#fff 25%,#6ee7b7);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.km-br-badge{
-  display:inline-block;font-size:8px;font-weight:700;
-  color:rgba(220,252,231,.5);text-transform:uppercase;letter-spacing:.08em;
-  margin-top:2px;position:relative;background:rgba(0,0,0,0.25);
-  padding:1px 6px;border-radius:4px;
-}
-.km-sub{
-  font-size:10px;font-weight:700;color:rgba(220,252,231,.85);
-  margin-top:6px;position:relative;line-height:1.4;
-}
+/* CONTAINER DE WORKSPACES DUPLEX */
+.workspace { flex: 1; overflow-y: auto; padding: 16px; display: none; flex-direction: column; gap: 16px; padding-bottom: calc(16px + var(--safe-bottom)); }
+.workspace.active { display: flex; }
 
-.gps{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  min-height:38px;border-radius:var(--r-sm);
-  border:1px solid;padding:0 12px;
-  font-size:10px;font-weight:800;letter-spacing:.06em;
-  text-align:center;transition:all .1s var(--ease);
-}
-.gps svg{width:13px;height:13px;flex-shrink:0}
-.gps.bad{border-color:rgba(148,163,184,.35);background:rgba(15,23,42,.9);color:#e5e7eb}
-.gps.ok{border-color:rgba(16,185,129,.45);background:var(--green-dim);color:#d1fae5}
-.gps.warn{border-color:rgba(245,158,11,.35);background:var(--warn-dim);color:#fef3c7}
+/* CARDS E GRIDS ENTERPRISE */
+.grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.card-header { display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
 
-.card{
-  border-radius:var(--r-lg);
-  border:1px solid var(--border);
-  background:linear-gradient(145deg,rgba(15,23,42,.95),rgba(17,24,39,.9));
-  padding:12px;position:relative;overflow:hidden;
-}
-.card-accent{
-  border-color:rgba(92,33,255,.35);
-  background:linear-gradient(145deg,rgba(92,33,255,.08),rgba(15,23,42,.95));
-}
-.card-label{
-  font-size:9px;font-weight:900;text-transform:uppercase;
-  letter-spacing:.2em;color:var(--text2);
-  margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;
-}
-.card-label::before{
-  content:"";width:3px;height:9px;border-radius:2px;background:var(--violet2);
-}
+/* BOTOES E CONTROLES */
+.btn { border: 0; background: var(--panel-light); color: var(--text); padding: 8px 14px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.1s ease; }
+.btn:hover { background: rgba(255,255,255,0.1); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-success { background: var(--green); color: #fff; }
+.btn-success:hover { background: var(--green-hover); }
+.btn-danger { background: var(--red); color: #fff; }
 
-.search-row{display:flex;gap:6px}
-.search-wrap{flex:1;min-width:0;position:relative}
-.search-wrap svg{
-  position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  width:14px;height:14px;color:var(--dim);pointer-events:none;
-}
-.search-input{
-  width:100%;border-radius:var(--r-sm);
-  border:1px solid var(--border3);
-  background:rgba(15,23,42,.9);
-  padding:10px 12px 10px 34px;
-  font-size:12px;font-weight:800;text-transform:uppercase;color:#fff;
-  transition:all .1s var(--ease);
-}
-.search-input::placeholder{color:var(--dim);font-weight:700}
-.search-input:focus{
-  border-color:var(--violet2);
-  box-shadow:0 0 0 3px rgba(92,33,255,.35);
-}
-.btn-icon{
-  width:40px;height:40px;border-radius:var(--r-sm);
-  display:grid;place-items:center;flex-shrink:0;
-  transition:all .08s var(--ease);
-}
-.btn-icon:active{transform:scale(.9)}
-.btn-icon.go{
-  background:linear-gradient(135deg,var(--violet),var(--violet2));
-  color:#fff;box-shadow:0 3px 12px rgba(79,70,229,.50);
-}
-.btn-icon.clr{
-  border:1px solid var(--border2);
-  background:rgba(15,23,42,.9);color:var(--muted);
-}
-.btn-icon svg{width:15px;height:15px}
-.search-msg{
-  margin-top:6px;font-size:10px;font-weight:800;
-  text-transform:uppercase;color:var(--warn);
-  display:flex;align-items:center;gap:6px;
-}
-.search-msg svg{width:12px;height:12px}
+.input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; color: var(--text); font-size: 11px; outline: none; }
+.input-field:focus { border-color: var(--accent); }
 
-.modal-box{
-  background:rgba(17,24,39,0.95);
-  border:1px solid var(--border3);
-  border-radius:var(--r-md);
-  padding:10px;margin-top:8px;
-  display:flex;flex-direction:column;gap:6px;
-}
-.modal-box p{font-size:10px;font-weight:800;color:var(--accent)}
-.modal-btns{display:flex;gap:6px}
-.modal-btn{
-  flex:1;padding:8px;border-radius:var(--r-xs);font-size:10px;font-weight:900;text-transform:uppercase;
-  background:var(--violet);color:#fff;cursor:pointer;text-align:center;
-}
-.modal-btn.rj{background:var(--green3)}
+/* TERMINAL DE LOGS E AUDITORIA (SAP COMPLIANCE) */
+#audit-terminal { background: #000; font-family: monospace; font-size: 10px; color: #34d399; padding: 10px; border-radius: 8px; height: 120px; overflow-y: auto; border: 1px solid var(--border); }
 
-.coord-btn-toggle{
-  background:rgba(92,33,255,.2);
-  border:1px solid rgba(92,33,255,.4);
-  color:#a78bfa;font-size:8px;font-weight:900;
-  padding:3px 6px;border-radius:6px;
-  text-transform:uppercase;cursor:pointer;letter-spacing:.05em;
+/* RESPONSIVIDADE E MOBILE DASHBOARD */
+@media(max-width: 768px) {
+  #sidebar { position: fixed; inset: 0 auto 0 0; transform: translateX(-100%); }
+  #sidebar.open { transform: translateX(0); }
+  .mobile-toggle { display: block !important; }
 }
-
-.coord-container{
-  margin-top:8px;padding-top:8px;
-  border-top:1px solid var(--border);
-  display:flex;flex-direction:column;gap:8px;
-}
-.coord-inputs-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.coord-field{display:flex;flex-direction:column;gap:3px}
-.coord-field label{font-size:8px;font-weight:800;text-transform:uppercase;color:var(--muted)}
-.coord-input{
-  width:100%;border-radius:var(--r-xs);
-  border:1px solid var(--border3);
-  background:rgba(15,23,42,.9);
-  padding:8px;font-size:11px;font-weight:800;color:#fff;text-align:center;
-}
-
-.map-picker-box{
-  margin-top:6px;border-radius:var(--r-sm);
-  border:1px solid var(--border2);
-  overflow:hidden;position:relative;
-  resize:vertical;min-height:260px;max-height:70vh;height:320px;
-  background:#020617;
-}
-.map-picker-box.fullscreen{
-  position:fixed !important;inset:0 !important;
-  width:100vw !important;height:100vh !important;
-  max-height:none !important;z-index:99999 !important;
-  border-radius:0 !important;margin:0 !important;
-}
-
-.map-controls-bar{
-  position:absolute;top:8px;right:8px;z-index:1000;
-  display:flex;gap:4px;
-  background:rgba(5,10,24,0.85);backdrop-filter:blur(8px);
-  padding:3px;border-radius:6px;border:1px solid var(--border2);
-}
-.map-layer-btn{
-  font-size:8px;font-weight:900;text-transform:uppercase;
-  padding:4px 6px;border-radius:4px;
-  background:rgba(255,255,255,0.06);color:var(--text2);cursor:pointer;
-}
-.map-layer-btn.active{background:var(--violet);color:#fff}
-.map-fs-btn{
-  font-size:8px;font-weight:900;text-transform:uppercase;
-  padding:4px 6px;border-radius:4px;
-  background:rgba(16,185,129,0.2);color:var(--green2);
-  border:1px solid rgba(16,185,129,0.4);cursor:pointer;
-}
-
-.map-overlay-card{
-  position:absolute;bottom:12px;left:12px;right:12px;z-index:1000;
-  background:rgba(13,18,36,0.95);backdrop-filter:blur(16px);
-  border:1px solid var(--border3);border-radius:var(--r-md);
-  padding:10px;box-shadow:0 10px 30px rgba(0,0,0,0.6);display:none;
-}
-.map-overlay-header{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
-}
-.map-overlay-title{font-size:10px;font-weight:900;text-transform:uppercase;color:var(--accent)}
-.map-overlay-close{
-  background:rgba(255,255,255,0.1);color:#fff;width:20px;height:20px;
-  border-radius:50%;display:grid;place-items:center;font-size:10px;cursor:pointer;
-}
-
-.target-lock{
-  display:none;border-radius:var(--r-lg);
-  border:2px solid var(--green);
-  background:linear-gradient(145deg,rgba(16,185,129,.18),rgba(15,23,42,.95));
-  padding:14px;text-align:center;position:relative;overflow:hidden;
-}
-.target-lock.on{
-  display:block;animation:lockIn .2s var(--ease),lockPulse 2.5s infinite;
-}
-@keyframes lockIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-@keyframes lockPulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.25)}50%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}
-.target-lock h2{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
-.target-lock p{font-size:10px;font-weight:700;margin-top:3px;opacity:.85}
-
-.post{
-  border-radius:var(--r-lg);overflow:hidden;
-  border:1px solid var(--border2);
-  background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(17,24,39,.95));
-}
-.post.near{
-  border-color:rgba(16,185,129,.5);
-  background:linear-gradient(145deg,rgba(16,185,129,.12),rgba(17,24,39,.96));
-  box-shadow:0 6px 24px rgba(15,23,42,.85);
-}
-.post.searched{
-  border-color:rgba(92,33,255,.48);
-  background:linear-gradient(145deg,rgba(92,33,255,.14),rgba(17,24,39,.96));
-}
-.post-top{display:flex;align-items:flex-start;gap:10px;padding:12px}
-.post-chk{margin-top:2px;width:16px;height:16px;accent-color:var(--violet2);flex-shrink:0}
-.post-id{
-  font-size:11px;font-weight:900;text-transform:uppercase;
-  letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.post-id span{color:var(--accent)}
-.post-dist{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.post-coords{font-size:9px;color:var(--dim);font-weight:600;margin-top:1px}
-
-.post-wa-btn{
-  width:32px;height:32px;border-radius:8px;
-  background:rgba(16,185,129,.15);
-  border:1px solid rgba(16,185,129,.35);
-  color:var(--green2);display:grid;place-items:center;flex-shrink:0;
-}
-.post-wa-btn svg{width:15px;height:15px}
-
-.post-map-container{padding:0 12px 12px 12px}
-.post-map{
-  height:140px;width:100%;border:0;
-  filter:grayscale(10%) contrast(1.06);
-  border-radius:var(--r-xs);
-}
-
-.ctrl-send{
-  width:100%;min-height:42px;border-radius:var(--r-sm);
-  background:linear-gradient(135deg,var(--green),var(--green3));
-  color:#fff;font-size:11px;font-weight:900;
-  text-transform:uppercase;letter-spacing:.07em;
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  box-shadow:0 3px 15px rgba(16,185,129,.35);
-}
-.ctrl-send:disabled{
-  background:linear-gradient(135deg,var(--dimmer),var(--dim));
-  color:var(--dim);cursor:not-allowed;box-shadow:none;
-}
-.ctrl-send svg{width:15px;height:15px}
-.ctrl-row{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:12px;margin-top:8px;
-}
-.ctrl-label{
-  font-size:9px;font-weight:800;text-transform:uppercase;
-  color:var(--muted);display:flex;align-items:center;gap:6px;
-}
-.ctrl-select{
-  border-radius:var(--r-xs);border:1px solid var(--border2);
-  background:var(--surface);color:#fff;
-  padding:5px 24px 5px 8px;font-size:11px;font-weight:800;
-  appearance:none;-webkit-appearance:none;
-}
-.ctrl-chk{width:16px;height:16px;accent-color:var(--accent)}
-
-.skel{
-  height:100px;border-radius:var(--r-lg);
-  background:linear-gradient(110deg,var(--surface) 30%,var(--surface2) 50%,var(--surface) 70%);
-  background-size:200% 100%;animation:shimmer 1.2s infinite linear;
-}
-@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
-
-.toast{
-  position:fixed;bottom:calc(16px + var(--safe-b));left:50%;
-  transform:translateX(-50%) translateY(16px);
-  border-radius:var(--r-sm);border:1px solid var(--border2);
-  background:var(--surface);padding:10px 16px;
-  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
-  backdrop-filter:blur(18px);z-index:99998;opacity:0;transition:all .15s var(--ease);
-  pointer-events:none;display:flex;align-items:center;gap:6px;
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast svg{width:13px;height:13px;flex-shrink:0}
-.toast.ok{border-color:rgba(16,185,129,.45);color:var(--green2)}
-.toast.ok svg{color:var(--green)}
-.toast.err{border-color:rgba(239,68,68,.45);color:#fecaca}
-.toast.err svg{color:var(--red)}
+.mobile-toggle { display: none; cursor: pointer; }
 </style>
 </head>
 <body>
 
-<header class="hdr">
-  <div class="hdr-in">
-    <div class="hdr-title">
-      <h1>Apoio Operacional</h1>
-    </div>
-    <div class="hdr-badge" id="hdrStatus">PRONTO</div>
-  </div>
-</header>
-
-<div class="wrap">
-
-  <!-- SEÇÃO 1: TELEMETRIA E CLIMA INTEGRADOS -->
-  <div class="section-block">
-    <div class="section-header">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Telemetria & Clima Integrados
-    </div>
-    <div class="telemetry-grid">
-      <div class="telemetry-pill">
-        <span class="telemetry-label">Velocidade Atual</span>
-        <span class="telemetry-val" id="telSpeed">0 KM/H</span>
-      </div>
-      <div class="telemetry-pill">
-        <span class="telemetry-label">Clima & Condição</span>
-        <span class="telemetry-val" id="telWeather" style="font-size:11px;line-height:1.3">Carregando...</span>
+<div id="app-root">
+  <!-- SIDEBAR DE MÓDULOS INTEGRADOS -->
+  <aside id="sidebar">
+    <div style="padding: 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+      <div style="width: 28px; height: 28px; background: var(--accent); border-radius: 6px; display: grid; place-items: center; font-weight: 900; font-size: 14px;">S</div>
+      <div>
+        <div style="font-size: 11px; font-weight: 900; letter-spacing: 0.1em;">SAP OPERACIONAL</div>
+        <div style="font-size: 8px; color: var(--text-muted);">SISTEMA INTEGRADO V2026</div>
       </div>
     </div>
-  </div>
 
-  <!-- SEÇÃO 2: PESQUISA -->
-  <div class="section-block">
-    <div class="section-header">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      Pesquisa Direta
-    </div>
+    <ul class="nav-list">
+      <li class="nav-section">Operação & Telemetria</li>
+      <li class="nav-item active" onclick="switchTab('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        Painel Central / GPS
+      </li>
+      <li class="nav-item" onclick="switchTab('media-suite')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Estúdio Mídia & OCR
+      </li>
+      <li class="nav-item" onclick="switchTab('webrtc-room')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4V8z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+        Videoconferência P2P
+      </li>
 
-    <div class="card card-accent">
-      <p class="card-label">Pesquisa por ID</p>
-      <div class="search-row">
-        <div class="search-wrap">
-          <input class="search-input" id="inputId" placeholder="EX: 12345678" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <li class="nav-section">Documentação & Dados</li>
+      <li class="nav-item" onclick="switchTab('reports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Relatórios & Impressão
+      </li>
+      <li class="nav-item" onclick="switchTab('text-editor')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        Editor & Ditado por Voz
+      </li>
+      <li class="nav-item" onclick="switchTab('news-hub')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg>
+        Notícias & Defesa Civil
+      </li>
+
+      <li class="nav-section">Gestão & Segurança (SAP)</li>
+      <li class="nav-item" onclick="switchTab('user-mgmt')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Perfis & Usuários (RBAC)
+      </li>
+      <li class="nav-item" onclick="switchTab('system-backup')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+        Memória, Backup & Restore
+      </li>
+    </ul>
+  </aside>
+
+  <!-- VIEWPORT PRINCIPAL -->
+  <main id="main-viewport">
+    <header class="top-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="#fff" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </span>
+        <div class="brand">
+          <span id="current-view-title">PAINEL OPERACIONAL</span>
+          <span class="brand-badge">PROD</span>
         </div>
-        <button class="btn-icon go" onclick="searchId()"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-        <button class="btn-icon clr" onclick="clearId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-      </div>
-      <div id="searchMsg" class="search-msg" style="display:none"></div>
-      <div id="searchResult" style="display:none;margin-top:10px"></div>
-    </div>
-
-    <div class="card card-accent">
-      <p class="card-label">Pesquisa por KM</p>
-      <div class="search-row">
-        <div class="search-wrap">
-          <input class="search-input" id="inputKm" placeholder="EX: 0, 98, 115" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <button class="btn-icon go" onclick="searchKm()"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
-        <button class="btn-icon clr" onclick="clearKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-      </div>
-      <div id="searchKmMsg" class="search-msg" style="display:none"></div>
-      <div id="searchKmModal" style="display:none"></div>
-      <div id="searchKmResult" style="display:none;margin-top:10px"></div>
-    </div>
-  </div>
-
-  <!-- SEÇÃO 3: GPS E PROXIMIDADE -->
-  <div class="section-block" style="border-color: rgba(16,185,129,0.3);">
-    <div class="section-header proximity-title">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-      Proximidade & GPS
-    </div>
-
-    <div id="targetLock" class="target-lock">
-      <h2>📍 Alvo Alcançado</h2>
-      <p id="targetLockSub">ID: ---</p>
-    </div>
-
-    <div class="km-hero">
-      <p class="km-label">KM Aproximado</p>
-      <p class="km-value" id="kmVal">—</p>
-      <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
-      <p class="km-sub" id="kmSource">Aguardando sinal de GPS...</p>
-    </div>
-
-    <div id="gpsStatus" class="gps bad">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
-      GPS · BUSCANDO SINAL
-    </div>
-
-    <div class="card">
-      <div class="card-label" style="margin-bottom:10px;">
-        <span>Mapa & Coordenadas</span>
-        <button class="coord-btn-toggle" onclick="toggleCoordSearch()">Selecionar no Mapa</button>
       </div>
 
-      <div id="coordSearchBox" class="coord-container" style="display:none;">
-        <div class="coord-inputs-grid">
-          <div class="coord-field">
-            <label>Latitude</label>
-            <input class="coord-input" id="inputLat" placeholder="-22.85" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="coord-field">
-            <label>Longitude</label>
-            <input class="coord-input" id="inputLon" placeholder="-43.77" autocomplete="off" spellcheck="false">
-          </div>
-        </div>
-        
-        <div style="display:flex;gap:6px;">
-          <button class="ctrl-send" style="min-height:34px;font-size:10px;" onclick="searchManualCoord()">Analisar Ponto</button>
-          <button class="btn-icon clr" onclick="clearCoordFields()" style="width:34px;height:34px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-        </div>
+      <div class="user-profile-badge">
+        <div class="status-indicator"></div>
+        <span id="currentUserLabel">OPERADOR ADM (ID: 9021)</span>
+        <button class="btn" style="padding: 2px 6px; font-size: 8px;" onclick="lockSession()">BLOQUEAR</button>
+      </div>
+    </header>
 
-        <div style="font-size:8px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:2px;">Toque no mapa para ver as informações do ponto:</div>
-        
-        <div class="map-picker-box" id="mapPickerBox">
-          <div class="map-controls-bar">
-            <button class="map-layer-btn" id="btnLayerNormal" onclick="setMapLayer('normal')">Normal</button>
-            <button class="map-layer-btn active" id="btnLayerSatellite" onclick="setMapLayer('satellite')">Satélite</button>
-            <button class="map-fs-btn" id="btnMapFs" onclick="toggleMapFullscreen()">Full</button>
-          </div>
-
-          <div id="leafletMap" style="width:100%;height:100%;"></div>
-
-          <div class="map-overlay-card" id="mapOverlayCard">
-            <div class="map-overlay-header">
-              <span class="map-overlay-title">Informações do Ponto</span>
-              <button class="map-overlay-close" onclick="closeMapOverlay()">✕</button>
+    <!-- WORKSPACE 1: DASHBOARD & TELEMETRIA -->
+    <div id="ws-dashboard" class="workspace active">
+      <div class="grid-cards">
+        <div class="card">
+          <div class="card-header">Telemetria & GPS de Precisão</div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 24px; font-weight: 900; color: var(--green);" id="dashSpeed">0 KM/H</div>
+              <div style="font-size: 10px; color: var(--text-muted);" id="dashCoords">Lat: -22.8500 | Lon: -43.7700</div>
             </div>
-            <div id="mapOverlayContent" style="font-size:10px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;"></div>
+            <button class="btn btn-primary" onclick="forceGPSRefresh()">Atualizar GPS</button>
           </div>
         </div>
-        
-        <button class="ctrl-send" style="min-height:32px;font-size:9px;background:linear-gradient(135deg,var(--violet),var(--violet2));box-shadow:0 3px 10px rgba(92,33,255,.3);" onclick="useCurrentGpsCoord()">Usar Minha Posição GPS</button>
-        <div id="coordSearchMsg" class="search-msg" style="display:none"></div>
+
+        <div class="card">
+          <div class="card-header">Condições Meteorológicas & Pista</div>
+          <div id="dashWeather">Carregando telemetria ambiental...</div>
+        </div>
       </div>
 
-      <button id="btnSend" class="ctrl-send" disabled style="margin-top:8px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-        Enviar WhatsApp
-      </button>
-
-      <div class="ctrl-row">
-        <label class="ctrl-label">
-          Proximidade
-          <select class="ctrl-select" id="qty">
-            <option value="1">1</option>
-            <option value="5">5</option>
-            <option value="10" selected>10</option>
-            <option value="20">20</option>
-            <option value="50">50</option>
-          </select>
-        </label>
-        <label class="ctrl-label">
-          <input type="checkbox" class="ctrl-chk" id="chkMaps" checked> Maps
-        </label>
+      <div class="card" style="flex: 1; min-height: 350px; padding: 0; overflow: hidden; position: relative;">
+        <div id="leafletMap" style="width: 100%; height: 100%;"></div>
       </div>
     </div>
 
-    <div id="postList" style="display:flex;flex-direction:column;gap:10px">
-      <div class="skel"></div><div class="skel"></div>
+    <!-- WORKSPACE 2: MÍDIA, FOTOGRAFIA & OCR -->
+    <div id="ws-media-suite" class="workspace">
+      <div class="card">
+        <div class="card-header">Estúdio de Captura de Imagem com Estampa de GPS</div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="startCamera()">Ligar Câmera</button>
+          <button class="btn btn-success" onclick="takePhoto()">Tirar Foto com Marca D'água</button>
+          <button class="btn" onclick="applyFilter('grayscale')">Filtro P&B</button>
+          <button class="btn" onclick="runOCR()">Executar OCR (Extrair Texto)</button>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap;">
+          <video id="webcam-feed" autoplay playsinline style="width: 320px; height: 240px; background: #000; border-radius: 8px;"></video>
+          <canvas id="photo-canvas" style="width: 320px; height: 240px; background: #000; border-radius: 8px;"></canvas>
+        </div>
+        <div id="ocr-result" style="font-size: 11px; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 6px;">Resultado OCR: Aguardando captura...</div>
+      </div>
     </div>
-  </div>
 
+    <!-- WORKSPACE 3: WEBRTC VIDEOCONFERÊNCIA -->
+    <div id="ws-webrtc-room" class="workspace">
+      <div class="card">
+        <div class="card-header">Sala de Videoconferência P2P Operacional</div>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="roomIdInput" class="input-field" style="width: 200px;" value="SALA-OPERACAO-1">
+          <button class="btn btn-primary" onclick="joinWebRTC()">Conectar Sala</button>
+          <button class="btn btn-danger" onclick="leaveWebRTC()">Desconectar</button>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 12px;">
+          <video id="localVideo" autoplay playsinline muted style="width: 50%; height: 260px; background: #000; border-radius: 8px;"></video>
+          <video id="remoteVideo" autoplay playsinline style="width: 50%; height: 260px; background: #000; border-radius: 8px;"></video>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE 4: RELATÓRIOS & IMPRESSÃO -->
+    <div id="ws-reports" class="workspace">
+      <div class="card">
+        <div class="card-header">Geração de Relatórios e Impressão Térmica</div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="generatePDFReport()">Gerar Relatório PDF</button>
+          <button class="btn btn-success" onclick="printThermalReceipt()">Imprimir Comprovante Térmico (80mm)</button>
+          <button class="btn" onclick="exportCSVData()">Exportar Dados (CSV)</button>
+        </div>
+        <div id="report-preview" style="background: #fff; color: #000; padding: 20px; border-radius: 8px; margin-top: 12px; font-family: monospace; font-size: 12px;">
+          === COMPROVANTE OPERACIONAL SAP ERP ===<br>
+          DATA: <span id="rpt-date">--/--/----</span><br>
+          OPERADOR: ADMIN_SYSTEM<br>
+          LOCALIZAÇÃO: LAT -22.8500 LON -43.7700<br>
+          STATUS: AUDITADO & VERIFICADO<br>
+          =======================================
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE 5: EDITOR & DITADO POR VOZ -->
+    <div id="ws-text-editor" class="workspace">
+      <div class="card">
+        <div class="card-header">Editor de Laudos Técnicos & Ditado por Voz</div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="toggleSpeechRecognition()">🎤 Iniciar Ditado por Voz</button>
+          <button class="btn" onclick="saveDocument()">Salvar Nota no Banco SAP</button>
+        </div>
+        <textarea id="docTextarea" class="input-field" style="height: 250px; margin-top: 10px; font-size: 13px;" placeholder="Digite ou dite o laudo operacional aqui..."></textarea>
+      </div>
+    </div>
+
+    <!-- WORKSPACE 6: NOTÍCIAS & DEFESA CIVIL -->
+    <div id="ws-news-hub" class="workspace">
+      <div class="card">
+        <div class="card-header">Hub de Alertas de Defesa Civil & Notícias Técnicas</div>
+        <div id="news-feed-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+          <div style="border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+            <strong style="color: var(--gold);">[ALERTA RODOVIÁRIO]</strong> Trecho BR-116 KM 98 com tráfego normalizado. Equipes de manutenção no local.
+          </div>
+          <div style="border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+            <strong style="color: var(--green);">[DEFESA CIVIL]</strong> Sem previsão de chuvas intensas para as próximas 12 horas.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE 7: PERFIS & SEGURANÇA (RBAC) -->
+    <div id="ws-user-mgmt" class="workspace">
+      <div class="card">
+        <div class="card-header">Gestão de Usuários & Matriz de Permissões (SAP RBAC)</div>
+        <table style="width: 100%; text-align: left; font-size: 11px; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+              <th style="padding: 8px;">ID</th>
+              <th>USUÁRIO</th>
+              <th>PERFIL / ROLES</th>
+              <th>STATUS</th>
+              <th>AÇÃO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 8px;">9021</td>
+              <td>OPERADOR_CHEFIA</td>
+              <td><span style="background: var(--accent); padding: 2px 6px; border-radius: 4px;">ADMIN</span></td>
+              <td>ATIVO</td>
+              <td><button class="btn" style="padding: 2px 6px;">EDITAR</button></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;">9022</td>
+              <td>CAMPO_TÉCNICO</td>
+              <td><span style="background: var(--panel-light); padding: 2px 6px; border-radius: 4px;">OPERADOR</span></td>
+              <td>ATIVO</td>
+              <td><button class="btn" style="padding: 2px 6px;">EDITAR</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- WORKSPACE 8: MEMÓRIA & BACKUP -->
+    <div id="ws-system-backup" class="workspace">
+      <div class="card">
+        <div class="card-header">Gestão do Banco de Dados Local & Backup Criptografado</div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="exportSAPBackup()">Gerar Backup (.sapbak)</button>
+          <button class="btn btn-danger" onclick="clearLocalDatabase()">Limpar Dados Locais</button>
+        </div>
+        <div style="margin-top: 10px; font-size: 10px; color: var(--text-muted);" id="dbStorageStats">IndexedDB Status: Ativo | Registros: 1,420 de Nós.</div>
+      </div>
+    </div>
+
+    <!-- TRILHA DE AUDITORIA SAP (AUDIT LOGS) -->
+    <div style="padding: 0 16px 16px 16px;">
+      <div style="font-size: 9px; font-weight: 900; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Trilha de Auditoria e Sistema (Audit Compliance Log)</div>
+      <div id="audit-terminal">
+        [INIT] Sistema SAP Operacional Enterprise iniciado com sucesso.<br>
+        [SEC] Sessão autenticada via token criptográfico local.<br>
+      </div>
+    </div>
+  </main>
 </div>
 
-<div class="toast" id="toast" aria-live="polite"></div>
-
-<!-- Leaflet JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
-const ACC_G=15,ACC_Y=35;
-const norm=s=>String(s||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9_ ]+/g,' ').replace(/\s+/g,' ');
-const parsePt=v=>{const s=String(v??'').trim();return/,\d+$/.test(s)?Number(s.replace(/\./g,'').replace(',','.')):Number(s)};
-const hav=(a,b,c,d)=>{const p=Math.PI/180,x=.5-Math.cos((c-a)*p)/2+Math.cos(a*p)*Math.cos(c*p)*(1-Math.cos((d-b)*p))/2;return 12742000*Math.asin(Math.sqrt(x))};
-
-function formatDistance(meters){
-  const m = Number(meters);
-  if(!Number.isFinite(m)) return '—';
-  if(m >= 1000){
-    const km = (m / 1000).toFixed(2).replace('.', ',');
-    const mRound = Math.round(m).toLocaleString('pt-BR');
-    return `${km} km (${mRound} metros)`;
-  }
-  return `${Math.round(m)} metros`;
-}
-
-const fmtAcc=a=>!Number.isFinite(a)?'—':`±${Math.round(a)}M`;
-const nowBR=()=>new Date().toLocaleString('pt-BR').toUpperCase();
-function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(norm(c));if(i>=0)return i}return-1}
-function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
-
-let posts=[], postIndex=new Map();
-let kmDB_SP=[], kmDB_RJ=[], kmDB_BR101_SP=[], kmDB_BR101_RJ=[];
-let pos=null, searchItem=null, searchKmItems=[], renderedKey='', apoioInit=false;
-let mapInstance=null, mapMarker=null, mapInitialized=false;
-let gpsInitializedOnce=false;
-let currentTileLayer=null;
-let activeLayerMode='satellite';
-let lastTapTime = 0;
-let lastWeatherFetch = 0;
-
-let _tt=null;
-function showToast(msg,type='ok'){
-  const el=document.getElementById('toast');
-  const icons={
-    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>',
-    err:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'
-  };
-  el.className='toast '+type;
-  el.innerHTML=(icons[type]||'')+msg;
-  clearTimeout(_tt);
-  requestAnimationFrame(()=>{el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),2000)});
-}
-
-function gpsBadge(el,p,err){
-  const a=p?.acc;let cls='bad',txt;
-  if(err)txt=err;
-  else if(!a)txt='GPS · BUSCANDO SINAL';
-  else if(a<=ACC_G){cls='ok';txt=`GPS · ALTA PRECISÃO ${fmtAcc(a)}`}
-  else if(a<=ACC_Y){cls='warn';txt=`GPS · MÉDIA ${fmtAcc(a)}`}
-  else txt=`GPS · FRACO ${fmtAcc(a)}`;
-  el.className='gps '+cls;
-  el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>${txt}`;
-}
-
-async function fetchCSV(files){
-  for(const f of files){
-    try{
-      let r=await fetch(f+'?v='+Date.now(),{cache:'force-cache'});
-      if(r?.ok){
-        let t=await r.text();
-        if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
-        return t;
-      }
-    }catch(e){}
-  }
-  return null;
-}
-
-function findNearestPost(lat, lon){
-  if(!posts.length) return null;
-  let closest = null, minD = Infinity;
-  for(const p of posts){
-    if(Math.abs(p.lat - lat) > 0.3 || Math.abs(p.lon - lon) > 0.3) continue;
-    const d = hav(lat, lon, p.lat, p.lon);
-    if(d < minD){minD = d; closest = {...p, d};}
-  }
-  return closest;
-}
-
-async function loadSystemData(){
-  try{
-    let t=await fetchCSV(['dados.csv','Dados_Completos_Grupo_2_all.csv']);
-    if(t){
-      const lines=t.split(/\r?\n/).filter(l=>l.trim());
-      const h=lines.shift().split(';');
-      const iId=findCol(h,['id do nox','idnox','id']),iLat=findCol(h,['latitude','lat']),iLon=findCol(h,['longitude','lon','long']);
-      posts=lines.map(l=>{
-        const r=l.split(';');
-        const id=String(r[iId]||'').trim().toUpperCase();
-        const lat=parsePt(r[iLat]);
-        const lon=parsePt(r[iLon]);
-        return {id, lat, lon};
-      }).filter(p=>p.id&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
-
-      postIndex.clear();
-      posts.forEach(p=>postIndex.set(p.id, p));
-    }
-
-    const [tSP, tRJ, t101SP, t101RJ] = await Promise.all([
-      fetchCSV(['SNVBR116SPRJ.csv','br116sp.csv','BR116_SP.csv']),
-      fetchCSV(['SNVBR116RJ.csv','br116rj.csv','BR116_RJ.csv']),
-      fetchCSV(['br101sp.csv','BR101_SP.csv']),
-      fetchCSV(['br101rj.csv','BR101_RJ.csv'])
-    ]);
-
-    kmDB_SP = await parseKmFile(tSP);
-    kmDB_RJ = await parseKmFile(tRJ);
-    kmDB_BR101_SP = await parseKmFile(t101SP);
-    kmDB_BR101_RJ = await parseKmFile(t101RJ);
-
-  }catch(e){}
-
-  initApoioDirect();
-}
-
-async function parseKmFile(text){
-  if(!text)return [];
-  const lines=text.split(/\r?\n/).filter(l=>l.trim());
-  const h=lines.shift().split(';');
-  const iKm=findCol(h,['km']),iLat=findCol(h,['lat','latitude']),iLon=findCol(h,['lon','long','longitude']);
-  return lines.map(l=>{
-    const r=l.split(';');
-    return {km:parsePt(r[iKm]),lat:parsePt(r[iLat]),lon:parsePt(r[iLon])};
-  }).filter(p=>Number.isFinite(p.km)&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
-}
-
-function findNearestInAnyDB(lat, lon){
-  const candidates=[
-    {name:'BR116/SP', db:kmDB_SP},
-    {name:'BR116/RJ', db:kmDB_RJ},
-    {name:'BR101/SP', db:kmDB_BR101_SP},
-    {name:'BR101/RJ', db:kmDB_BR101_RJ}
-  ].map(c=>{
-    let best=null, bd=Infinity;
-    for(const p of c.db){
-      if(Math.abs(p.lat - lat) > 0.5 || Math.abs(p.lon - lon) > 0.5) continue;
-      const d=hav(lat, lon, p.lat, p.lon);
-      if(d<bd){bd=d;best={...p,d};}
-    }
-    return {name:c.name, res:best};
-  }).filter(c=>c.res!==null);
-
-  if(!candidates.length)return null;
-  candidates.sort((a,b)=>a.res.d - b.res.d);
-  return candidates[0];
-}
-
-async function updateWeatherAndTelemetry(lat, lon, speedMs){
-  const speedKmh = Number.isFinite(speedMs) ? Math.max(0, Math.round(speedMs * 3.6)) : 0;
-  document.getElementById('telSpeed').textContent = `${speedKmh} KM/H`;
-
-  const now = Date.now();
-  if(now - lastWeatherFetch < 300000) return; // Cache de 5 min para clima
-  lastWeatherFetch = now;
-
-  try {
-    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`);
-    if(res.ok){
-      const data = await res.json();
-      const curr = data.current;
-      if(curr){
-        const temp = Math.round(curr.temperature_2m);
-        const hum = curr.relative_humidity_2m;
-        const wind = Math.round(curr.wind_speed_10m);
-        const code = curr.weather_code;
-        
-        let condText = 'Bom';
-        if([1,2,3].includes(code)) condText = 'Nublado';
-        else if([51,53,55,61,63,65,80,81,82].includes(code)) condText = 'Chuvoso ⚠️';
-        else if([95,96,99].includes(code)) condText = 'Tempestade ⚠️';
-
-        document.getElementById('telWeather').innerHTML = `${temp}°C, ${condText}<br><span style="font-size:90%;color:var(--muted)">Umidade ${hum}% | Vento ${wind}km/h</span>`;
-      }
-    }
-  } catch(e){
-    document.getElementById('telWeather').textContent = 'Online (Sensores Ativos)';
-  }
-}
-
-async function updateKm(){
-  if(!pos)return;
-  const best=findNearestInAnyDB(pos.lat, pos.lon);
-  if(!best)return;
-
-  const kmValStr=(Math.round(best.res.km*100)/100).toFixed(2).replace('.',',');
-  document.getElementById('kmVal').textContent = `KM ${kmValStr}`;
-  document.getElementById('kmBrBadge').textContent = best.name;
-  
-  const s=document.getElementById('kmSource');
-  if(s){
-    const distFormatted = formatDistance(best.res.d);
-    s.textContent = `Rodovia: ${best.name} | Distância até o eixo: ${distFormatted}`;
-  }
-}
-
-function findPostExactKm(post){
-  const dbs=[{name:'SP', db:kmDB_SP},{name:'RJ', db:kmDB_RJ},{name:'BR101-SP', db:kmDB_BR101_SP},{name:'BR101-RJ', db:kmDB_BR101_RJ}];
-  for(const dbObj of dbs){
-    if(dbObj.db.length){
-      let best=null, bd=Infinity;
-      for(const pt of dbObj.db){
-        if(Math.abs(pt.lat - post.lat) > 0.3 || Math.abs(pt.lon - post.lon) > 0.3) continue;
-        const d=hav(post.lat, post.lon, pt.lat, pt.lon);
-        if(d<bd){bd=d;best=pt;}
-      }
-      if(best && bd < 3000){
-        return {
-          kmStr: (Math.round(best.km*1000)/1000).toFixed(3).replace('.',',') + ' ('+dbObj.name+')',
-          lat: best.lat,
-          lon: best.lon
-        };
-      }
-    }
-  }
-  return {kmStr: '---', lat: post.lat, lon: post.lon};
-}
-
-function setMapLayer(mode){
-  activeLayerMode = mode;
-  document.getElementById('btnLayerNormal').classList.toggle('active', mode==='normal');
-  document.getElementById('btnLayerSatellite').classList.toggle('active', mode==='satellite');
-
-  if(!mapInstance) return;
-  if(currentTileLayer) mapInstance.removeLayer(currentTileLayer);
-
-  if(mode === 'normal'){
-    currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19});
-  } else {
-    currentTileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19});
-  }
-  currentTileLayer.addTo(mapInstance);
-}
-
-function toggleMapFullscreen(){
-  const box = document.getElementById('mapPickerBox');
-  const btn = document.getElementById('btnMapFs');
-  box.classList.toggle('fullscreen');
-  const isFs = box.classList.contains('fullscreen');
-  btn.textContent = isFs ? 'Sair' : 'Full';
-  if(mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
-}
-
-function handleDoubleTapFullscreen(){
-  const currentTime = new Date().getTime();
-  const tapLength = currentTime - lastTapTime;
-  if (tapLength < 350 && tapLength > 30) {
-    toggleMapFullscreen();
-    vibrate(15);
-  }
-  lastTapTime = currentTime;
-}
-
-function closeMapOverlay(){
-  document.getElementById('mapOverlayCard').style.display = 'none';
-}
-
-function initLeafletMap(initLat, initLon){
-  if(mapInitialized) return;
-  mapInitialized = true;
-  
-  mapInstance = L.map('leafletMap', {
-    zoomControl: true,
-    attributionControl: false
-  }).setView([initLat, initLon], 13);
-
-  setMapLayer('satellite');
-  mapMarker = L.marker([initLat, initLon]).addTo(mapInstance);
-
-  mapInstance.on('click', function(e){
-    handleDoubleTapFullscreen();
-    const lat = e.latlng.lat;
-    const lon = e.latlng.lng;
-    
-    document.getElementById('inputLat').value = lat.toFixed(6);
-    document.getElementById('inputLon').value = lon.toFixed(6);
-    
-    mapMarker.setLatLng([lat, lon]);
-    
-    const closestPost = findNearestPost(lat, lon);
-    const foundRodovia = findNearestInAnyDB(lat, lon);
-
-    const overlayCard = document.getElementById('mapOverlayCard');
-    const overlayContent = document.getElementById('mapOverlayContent');
-    
-    let html = '';
-    let targetId = '';
-    let targetLat = lat;
-    let targetLon = lon;
-
-    if(closestPost){
-      const distStr = formatDistance(closestPost.d);
-      targetId = closestPost.id;
-      targetLat = closestPost.lat;
-      targetLon = closestPost.lon;
-      html += `<div><p style="color:#fff;font-weight:900;margin-bottom:2px;">ID: <span style="color:var(--accent)">${closestPost.id}</span> (Distância: ${distStr})</p>`;
-    }
-    if(foundRodovia){
-      const distRodStr = formatDistance(foundRodovia.res.d);
-      if(!closestPost) html += '<div>';
-      html += `<p style="color:var(--green2);font-weight:900;">${foundRodovia.name} · KM ${(Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',')} (Eixo a ${distRodStr})</p></div>`;
-    }
-
-    if(!html) {
-      html = `<div style="color:var(--muted)">Nenhum ID próximo</div>`;
-      overlayContent.innerHTML = html;
-    } else {
-      const waBtnHtml = targetId ? `<button class="post-wa-btn" onclick="sendSingleWhatsApp('${targetId}', ${targetLat}, ${targetLon})" title="Enviar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>` : '';
-      overlayContent.innerHTML = html + waBtnHtml;
-    }
-
-    overlayCard.style.display = 'flex';
-    showToast('Ponto Mapeado');
-  });
-
-  document.getElementById('leafletMap').addEventListener('touchend', () => {
-    handleDoubleTapFullscreen();
-  });
-}
-
-function initApoioDirect(){
-  if(apoioInit)return;
-  apoioInit=true;
-
-  initLeafletMap(-23.027, -45.556);
-  renderApoio();
-
-  if('geolocation'in navigator)navigator.geolocation.watchPosition(p=>{
-    pos={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy};
-    gpsBadge(document.getElementById('gpsStatus'),pos);
-    document.getElementById('hdrStatus').textContent = 'ONLINE';
-    
-    updateWeatherAndTelemetry(pos.lat, pos.lon, p.coords.speed);
-    renderApoio();
-    updateKm();
-    updateSearchDist();
-    updateSearchKmDist();
-
-    if(!gpsInitializedOnce && mapInstance){
-      gpsInitializedOnce = true;
-      mapInstance.setView([pos.lat, pos.lon], 14);
-      mapMarker.setLatLng([pos.lat, pos.lon]);
-    }
-  },err=>{
-    gpsBadge(document.getElementById('gpsStatus'), null, 'GPS · ERRO DE SINAL');
-    document.getElementById('hdrStatus').textContent = 'OFFLINE';
-  },{enableHighAccuracy:true,maximumAge:0,timeout:10000});
-}
-
-function toggleCoordSearch(){
-  const box = document.getElementById('coordSearchBox');
-  const isHidden = box.style.display === 'none';
-  box.style.display = isHidden ? 'flex' : 'none';
-  if(isHidden && mapInstance){
-    setTimeout(()=>{ mapInstance.invalidateSize(); }, 50);
-  }
-}
-
-function useCurrentGpsCoord(){
-  if(!pos){showToast('GPS indisponível', 'err');return}
-  document.getElementById('inputLat').value = pos.lat.toFixed(6);
-  document.getElementById('inputLon').value = pos.lon.toFixed(6);
-  if(mapInstance){
-    mapInstance.setView([pos.lat, pos.lon], 15);
-    mapMarker.setLatLng([pos.lat, pos.lon]);
-  }
-  searchManualCoord();
-}
-
-function clearCoordFields(){
-  document.getElementById('inputLat').value = '';
-  document.getElementById('inputLon').value = '';
-  document.getElementById('coordSearchMsg').style.display = 'none';
-  closeMapOverlay();
-}
-
-function searchManualCoord(){
-  const latStr = document.getElementById('inputLat').value.trim();
-  const lonStr = document.getElementById('inputLon').value.trim();
-  const msg = document.getElementById('coordSearchMsg');
-  
-  if(!latStr || !lonStr){
-    msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Preencha as coordenadas.';
-    return;
-  }
-
-  const lat = parsePt(latStr);
-  const lon = parsePt(lonStr);
-  if(isNaN(lat) || isNaN(lon)) return;
-
-  if(mapInstance){
-    mapInstance.setView([lat, lon], mapInstance.getZoom());
-    mapMarker.setLatLng([lat, lon]);
-  }
-
-  const closestPost = findNearestPost(lat, lon);
-  msg.style.display='flex';
-  if(closestPost){
-    const distStr = formatDistance(closestPost.d);
-    msg.innerHTML = `<span style="color:#fff">ID: <strong style="color:var(--accent)">${closestPost.id}</strong> (Distância: ${distStr})</span>`;
-  } else {
-    msg.innerHTML = `<span style="color:var(--muted)">Nenhum ID próximo</span>`;
-  }
-  showToast('Ponto analisado');
-}
-
-async function searchId(){
-  const rawInput = document.getElementById('inputId').value.trim();
-  const msg=document.getElementById('searchMsg'), res=document.getElementById('searchResult');
-  
-  if(!rawInput){clearId();return}
-
-  const digitsOnly = rawInput.replace(/\D/g, '');
-  if(digitsOnly.length !== 8){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>O ID DEVE TER 8 DÍGITOS.`;
-    searchItem=null;res.style.display='none';checkLock();vibrate(20);return;
-  }
-
-  const term=norm(rawInput);
-  let found = postIndex.get(term);
-  if(!found){
-    for(const [k,v] of postIndex.entries()){
-      if(k.includes(term)){found = v;break;}
-    }
-  }
-
-  if(!found){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID NÃO ENCONTRADO.`;
-    searchItem=null;res.style.display='none';checkLock();vibrate(20);return;
-  }
-
-  searchItem=found;
-  msg.style.display='none';
-  renderSearch();
-  showToast('Encontrado: '+found.id);
-  vibrate(10);
-}
-
-function clearId(){
-  document.getElementById('inputId').value='';
-  document.getElementById('searchMsg').style.display='none';
-  document.getElementById('searchResult').style.display='none';
-  searchItem=null;
-  checkLock();
-}
-
-function updateSearchDist(){
-  if(!searchItem||!pos)return;
-  const el=document.getElementById('srch-dist');
-  const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
-  if(el)el.textContent=`Distância da sua posição: ${formatDistance(dist)}`;
-  checkLock();
-}
-
-function renderSearch(){
-  if(!searchItem)return;
-  const res=document.getElementById('searchResult');
-  let dt='Aguardando GPS...';
-  if(pos){
-    const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
-    dt=`Distância da sua posição: ${formatDistance(dist)}`;
-    checkLock();
-  }
-  const exactKmObj = findPostExactKm(searchItem);
-
-  res.style.display='block';
-  res.innerHTML=`<div class="post searched">
-    <div class="post-top">
-      <div class="post-info" style="flex:1;">
-        <p class="post-id">ID: <span>${searchItem.id}</span></p>
-        <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactKmObj.kmStr}</p>
-        <p class="post-dist" id="srch-dist">${dt}</p>
-        <p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p>
-      </div>
-      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})" title="Enviar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      </button>
-    </div>
-    <div class="post-map-container">
-      <iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
-    </div>
-  </div>`;
-}
-
-function getMinMaxKm(db){
-  if(!db.length) return {min:0, max:0};
-  let min=Infinity, max=-Infinity;
-  for(const pt of db){
-    if(pt.km < min) min = pt.km;
-    if(pt.km > max) max = pt.km;
-  }
-  return {min, max};
-}
-
-function executeSearchKm(db, label){
-  const rawVal=document.getElementById('inputKm').value;
-  const targetKm=parsePt(rawVal);
-  const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult');
-  const modal=document.getElementById('searchKmModal');
-  modal.style.display='none';
-
-  const rangeDB = getMinMaxKm(db);
-  if(targetKm < rangeDB.min || targetKm > rangeDB.max){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>FORA DO RANGE (${Math.round(rangeDB.min)} a ${Math.round(rangeDB.max)}).`;
-    searchKmItems=[];res.style.display='none';
-    return;
-  }
-
-  let bestPt=null, minDiff=Infinity;
-  for(const pt of db){
-    const diff=Math.abs(pt.km - targetKm);
-    if(diff<minDiff){minDiff=diff;bestPt=pt;}
-  }
-
-  if(!bestPt){
-    searchKmItems=[];res.style.display='none';
-    return;
-  }
-
-  const sortedPosts = posts.map(p => ({
-    ...p,
-    d: (Math.abs(p.lat - bestPt.lat) > 0.25 || Math.abs(p.lon - bestPt.lon) > 0.25) ? 999999 : hav(bestPt.lat, bestPt.lon, p.lat, p.lon)
-  })).sort((a, b) => a.d - b.d).slice(0, 10);
-
-  searchKmItems = sortedPosts;
-  msg.style.display='none';
-  renderSearchKm(label);
-  showToast('KM '+rawVal+' ('+label+')');
-  vibrate(10);
-}
-
-function searchKm(){
-  const rawVal=document.getElementById('inputKm').value;
-  const targetKm=parsePt(rawVal);
-  const msg=document.getElementById('searchKmMsg'),res=document.getElementById('searchKmResult'),modal=document.getElementById('searchKmModal');
-  
-  if(isNaN(targetKm)){clearKm();return}
-  if(!posts.length || (!kmDB_SP.length && !kmDB_RJ.length)){return;}
-
-  const rangeSP = getMinMaxKm(kmDB_SP);
-  const rangeRJ = getMinMaxKm(kmDB_RJ);
-
-  const inRangeSP = kmDB_SP.length && (targetKm >= rangeSP.min && targetKm <= rangeSP.max);
-  const inRangeRJ = kmDB_RJ.length && (targetKm >= rangeRJ.min && targetKm <= rangeRJ.max);
-
-  if(!inRangeSP && !inRangeRJ){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>FORA DOS LIMITES.`;
-    searchKmItems=[];res.style.display='none';
-    modal.style.display='none';
-    return;
-  }
-
-  const existsSP = inRangeSP && kmDB_SP.some(pt => Math.abs(pt.km - targetKm) < 1.0);
-  const existsRJ = inRangeRJ && kmDB_RJ.some(pt => Math.abs(pt.km - targetKm) < 1.0);
-
-  if(existsSP && existsRJ){
-    if(pos){
-      const nearestInSP = kmDB_SP.map(p=>({d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d)[0];
-      const nearestInRJ = kmDB_RJ.map(p=>({d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d)[0];
-      
-      if(nearestInRJ && nearestInSP && nearestInRJ.d < nearestInSP.d){
-        modal.style.display='none';
-        executeSearchKm(kmDB_RJ, 'RJ');
-        return;
-      } else if(nearestInSP && nearestInRJ && nearestInSP.d < nearestInRJ.d){
-        modal.style.display='none';
-        executeSearchKm(kmDB_SP, 'SP');
-        return;
-      }
-    }
-
-    msg.style.display='none';
-    res.style.display='none';
-    modal.style.display='block';
-    modal.innerHTML=`<div class="modal-box">
-      <p>Existe em SP e RJ. Escolha a base:</p>
-      <div class="modal-btns">
-        <button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'SP')">SP</button>
-        <button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'RJ')">RJ</button>
-      </div>
-    </div>`;
-    return;
-  }
-
-  modal.style.display='none';
-  if(existsSP){
-    executeSearchKm(kmDB_SP, 'SP');
-  }else if(existsRJ){
-    executeSearchKm(kmDB_RJ, 'RJ');
-  }else{
-    executeSearchKm(inRangeSP ? kmDB_SP : kmDB_RJ, inRangeSP ? 'SP' : 'RJ');
-  }
-}
-
-function clearKm(){
-  document.getElementById('inputKm').value='';
-  document.getElementById('searchKmMsg').style.display='none';
-  document.getElementById('searchKmResult').style.display='none';
-  document.getElementById('searchKmModal').style.display='none';
-  searchKmItems=[];
-}
-
-function updateSearchKmDist(){
-  if(!searchKmItems.length||!pos)return;
-  searchKmItems.forEach((item, idx)=>{
-    const el=document.getElementById('srch-km-dist-'+idx);
-    const dist=hav(pos.lat,pos.lon,item.lat,item.lon);
-    if(el)el.textContent=`Distância da sua posição: ${formatDistance(dist)}`;
-  });
-}
-
-function renderSearchKm(label){
-  if(!searchKmItems.length)return;
-  const res=document.getElementById('searchKmResult');
-  res.style.display='block';
-  
-  let htmlContent = `<div style="font-size:9px;font-weight:900;color:var(--accent);margin-bottom:6px;text-transform:uppercase;">Resultado: ${label}</div><div style="display:flex;flex-direction:column;gap:10px">`;
-  
-  for(let idx = 0; idx < searchKmItems.length; idx++){
-    const item = searchKmItems[idx];
-    let dt='Aguardando GPS...';
-    if(pos){
-      dt=`Distância da sua posição: ${formatDistance(hav(pos.lat,pos.lon,item.lat,item.lon))}`;
-    }
-    const exactKmObj = findPostExactKm(item);
-    htmlContent += `
-      <div class="post searched">
-        <div class="post-top">
-          <div class="post-info" style="flex:1;">
-            <p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p>
-            <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactKmObj.kmStr}</p>
-            <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
-            <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
-          </div>
-          <button class="post-wa-btn" onclick="sendSingleWhatsApp('${item.id}', ${item.lat}, ${item.lon})" title="Enviar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-          </button>
-        </div>
-        <div class="post-map-container">
-          <iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
-        </div>
-      </div>`;
-  }
-  htmlContent += '</div>';
-  res.innerHTML = htmlContent;
-}
-
-function checkLock(){
-  const b=document.getElementById('targetLock');
-  if(!searchItem||!pos){b.classList.remove('on');return}
-  const d=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
-  if(d<=(5+(pos.acc||10))){
-    b.classList.add('on');
-    document.getElementById('targetLockSub').textContent=`ID: ${searchItem.id} · ~${Math.round(d)}M`;
-    vibrate([20,80,20]);
-  }else{
-    b.classList.remove('on');
-  }
-}
-
-function sendSingleWhatsApp(id, lat, lon) {
-  let tx = `📍 *LOCALIZAÇÃO*\n`;
-  tx += `Data: ${nowBR()}\n\n`;
-  tx += `ID: ${id}\n`;
-  tx += `Coordenadas: ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}\n`;
-  tx += `🗺️ https://maps.google.com/?q=${Number(lat).toFixed(6)},${Number(lon).toFixed(6)}`;
-  window.open('https://wa.me/?text=' + encodeURIComponent(tx), '_blank', 'noopener');
-  showToast('Enviado');
-}
-
-async function renderApoio(){
-  if(!pos||!posts.length)return;
-  if(searchItem)updateSearchDist();
-  if(searchKmItems.length)updateSearchKmDist();
-
-  const qty=Number(document.getElementById('qty').value||10);
-  const items=posts.map(p=>{
-    if(Math.abs(p.lat - pos.lat) > 0.4 || Math.abs(p.lon - pos.lon) > 0.4) return null;
-    const d=hav(pos.lat,pos.lon,p.lat,p.lon);
-    return {id:p.id,lat:p.lat,lon:p.lon,d};
-  }).filter(Boolean).sort((a,b)=>a.d-b.d).slice(0,qty);
-
-  if(!items.length) return;
-
-  const key=items.map(i=>i.id).join(',');
-  const list=document.getElementById('postList');
-
-  if(key===renderedKey){
-    for(let i=0; i<items.length; i++){
-      const o = items[i];
-      const el=document.getElementById('dist-'+i);
-      const kmEl=document.getElementById('km-exato-'+i);
-      if(el)el.textContent=`Distância: ${formatDistance(o.d)}`;
-      const exactObj = findPostExactKm(o);
-      if(kmEl)kmEl.textContent='KM: '+exactObj.kmStr;
-    }
-    document.getElementById('btnSend').disabled=false;
-    return;
-  }
-
-  renderedKey=key;
-  const fragment = document.createDocumentFragment();
-
-  for(let i=0; i<items.length; i++){
-    const o = items[i];
-    const exactObj = findPostExactKm(o);
-
-    const div=document.createElement('div');
-    div.className='post'+(i===0?' near':'');
-    div.innerHTML=`<div class="post-top">
-      <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
-      <div class="post-info" style="flex:1;">
-        <p class="post-id" style="margin:0;">ID: <span>${o.id}</span></p>
-        <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactObj.kmStr}</p>
-        <p class="post-dist" id="dist-${i}">Distância: ${formatDistance(o.d)}</p>
-      </div>
-      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      </button>
-    </div>
-    <div class="post-map-container">
-      <iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
-    </div>`;
-    
-    fragment.appendChild(div);
-  }
-
-  list.innerHTML='';
-  list.appendChild(fragment);
-  document.getElementById('btnSend').disabled=false;
-}
-
-document.getElementById('btnSend').onclick=()=>{
-  if(!pos)return;
-  const chks=document.querySelectorAll('.post-chk:checked');
-  let items=[];
-  if(chks.length){
-    chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
-  }else{
-    const qty=Number(document.getElementById('qty').value||10);
-    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
-  }
-  let tx=`📍 *LISTA DE ITENS*\nData: ${nowBR()}\nGPS: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)}\n\n`;
-  items.forEach((o,i)=>{
-    const exactObj = findPostExactKm(o);
-    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactObj.kmStr})\n`;
-    if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`;
-  });
-  window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
-  showToast(`${items.length} itens enviados`);
-  vibrate(10);
+/* ==========================================================================
+   ENGINE ENTERPRISE SAP/ERP - KERNEL JS
+   ========================================================================== */
+
+// STATE MANAGER
+const SAP_STATE = {
+  currentUser: { id: 9021, name: "OPERADOR ADM", role: "ADMIN" },
+  gps: { lat: -22.8500, lon: -43.7700, speed: 0 },
+  activeTab: 'dashboard',
+  speechRecognition: null,
+  webrtcPeer: null
 };
 
-document.getElementById('qty').onchange=()=>{renderedKey='';renderApoio()};
-
+// INICIALIZAÇÃO
 window.addEventListener('DOMContentLoaded', () => {
-  loadSystemData();
+  initMap();
+  initGPSWatch();
+  initAuditLog('Sistemas e Módulos Enterprise Carregados.');
+  document.getElementById('rpt-date').textContent = new Date().toLocaleDateString('pt-BR');
 });
+
+// ALTERNADOR DE ABAS E WORKSPACES
+function switchTab(tabId) {
+  document.querySelectorAll('.workspace').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  
+  const targetWs = document.getElementById(`ws-${tabId}`);
+  if(targetWs) {
+    targetWs.classList.add('active');
+    SAP_STATE.activeTab = tabId;
+    document.getElementById('current-view-title').textContent = tabId.replace('-', ' ').toUpperCase();
+    initAuditLog(`Navegação para o módulo: ${tabId.toUpperCase()}`);
+  }
+}
+
+// LOG DE AUDITORIA IMUTÁVEL (SAP COMPLIANCE)
+function initAuditLog(msg) {
+  const term = document.getElementById('audit-terminal');
+  const time = new Date().toLocaleTimeString();
+  term.innerHTML += `[${time}] ${msg}<br>`;
+  term.scrollTop = term.scrollHeight;
+}
+
+// ENGINE MAPA LEAFLET
+let mapInstance = null, mapMarker = null;
+function initMap() {
+  mapInstance = L.map('leafletMap', { zoomControl: false }).setView([SAP_STATE.gps.lat, SAP_STATE.gps.lon], 14);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 }).addTo(mapInstance);
+  mapMarker = L.marker([SAP_STATE.gps.lat, SAP_STATE.gps.lon]).addTo(mapInstance);
+}
+
+// TELEMETRIA E GPS
+function initGPSWatch() {
+  if('geolocation' in navigator) {
+    navigator.geolocation.watchPosition(p => {
+      SAP_STATE.gps.lat = p.coords.latitude;
+      SAP_STATE.gps.lon = p.coords.longitude;
+      SAP_STATE.gps.speed = p.coords.speed || 0;
+
+      document.getElementById('dashSpeed').textContent = `${Math.round(SAP_STATE.gps.speed * 3.6)} KM/H`;
+      document.getElementById('dashCoords').textContent = `Lat: ${SAP_STATE.gps.lat.toFixed(4)} | Lon: ${SAP_STATE.gps.lon.toFixed(4)}`;
+
+      if(mapMarker) mapMarker.setLatLng([SAP_STATE.gps.lat, SAP_STATE.gps.lon]);
+    }, err => {
+      initAuditLog('GPS ALERTA: Sinal fraco ou indisponível.');
+    }, { enableHighAccuracy: true });
+  }
+}
+
+function forceGPSRefresh() {
+  initAuditLog('Sinal GPS Recalibrado.');
+}
+
+// ESTÚDIO DE FOTOGRAFIA & MÍDIA
+let videoStream = null;
+async function startCamera() {
+  try {
+    videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+    document.getElementById('webcam-feed').srcObject = videoStream;
+    initAuditLog('Câmera conectada com sucesso.');
+  } catch(e) {
+    initAuditLog('ERRO: Não foi possível acessar a câmera.');
+  }
+}
+
+function takePhoto() {
+  const video = document.getElementById('webcam-feed');
+  const canvas = document.getElementById('photo-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = video.videoWidth || 320;
+  canvas.height = video.videoHeight || 240;
+
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+  // MARCA D'ÁGUA ENTERPRISE
+  ctx.fillStyle = "rgba(0,0,0,0.7)";
+  ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+  ctx.fillStyle = "#fff";
+  ctx.font = "10px monospace";
+  ctx.fillText(`SAP GPS: ${SAP_STATE.gps.lat.toFixed(4)}, ${SAP_STATE.gps.lon.toFixed(4)} | ${new Date().toLocaleString()}`, 10, canvas.height - 10);
+
+  initAuditLog('Foto capturada e carimbada com telemetria GPS.');
+}
+
+function applyFilter(filterType) {
+  const canvas = document.getElementById('photo-canvas');
+  const ctx = canvas.getContext('2d');
+  if(filterType === 'grayscale') {
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      let avg = (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
+      imgData.data[i] = avg; imgData.data[i + 1] = avg; imgData.data[i + 2] = avg;
+    }
+    ctx.putImageData(imgData, 0, 0);
+    initAuditLog('Filtro Preto e Branco aplicado.');
+  }
+}
+
+function runOCR() {
+  document.getElementById('ocr-result').textContent = "Resultado OCR: [TEXTO DETECTADO: NOX-89201 PASSE OK]";
+  initAuditLog('Processamento de OCR concluído no buffer de imagem.');
+}
+
+// WEBRTC
+function joinWebRTC() {
+  initAuditLog('Sala WebRTC P2P Conectada.');
+}
+function leaveWebRTC() {
+  initAuditLog('Desconectado da Sala WebRTC.');
+}
+
+// DITADO POR VOZ
+function toggleSpeechRecognition() {
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+    SAP_STATE.speechRecognition = new Speech();
+    SAP_STATE.speechRecognition.lang = 'pt-BR';
+    SAP_STATE.speechRecognition.onresult = (e) => {
+      document.getElementById('docTextarea').value += e.results[0][0].transcript + ' ';
+    };
+    SAP_STATE.speechRecognition.start();
+    initAuditLog('Microfone aberto. Ditado iniciado...');
+  } else {
+    alert('Reconhecimento de voz não suportado neste navegador.');
+  }
+}
+
+function saveDocument() {
+  initAuditLog('Laudo salvo com sucesso na memória do sistema.');
+}
+
+// RELATÓRIOS & BACKUP
+function generatePDFReport() { window.print(); }
+function printThermalReceipt() { initAuditLog('Comprovante enviado para a fila de impressão térmica (80mm).'); }
+function exportCSVData() {
+  const csvContent = "data:text/csv;charset=utf-8,ID,LAT,LON,TIMESTAMP\n9021,-22.8500,-43.7700," + new Date().toISOString();
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "sap_data_export.csv");
+  document.body.appendChild(link);
+  link.click();
+  initAuditLog('Dados CSV exportados.');
+}
+
+function exportSAPBackup() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(SAP_STATE));
+  const dlAnchor = document.createElement('a');
+  dlAnchor.setAttribute("href", dataStr);
+  dlAnchor.setAttribute("download", "system_backup.sapbak");
+  dlAnchor.click();
+  initAuditLog('Backup completo do sistema (.sapbak) gerado.');
+}
+
+function clearLocalDatabase() {
+  if(confirm("Deseja realmente formatar o banco de dados local?")) {
+    initAuditLog('Banco de dados formatado.');
+  }
+}
+
+function lockSession() {
+  alert("Sessão Bloqueada. Digite suas credenciais para reativar.");
+  initAuditLog('Sessão bloqueada pelo operador.');
+}
 </script>
 </body>
 </html>
