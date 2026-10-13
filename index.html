@@ -85,7 +85,6 @@ input,select{font-family:var(--font);outline:none}
   box-shadow:0 8px 32px rgba(0,0,0,.4);
 }
 
-/* Botões de Pesquisa ajustados em grade de 2 linhas para caber na tela */
 .menu-pills-grid{
   display:grid;grid-template-columns:1fr 1fr;gap:6px;
 }
@@ -106,7 +105,6 @@ input,select{font-family:var(--font);outline:none}
 }
 .collapsible-pane.show{display:flex;}
 
-/* KM em tempo real compacto */
 .km-hero-compact{
   display:flex;align-items:center;justify-content:space-between;
   border-radius:var(--r-sm);
@@ -203,7 +201,6 @@ input,select{font-family:var(--font);outline:none}
   overflow:hidden;position:relative;height:220px;background:#020617;
   margin-top:4px;
 }
-/* FULLSCREEN REAL E ISOLADO */
 .map-box.fullscreen{
   position:fixed !important;inset:0 !important;width:100vw !important;
   height:100vh !important;height:100dvh !important;z-index:999999 !important;
@@ -219,7 +216,6 @@ input,select{font-family:var(--font);outline:none}
 }
 .map-btn.active{background:var(--accent);color:#fff}
 
-/* Botão Flutuante de Fechar Tela Cheia */
 .fs-close-btn{
   display:none;position:fixed;top:12px;left:12px;z-index:1000000;
   background:rgba(239,68,68,.9);color:#fff;padding:6px 12px;
@@ -259,7 +255,6 @@ input,select{font-family:var(--font);outline:none}
 
 .post-map{height:100px;width:100%;border:0;filter:grayscale(15%) contrast(1.05)}
 
-/* Botão WhatsApp Compacto */
 .ctrl-send{
   width:auto;min-width:120px;padding:5px 10px;border-radius:var(--r-xs);
   background:linear-gradient(135deg,var(--green),#059669);color:#fff;font-size:8px;font-weight:900;
@@ -283,7 +278,6 @@ input,select{font-family:var(--font);outline:none}
 }
 .ctrl-chk{width:13px;height:13px;accent-color:var(--accent)}
 
-/* Pop-up do Mapa Minimalista e Discreto */
 .leaflet-popup-content-wrapper{
   background:rgba(11,17,36,0.96) !important;
   color:#fff !important;
@@ -317,7 +311,6 @@ input,select{font-family:var(--font);outline:none}
 
 <div class="wrap">
 
-  <!-- BOTÕES DE PESQUISA EM GRADE DE DUAS LINHAS -->
   <div class="section-block">
     <div class="menu-pills-grid">
       <button class="menu-pill" id="pillId" onclick="switchPane('id')">🔍 Pesquisa por ID</button>
@@ -393,10 +386,8 @@ input,select{font-family:var(--font);outline:none}
     </div>
   </div>
 
-  <!-- BOTÃO FLUTUANTE EXCLUSIVO PARA SAIR DO FULLSCREEN -->
   <button class="fs-close-btn" onclick="toggleFullscreen()">✕ Fechar Tela Cheia</button>
 
-  <!-- TELA PRINCIPAL: KM EM TEMPO REAL E OS 10 MAIS PRÓXIMOS -->
   <div class="section-block">
     <div class="km-hero-compact">
       <div>
@@ -446,7 +437,17 @@ input,select{font-family:var(--font);outline:none}
 const norm=s=>String(s||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9_ ]+/g,' ').replace(/\s+/g,' ');
 const parsePt=v=>{const s=String(v??'').trim();return/,\d+$/.test(s)?Number(s.replace(/\./g,'').replace(',','.')):Number(s)};
 const hav=(a,b,c,d)=>{const p=Math.PI/180,x=.5-Math.cos((c-a)*p)/2+Math.cos(a*p)*Math.cos(c*p)*(1-Math.cos((d-b)*p))/2;return 12742000*Math.asin(Math.sqrt(x))};
-const range=dist=>`${Math.max(0,Math.round(dist))}M`;
+
+// FORMATAÇÃO INTELIGENTE DE DISTÂNCIA (< 1km em metros, >= 1km em quilômetros com vírgula)
+const formatDist = dist => {
+  const m = Math.max(0, Math.round(dist));
+  if (m < 1000) {
+    return `${m}m`;
+  }
+  const km = m / 1000;
+  return `${km.toFixed(1).replace('.', ',')} km`;
+};
+
 const nowBR=()=>new Date().toLocaleString('pt-BR').toUpperCase();
 function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(norm(c));if(i>=0)return i}return-1}
 
@@ -650,13 +651,13 @@ function initMap(lat, lon){
     }
 
     let postIdStr = nearestPost ? nearestPost.id : '---';
-    let distStr = nearestPost ? range(minPostDist) : '---';
+    let distStr = nearestPost ? formatDist(minPostDist) : '---';
 
     let popupContent = `
       <div style="font-family:var(--font);color:#fff;padding:2px;min-width:130px;font-size:8px;">
         <div style="font-weight:900;color:#3b82f6;text-transform:uppercase;margin-bottom:1px;">${cityName}</div>
         <div style="font-weight:800;color:#d1d5db;">Rodovia: ${kmStr}</div>
-        <div style="font-weight:900;color:#34d399;">ID: ${postIdStr} (${distStr})</div>
+        <div style="font-weight:900;color:#34d399;">ID: ${postIdStr} (Até o local: ${distStr})</div>
         <button style="margin-top:4px;width:100%;background:#10b981;color:#fff;border:0;padding:2px;border-radius:2px;font-size:7px;font-weight:900;text-transform:uppercase;cursor:pointer;" onclick="sendWhatsApp('${postIdStr}', ${l.lat}, ${l.lng})">WhatsApp</button>
       </div>
     `;
@@ -748,14 +749,14 @@ function clearId(){
 function updateSearchDist(){
   if(!searchItem||!pos)return;
   let el=document.getElementById('srch-dist');
-  if(el)el.textContent='Dist: '+range(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon));
+  if(el)el.textContent='Até o local: '+formatDist(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon));
 }
 
 async function renderSearch(){
   if(!searchItem)return;
   let res=document.getElementById('searchResult');
   let dt='Aguardando GPS...';
-  if(pos) dt='Dist: '+range(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon));
+  if(pos) dt='Até o local: '+formatDist(hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon));
   
   const cityName = await fetchCityName(searchItem.lat, searchItem.lon);
 
@@ -855,7 +856,7 @@ function updateSearchKmDist(){
   if(!searchKmItems.length||!pos)return;
   searchKmItems.forEach((item, idx)=>{
     let el=document.getElementById('srch-km-dist-'+idx);
-    if(el)el.textContent='Dist: '+range(hav(pos.lat,pos.lon,item.lat,item.lon));
+    if(el)el.textContent='Até o local: '+formatDist(hav(pos.lat,pos.lon,item.lat,item.lon));
   });
 }
 
@@ -867,7 +868,7 @@ async function renderSearchKm(label, bestPt){
   let html='<div style="display:flex;flex-direction:column;gap:6px">';
   for(let idx = 0; idx < searchKmItems.length; idx++){
     let item = searchKmItems[idx];
-    let dt=pos?'Dist: '+range(hav(pos.lat,pos.lon,item.lat,item.lon)):'--';
+    let dt=pos?'Até o local: '+formatDist(hav(pos.lat,pos.lon,item.lat,item.lon)):'--';
     const cityName = await fetchCityName(item.lat, item.lon);
     html+=`<div class="post searched">
       <div class="post-top">
@@ -908,7 +909,7 @@ async function renderApoio(){
   if(key===renderedKey){
     items.forEach((o,i)=>{
       let el=document.getElementById('dist-'+i);
-      if(el)el.textContent='Dist: '+range(o.d);
+      if(el)el.textContent='Até o local: '+formatDist(o.d);
     });
     document.getElementById('btnSend').disabled=false;
     return;
@@ -928,7 +929,7 @@ async function renderApoio(){
         <p class="post-id">ID: ${o.id}</p>
         <p class="post-dist" style="color:var(--accent);font-weight:900;">${cityName}</p>
         <p class="post-dist" style="color:var(--green2);">KM: ${findPostExactKm(o)}</p>
-        <p class="post-dist" id="dist-${i}">Dist: ${range(o.d)}</p>
+        <p class="post-dist" id="dist-${i}">Até o local: ${formatDist(o.d)}</p>
       </div>
       <button class="post-wa" onclick="sendWhatsApp('${o.id}', ${o.lat}, ${o.lon})">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
