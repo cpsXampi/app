@@ -26,8 +26,8 @@
   --muted:#9ca3af;
   --dim:#4b5563;
   --font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  --r-xs:6px;--r-sm:10px;--r-md:14px;--r-lg:18px;
-  --safe-b:max(env(safe-area-inset-bottom,0px),16px);
+  --r-xs:4px;--r-sm:8px;--r-md:12px;
+  --safe-b:max(env(safe-area-inset-bottom,0px),12px);
   --safe-t:env(safe-area-inset-top,0px);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -57,73 +57,61 @@ input,select{font-family:var(--font);outline:none}
   border-bottom:1px solid var(--border2);
   background:rgba(7,9,19,.95);
   backdrop-filter:blur(20px);
-  padding:0 14px;padding-top:var(--safe-t);
+  padding:0 12px;padding-top:var(--safe-t);
   box-shadow:0 4px 20px rgba(0,0,0,.6);
 }
 .hdr-in{
   max-width:680px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;height:50px;
+  display:flex;align-items:center;justify-content:space-between;height:44px;
 }
 .hdr-title{
-  font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.25em;
-  color:var(--accent);text-shadow:0 0 12px var(--accent-glow);
+  font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.25em;
+  color:var(--accent);text-shadow:0 0 10px var(--accent-glow);
 }
 
 .wrap{
   max-width:680px;margin:0 auto;
-  padding:12px;padding-bottom:var(--safe-b);
-  display:flex;flex-direction:column;gap:12px;
+  padding:10px;padding-bottom:var(--safe-b);
+  display:flex;flex-direction:column;gap:10px;
 }
 
 .section-block{
-  display:flex;flex-direction:column;gap:10px;
+  display:flex;flex-direction:column;gap:8px;
   background:rgba(11,17,36,0.85);
   border:1px solid var(--border);
   border-radius:var(--r-md);
-  padding:12px;
+  padding:10px;
   backdrop-filter:blur(12px);
   box-shadow:0 8px 32px rgba(0,0,0,.4);
 }
 
 .section-divider{
-  height:1px;background:var(--border2);margin:4px 0;width:100%;
+  height:1px;background:var(--border2);margin:2px 0;width:100%;
 }
 
-.km-hero{
+/* KM em tempo real compacto */
+.km-hero-compact{
+  display:flex;align-items:center;justify-content:space-between;
   border-radius:var(--r-sm);
   border:1px solid rgba(59,130,246,.35);
   background:linear-gradient(145deg,#111936 0%,#070913 100%);
-  text-align:center;
-  padding:14px;
-  position:relative;overflow:hidden;
-  box-shadow:inset 0 0 25px rgba(59,130,246,.06);
+  padding:8px 12px;
 }
-.km-value{
-  font-size:clamp(28px,8vw,38px);font-weight:900;
-  line-height:1.1;letter-spacing:-.03em;
+.km-value-compact{
+  font-size:20px;font-weight:900;
   font-variant-numeric:tabular-nums;
   background:linear-gradient(180deg,#fff 20%,var(--accent));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  text-shadow:0 0 20px var(--accent-glow);
 }
-.km-br-badge{
-  display:inline-block;
-  font-size:8px;font-weight:700;
-  color:rgba(147,197,253,.9);
-  text-transform:uppercase;
-  background:rgba(59,130,246,.15);
-  border:1px solid rgba(59,130,246,.3);
-  padding:2px 8px;
-  border-radius:4px;
-  margin-top:4px;
-  letter-spacing:.1em;
+.km-meta-compact{
+  display:flex;flex-direction:column;align-items:flex-end;gap:2px;
 }
 
 .gps{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  min-height:36px;border-radius:var(--r-xs);
-  border:1px solid;padding:0 10px;
-  font-size:9px;font-weight:800;letter-spacing:.08em;
+  display:flex;align-items:center;justify-content:center;gap:4px;
+  min-height:28px;border-radius:var(--r-xs);
+  border:1px solid;padding:0 8px;
+  font-size:8px;font-weight:800;letter-spacing:.08em;
   text-align:center;text-transform:uppercase;
 }
 .gps.bad{border-color:rgba(100,116,139,.3);background:rgba(11,17,36,.9);color:#e5e7eb}
@@ -134,37 +122,37 @@ input,select{font-family:var(--font);outline:none}
   border-radius:var(--r-sm);
   border:1px solid var(--border);
   background:rgba(11,17,36,0.9);
-  padding:10px;
+  padding:8px;
 }
 .card-accent{
   border-color:rgba(59,130,246,.35);
   background:linear-gradient(145deg,rgba(59,130,246,.05),rgba(11,17,36,.9));
 }
 
-.search-row{display:flex;gap:6px}
+.search-row{display:flex;gap:4px}
 .search-wrap{flex:1;min-width:0;position:relative}
 .search-input{
   width:100%;border-radius:var(--r-xs);
   border:1px solid var(--border2);
   background:rgba(7,9,19,.9);
-  padding:9px 10px;
-  font-size:11px;font-weight:800;text-transform:uppercase;color:#fff;
+  padding:7px 8px;
+  font-size:10px;font-weight:800;text-transform:uppercase;color:#fff;
   transition:all .2s ease;
 }
 .search-input:focus{
   border-color:var(--accent);
-  box-shadow:0 0 12px var(--accent-glow);
+  box-shadow:0 0 10px var(--accent-glow);
 }
 .btn-icon{
-  width:36px;height:36px;border-radius:var(--r-xs);
+  width:32px;height:32px;border-radius:var(--r-xs);
   display:grid;place-items:center;flex-shrink:0;
   border:1px solid var(--border);
 }
-.btn-icon.go{background:linear-gradient(135deg,var(--accent),#1d4ed8);color:#fff;font-weight:900;border:none;box-shadow:0 0 10px var(--accent-glow)}
+.btn-icon.go{background:linear-gradient(135deg,var(--accent),#1d4ed8);color:#fff;font-weight:900;border:none;box-shadow:0 0 8px var(--accent-glow)}
 .btn-icon.clr{background:rgba(7,9,19,.9);color:var(--muted)}
-.btn-icon svg{width:14px;height:14px}
+.btn-icon svg{width:12px;height:12px}
 .search-msg{
-  margin-top:6px;font-size:9px;font-weight:800;
+  margin-top:4px;font-size:8px;font-weight:800;
   text-transform:uppercase;color:var(--warn);
 }
 
@@ -172,35 +160,31 @@ input,select{font-family:var(--font);outline:none}
   background:rgba(11,17,36,0.95);
   border:1px solid var(--border2);
   border-radius:var(--r-sm);
-  padding:10px;
-  margin-top:8px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+  padding:8px;
+  margin-top:6px;
+  display:flex;flex-direction:column;gap:4px;
 }
-.modal-box p{font-size:9px;font-weight:800;color:var(--accent);text-transform:uppercase;}
-.modal-btns{display:flex;gap:6px}
+.modal-box p{font-size:8px;font-weight:800;color:var(--accent);text-transform:uppercase;}
+.modal-btns{display:flex;gap:4px}
 .modal-btn{
-  flex:1;padding:8px;border-radius:var(--r-xs);font-size:9px;font-weight:900;text-transform:uppercase;
+  flex:1;padding:6px;border-radius:var(--r-xs);font-size:8px;font-weight:900;text-transform:uppercase;
   background:var(--accent);color:#fff;cursor:pointer;text-align:center;
 }
 .modal-btn.rj{background:#2563eb;color:#fff;}
 
 .coord-container{
-  margin-top:8px;padding-top:8px;
-  border-top:1px solid var(--border);
-  display:flex;flex-direction:column;gap:8px;
+  display:flex;flex-direction:column;gap:6px;
 }
-.coord-inputs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.coord-inputs{display:grid;grid-template-columns:1fr 1fr;gap:4px}
 .coord-input{
   width:100%;border-radius:var(--r-xs);border:1px solid var(--border2);
-  background:rgba(7,9,19,.9);padding:8px;font-size:11px;font-weight:800;color:#fff;text-align:center;
+  background:rgba(7,9,19,.9);padding:6px;font-size:10px;font-weight:800;color:#fff;text-align:center;
 }
 
 .map-box{
   border-radius:var(--r-xs);border:1px solid var(--border2);
-  overflow:hidden;position:relative;height:240px;background:#020617;
-  margin-top:6px;
+  overflow:hidden;position:relative;height:220px;background:#020617;
+  margin-top:4px;
 }
 .map-box.fullscreen{
   position:fixed !important;inset:0 !important;width:100vw !important;
@@ -208,12 +192,12 @@ input,select{font-family:var(--font);outline:none}
   border-radius:0 !important;border:none !important;
 }
 .map-ctrls{
-  position:absolute;top:6px;right:6px;z-index:1000;
-  display:flex;gap:4px;background:rgba(7,9,19,.9);padding:2px;border-radius:4px;border:1px solid var(--border2);
+  position:absolute;top:4px;right:4px;z-index:1000;
+  display:flex;gap:3px;background:rgba(7,9,19,.9);padding:2px;border-radius:4px;border:1px solid var(--border2);
 }
 .map-btn{
-  font-size:8px;font-weight:900;text-transform:uppercase;padding:3px 6px;
-  border-radius:3px;background:rgba(255,255,255,.05);color:var(--text2);cursor:pointer;
+  font-size:7px;font-weight:900;text-transform:uppercase;padding:2px 5px;
+  border-radius:2px;background:rgba(255,255,255,.05);color:var(--text2);cursor:pointer;
 }
 .map-btn.active{background:var(--accent);color:#fff}
 
@@ -226,61 +210,72 @@ input,select{font-family:var(--font);outline:none}
 .post.near{
   border-color:rgba(16,185,129,.5);
   background:linear-gradient(145deg,rgba(16,185,129,.1),rgba(11,17,36,.95));
-  box-shadow:0 0 15px rgba(16,185,129,.15);
+  box-shadow:0 0 12px rgba(16,185,129,.15);
 }
 .post.searched{
   border-color:rgba(59,130,246,.5);
   background:linear-gradient(145deg,rgba(59,130,246,.1),rgba(11,17,36,.95));
-  box-shadow:0 0 15px var(--accent-glow);
+  box-shadow:0 0 12px var(--accent-glow);
 }
-.post-top{display:flex;align-items:flex-start;gap:8px;padding:10px}
-.post-chk{margin-top:2px;width:15px;height:15px;accent-color:var(--accent);flex-shrink:0}
-.post-id{font-size:10px;font-weight:900;text-transform:uppercase;color:var(--accent);letter-spacing:.05em}
-.post-dist{font-size:8px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-top:2px}
-.post-coords{font-size:8px;color:var(--dim);font-weight:600;margin-top:1px}
+.post-top{display:flex;align-items:flex-start;gap:6px;padding:8px}
+.post-chk{margin-top:2px;width:13px;height:13px;accent-color:var(--accent);flex-shrink:0}
+.post-id{font-size:9px;font-weight:900;text-transform:uppercase;color:var(--accent);letter-spacing:.05em}
+.post-dist{font-size:7px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-top:1px}
+.post-coords{font-size:7px;color:var(--dim);font-weight:600}
 
 .post-wa{
-  width:30px;height:30px;border-radius:var(--r-xs);
+  width:26px;height:26px;border-radius:var(--r-xs);
   background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);
   color:var(--green2);display:grid;place-items:center;flex-shrink:0;
 }
-.post-wa svg{width:14px;height:14px}
+.post-wa svg{width:12px;height:12px}
 
-.post-map{height:120px;width:100%;border:0;filter:grayscale(15%) contrast(1.05)}
+.post-map{height:100px;width:100%;border:0;filter:grayscale(15%) contrast(1.05)}
 
-/* Botão de WhatsApp compacto e discreto */
+/* Botão WhatsApp Compacto */
 .ctrl-send{
-  width:auto;min-width:140px;padding:6px 12px;border-radius:var(--r-xs);
-  background:linear-gradient(135deg,var(--green),#059669);color:#fff;font-size:9px;font-weight:900;
+  width:auto;min-width:120px;padding:5px 10px;border-radius:var(--r-xs);
+  background:linear-gradient(135deg,var(--green),#059669);color:#fff;font-size:8px;font-weight:900;
   text-transform:uppercase;letter-spacing:.08em;
   display:inline-flex;align-items:center;justify-content:center;gap:4px;
-  box-shadow:0 2px 8px rgba(16,185,129,.2);
+  box-shadow:0 2px 6px rgba(16,185,129,.2);
 }
 .ctrl-send:disabled{background:var(--dim);color:var(--muted);box-shadow:none}
-.ctrl-send svg{width:12px;height:12px}
+.ctrl-send svg{width:11px;height:11px}
 
 .ctrl-row{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;
+  display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:4px;
 }
 .ctrl-label{
   font-size:8px;font-weight:800;text-transform:uppercase;color:var(--muted);
-  display:flex;align-items:center;gap:4px;
+  display:flex;align-items:center;gap:3px;
 }
 .ctrl-select{
   border-radius:4px;border:1px solid var(--border2);background:var(--bg);color:#fff;
-  padding:3px 18px 3px 6px;font-size:10px;font-weight:800;appearance:none;
+  padding:2px 14px 2px 4px;font-size:9px;font-weight:800;appearance:none;
 }
-.ctrl-chk{width:14px;height:14px;accent-color:var(--accent)}
+.ctrl-chk{width:13px;height:13px;accent-color:var(--accent)}
+
+/* Pop-up do Mapa Minimalista e Discreto */
+.leaflet-popup-content-wrapper{
+  background:rgba(11,17,36,0.96) !important;
+  color:#fff !important;
+  border:1px solid var(--border2) !important;
+  border-radius:var(--r-xs) !important;
+  box-shadow:0 4px 16px rgba(0,0,0,.6) !important;
+  backdrop-filter:blur(8px);
+}
+.leaflet-popup-tip{background:rgba(11,17,36,0.96) !important;}
 
 .toast{
-  position:fixed;bottom:calc(12px + var(--safe-b));left:50%;
+  position:fixed;bottom:calc(10px + var(--safe-b));left:50%;
   transform:translateX(-50%) translateY(10px);
   border-radius:var(--r-xs);border:1px solid var(--border2);
-  background:var(--surface);padding:8px 14px;font-size:9px;font-weight:800;
+  background:var(--surface);padding:6px 12px;font-size:8px;font-weight:800;
   text-transform:uppercase;letter-spacing:.08em;z-index:99999;opacity:0;transition:all .15s ease;pointer-events:none;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.ok{color:var(--accent);border-color:rgba(59,130,246,.4);box-shadow:0 0 15px var(--accent-glow)}
+.toast.ok{color:var(--accent);border-color:rgba(59,130,246,.4);box-shadow:0 0 10px var(--accent-glow)}
 .toast.err{color:#fecaca;border-color:rgba(239,68,68,.4)}
 </style>
 </head>
@@ -289,6 +284,8 @@ input,select{font-family:var(--font);outline:none}
 <header class="hdr">
   <div class="hdr-in">
     <div class="hdr-title">Apoio Técnico</div>
+    <!-- KM em tempo real visível na barra de cabeçalho / topo -->
+    <div style="font-size:9px;font-weight:900;color:var(--accent);" id="topKmLive">—</div>
   </div>
 </header>
 
@@ -296,7 +293,7 @@ input,select{font-family:var(--font);outline:none}
 
   <!-- 4 OPÇÕES INICIAIS LOGO DE CARA -->
   <div class="section-block">
-    <!-- 1. Pesquisa de ID -->
+    <!-- 1. Pesquisa de ID (Exige 8 dígitos) -->
     <div class="card card-accent">
       <div class="search-row">
         <div class="search-wrap">
@@ -306,7 +303,7 @@ input,select{font-family:var(--font);outline:none}
         <button class="btn-icon clr" onclick="clearId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
       <div id="searchMsg" class="search-msg" style="display:none"></div>
-      <div id="searchResult" style="display:none;margin-top:8px"></div>
+      <div id="searchResult" style="display:none;margin-top:6px"></div>
     </div>
 
     <!-- 2. Pesquisa de KM -->
@@ -320,29 +317,31 @@ input,select{font-family:var(--font);outline:none}
       </div>
       <div id="searchKmMsg" class="search-msg" style="display:none"></div>
       <div id="searchKmModal" style="display:none"></div>
-      <div id="searchKmResult" style="display:none;margin-top:8px"></div>
+      <div id="searchKmResult" style="display:none;margin-top:6px"></div>
     </div>
 
     <div class="section-divider"></div>
 
     <!-- 3. Pesquisa por Coordenada -->
     <div class="card">
-      <div style="font-size:9px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:6px;">Inserir Coordenada</div>
-      <div class="coord-inputs">
-        <input class="coord-input" id="inputLat" placeholder="LAT" autocomplete="off" spellcheck="false">
-        <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
-      </div>
-      <div style="display:flex;gap:4px;margin-top:6px;">
-        <button class="btn-icon go" style="flex:1;height:32px;border-radius:var(--r-xs);font-size:9px;" onclick="searchManualCoord()">Calcular Coordenada</button>
-        <button class="btn-icon clr" onclick="clearCoordFields()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <div style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Coordenada Manual</div>
+      <div class="coord-container">
+        <div class="coord-inputs">
+          <input class="coord-input" id="inputLat" placeholder="LAT" autocomplete="off" spellcheck="false">
+          <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
+        </div>
+        <div style="display:flex;gap:3px;">
+          <button class="btn-icon go" style="flex:1;height:28px;border-radius:var(--r-xs);font-size:8px;" onclick="searchManualCoord()">Calcular</button>
+          <button class="btn-icon clr" onclick="clearCoordFields()" style="width:28px;height:28px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        </div>
       </div>
     </div>
 
-    <!-- 4. Pesquisa pelo Mapa / Interativo -->
+    <!-- 4. Pesquisa pelo Mapa Interativo -->
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:var(--accent)">Explorar via Mapa</span>
-        <button class="ctrl-select" style="padding:2px 8px;font-size:8px;cursor:pointer;" onclick="useCurrentGps()">Usar GPS Atual</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+        <span style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent)">Mapa Interativo</span>
+        <button class="ctrl-select" style="padding:2px 6px;font-size:7px;cursor:pointer;" onclick="useCurrentGps()">GPS Atual</button>
       </div>
       <div class="map-box" id="mapBox">
         <div class="map-ctrls">
@@ -355,19 +354,23 @@ input,select{font-family:var(--font);outline:none}
     </div>
   </div>
 
-  <!-- KM EM TEMPO REAL E OUTRAS CORES/DADOS -->
+  <!-- KM EM TEMPO REAL E LISTA -->
   <div class="section-block">
-    <div class="km-hero">
-      <div class="km-value" id="kmVal">—</div>
-      <div><span class="km-br-badge" id="kmBrBadge">SINTONIZANDO...</span></div>
-      <div id="cityNameDisplay" style="font-size:9px;font-weight:800;color:var(--text2);margin-top:4px;text-transform:uppercase;letter-spacing:.08em;">---</div>
+    <div class="km-hero-compact">
+      <div>
+        <div class="km-value-compact" id="kmVal">—</div>
+      </div>
+      <div class="km-meta-compact">
+        <span class="km-br-badge" id="kmBrBadge">SINTONIZANDO...</span>
+        <div id="cityNameDisplay" style="font-size:8px;font-weight:800;color:var(--text2);text-transform:uppercase;">---</div>
+      </div>
     </div>
 
     <div id="gpsStatus" class="gps bad">GPS · BUSCANDO SINAL</div>
 
     <div class="card">
       <div class="ctrl-row" style="margin-top:0;">
-        <div style="display:flex;align-items:center;gap:6px;">
+        <div style="display:flex;align-items:center;gap:4px;">
           <label class="ctrl-label">Qtd:</label>
           <select class="ctrl-select" id="qty">
             <option value="1">1</option>
@@ -375,7 +378,7 @@ input,select{font-family:var(--font);outline:none}
             <option value="10" selected>10</option>
             <option value="20">20</option>
           </select>
-          <label class="ctrl-label" style="margin-left:6px;">
+          <label class="ctrl-label" style="margin-left:4px;">
             <input type="checkbox" class="ctrl-chk" id="chkMaps" checked> Maps
           </label>
         </div>
@@ -387,7 +390,7 @@ input,select{font-family:var(--font);outline:none}
       </div>
     </div>
 
-    <div id="postList" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div id="postList" style="display:flex;flex-direction:column;gap:6px"></div>
   </div>
 
 </div>
@@ -421,8 +424,8 @@ function gpsBadge(el,p,err){
   const a=p?.acc;let cls='bad',txt;
   if(err)txt=err;
   else if(!a)txt='GPS · BUSCANDO';
-  else if(a<=15) {cls='ok';txt=`GPS · ALTA PREC (±${Math.round(a)}M)`;}
-  else {cls='warn';txt=`GPS · MÉDIA PREC (±${Math.round(a)}M)`;}
+  else if(a<=15) {cls='ok';txt=`GPS · ALTA (±${Math.round(a)}M)`;}
+  else {cls='warn';txt=`GPS · MÉDIA (±${Math.round(a)}M)`;}
   el.className='gps '+cls;el.textContent=txt;
 }
 
@@ -536,7 +539,9 @@ async function updateKm(){
   let best=findNearestInAnyDB(pos.lat, pos.lon);
   if(!best)return;
   let kmValStr=(Math.round(best.res.km*100)/100).toFixed(2).replace('.',',');
-  document.getElementById('kmVal').textContent = `KM ${kmValStr}`;
+  let fullStr = `KM ${kmValStr}`;
+  document.getElementById('kmVal').textContent = fullStr;
+  document.getElementById('topKmLive').textContent = fullStr;
   document.getElementById('kmBrBadge').textContent = best.name;
 }
 
@@ -564,6 +569,7 @@ function initMap(lat, lon){
   setMapLayer('sat');
   mapMarker = L.marker([lat, lon]).addTo(mapInstance);
   
+  // POP-UP DO MAPA EXTREMAMENTE DISCRETO E MINIMALISTA
   mapInstance.on('click', async e=>{
     let l = e.latlng;
     document.getElementById('inputLat').value = l.lat.toFixed(6);
@@ -589,19 +595,18 @@ function initMap(lat, lon){
     let distStr = nearestPost ? range(minPostDist) : '---';
 
     let popupContent = `
-      <div style="font-family:var(--font);color:#070913;padding:4px;min-width:160px;">
-        <p style="font-size:10px;font-weight:900;color:#3b82f6;text-transform:uppercase;margin-bottom:2px;">${cityName}</p>
-        <p style="font-size:9px;font-weight:800;color:#111936;">Rodovia: ${kmStr}</p>
-        <p style="font-size:9px;font-weight:900;color:#10b981;">ID Próximo: ${postIdStr}</p>
-        <p style="font-size:8px;font-weight:700;color:#4b5563;">Distância: ${distStr}</p>
-        <button style="margin-top:6px;width:100%;background:#10b981;color:#fff;border:0;padding:4px;border-radius:4px;font-size:8px;font-weight:900;text-transform:uppercase;cursor:pointer;" onclick="sendWhatsApp('${postIdStr}', ${l.lat}, ${l.lng})">Enviar WhatsApp</button>
+      <div style="font-family:var(--font);color:#fff;padding:2px;min-width:130px;font-size:8px;">
+        <div style="font-weight:900;color:#3b82f6;text-transform:uppercase;margin-bottom:1px;">${cityName}</div>
+        <div style="font-weight:800;color:#d1d5db;">Rodovia: ${kmStr}</div>
+        <div style="font-weight:900;color:#34d399;">ID: ${postIdStr} (${distStr})</div>
+        <button style="margin-top:4px;width:100%;background:#10b981;color:#fff;border:0;padding:2px;border-radius:2px;font-size:7px;font-weight:900;text-transform:uppercase;cursor:pointer;" onclick="sendWhatsApp('${postIdStr}', ${l.lat}, ${l.lng})">WhatsApp</button>
       </div>
     `;
 
     if(popupInstance){
       mapInstance.removeLayer(popupInstance);
     }
-    popupInstance = L.popup().setLatLng([l.lat, l.lng]).setContent(popupContent).openOn(mapInstance);
+    popupInstance = L.popup({maxWidth:180,className:'mini-popup'}).setLatLng([l.lat, l.lng]).setContent(popupContent).openOn(mapInstance);
   });
 }
 
@@ -647,6 +652,7 @@ function searchManualCoord(){
   showToast('Posicionado');
 }
 
+// PESQUISA DE ID EXIGINDO EXATAMENTE 8 DÍGITOS
 function searchId(){
   let raw = document.getElementById('inputId').value.trim();
   let msg = document.getElementById('searchMsg'), res = document.getElementById('searchResult');
@@ -710,7 +716,7 @@ async function renderSearch(){
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </button>
     </div>
-    <div style="padding:0 8px 8px;"><iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&output=embed" loading="lazy"></iframe></div>
+    <div style="padding:0 6px 6px;"><iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&output=embed" loading="lazy"></iframe></div>
   </div>`;
 }
 
@@ -760,7 +766,7 @@ function searchKm(){
     res.style.display='none';
     modal.style.display='block';
     modal.innerHTML=`<div class="modal-box">
-      <p>KM ${rawVal} existe em SP e RJ. Escolha a base:</p>
+      <p>KM ${rawVal} em SP e RJ. Escolha a base:</p>
       <div class="modal-btns">
         <button class="modal-btn" onclick="executeSearchKm(kmDB_SP, 'BR116-SP')">São Paulo</button>
         <button class="modal-btn rj" onclick="executeSearchKm(kmDB_RJ, 'BR116-RJ')">Rio de Janeiro</button>
@@ -801,7 +807,7 @@ async function renderSearchKm(label, bestPt){
   let res=document.getElementById('searchKmResult');
   res.style.display='block';
   
-  let html='<div style="display:flex;flex-direction:column;gap:8px">';
+  let html='<div style="display:flex;flex-direction:column;gap:6px">';
   for(let idx = 0; idx < searchKmItems.length; idx++){
     let item = searchKmItems[idx];
     let dt=pos?'Dist: '+range(hav(pos.lat,pos.lon,item.lat,item.lon)):'--';
@@ -819,7 +825,7 @@ async function renderSearchKm(label, bestPt){
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
         </button>
       </div>
-      <div style="padding:0 8px 8px;"><iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&output=embed" loading="lazy"></iframe></div>
+      <div style="padding:0 6px 6px;"><iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&output=embed" loading="lazy"></iframe></div>
     </div>`;
   }
   html+='</div>';
@@ -871,7 +877,7 @@ async function renderApoio(){
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </button>
     </div>
-    <div style="padding:0 8px 8px;"><iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&output=embed" loading="lazy"></iframe></div>`;
+    <div style="padding:0 6px 6px;"><iframe class="post-map" src="https://maps.google.com/maps?q=${o.lat},${o.lon}&t=k&z=19&output=embed" loading="lazy"></iframe></div>`;
     frag.appendChild(div);
   }
 
