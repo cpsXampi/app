@@ -11,23 +11,18 @@
 <style>
 :root{
   --bg:#050816;
-  --bg2:#090f1f;
   --surface:#0d1224;
   --surface2:#111731;
-  --surface3:#171d3d;
   --border:rgba(255,255,255,.06);
   --border2:rgba(255,255,255,.12);
   --border3:rgba(255,255,255,.18);
   --accent:#ffd600;
-  --accent2:#ffe44d;
   --green:#10b981;
   --green2:#34d399;
   --green3:#059669;
   --green-dim:rgba(16,185,129,.10);
   --violet:#5b21ff;
   --violet2:#7c3aed;
-  --violet-dim:rgba(92,33,255,.12);
-  --red:#ef4444;
   --warn:#f59e0b;
   --warn-dim:rgba(245,158,11,.10);
   --text:#f3f4f6;
@@ -61,7 +56,7 @@ button{
 }
 button:active{opacity:.80;transform:scale(.96);transition:transform 30ms,opacity 30ms}
 input,select{font-family:var(--font);outline:none}
-img,video{display:block;max-width:100%}
+img{display:block;max-width:100%}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--dim);border-radius:9px}
@@ -78,7 +73,6 @@ img,video{display:block;max-width:100%}
   max-width:680px;margin:0 auto;
   display:flex;align-items:center;gap:12px;height:52px;
 }
-.hdr-title{flex:1;min-width:0}
 .hdr-title h1{
   font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.15em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -132,30 +126,8 @@ img,video{display:block;max-width:100%}
   padding:1px 6px;border-radius:4px;
 }
 .km-sub{
-  font-size:9px;font-weight:600;color:rgba(220,252,231,.7);
-  margin-top:2px;position:relative;
-}
-
-.radar-box{
-  display:flex;align-items:center;justify-content:center;
-  gap:8px;margin-top:8px;padding-top:6px;
-  border-top:1px solid rgba(16,185,129,.2);position:relative;
-}
-.compass-badge{
-  display:flex;align-items:center;gap:6px;
-  background:rgba(0,0,0,0.3);padding:3px 8px;
-  border-radius:20px;border:1px solid rgba(16,185,129,0.3);
-}
-.compass-arrow{
-  width:20px;height:20px;border-radius:50%;
-  background:rgba(16,185,129,0.2);
-  display:grid;place-items:center;
-  transition:transform 0.2s ease-out;flex-shrink:0;
-}
-.compass-arrow svg{width:12px;height:12px;color:var(--green2)}
-.radar-text{
-  font-size:9px;font-weight:900;color:#a7f3d0;
-  letter-spacing:.05em;text-transform:uppercase;
+  font-size:10px;font-weight:700;color:rgba(220,252,231,.85);
+  margin-top:6px;position:relative;line-height:1.4;
 }
 
 .gps{
@@ -487,16 +459,7 @@ img,video{display:block;max-width:100%}
       <p class="km-label">KM Aproximado</p>
       <p class="km-value" id="kmVal">—</p>
       <div><span class="km-br-badge" id="kmBrBadge">---</span></div>
-      <p class="km-sub" id="kmSource">Aguardando GPS...</p>
-      
-      <div class="radar-box">
-        <div class="compass-badge">
-          <div class="compass-arrow" id="mainCompassArrow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-          </div>
-          <span class="radar-text" id="mainRadarText">Direção</span>
-        </div>
-      </div>
+      <p class="km-sub" id="kmSource">Aguardando sinal de GPS...</p>
     </div>
 
     <div id="gpsStatus" class="gps bad">
@@ -590,7 +553,18 @@ const ACC_G=15,ACC_Y=35;
 const norm=s=>String(s||'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9_ ]+/g,' ').replace(/\s+/g,' ');
 const parsePt=v=>{const s=String(v??'').trim();return/,\d+$/.test(s)?Number(s.replace(/\./g,'').replace(',','.')):Number(s)};
 const hav=(a,b,c,d)=>{const p=Math.PI/180,x=.5-Math.cos((c-a)*p)/2+Math.cos(a*p)*Math.cos(c*p)*(1-Math.cos((d-b)*p))/2;return 12742000*Math.asin(Math.sqrt(x))};
-const range=(dist,acc=0)=>{const d=Math.round(dist),e=Number.isFinite(acc)?Math.round(acc):0;return`${Math.max(0,d-e)}M A ${d+e}M`};
+
+function formatDistance(meters){
+  const m = Number(meters);
+  if(!Number.isFinite(m)) return '—';
+  if(m >= 1000){
+    const km = (m / 1000).toFixed(2).replace('.', ',');
+    const mRound = Math.round(m).toLocaleString('pt-BR');
+    return `${km} km (${mRound} metros)`;
+  }
+  return `${Math.round(m)} metros`;
+}
+
 const fmtAcc=a=>!Number.isFinite(a)?'—':`±${Math.round(a)}M`;
 const nowBR=()=>new Date().toLocaleString('pt-BR').toUpperCase();
 function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(norm(c));if(i>=0)return i}return-1}
@@ -604,7 +578,6 @@ let gpsInitializedOnce=false;
 let currentTileLayer=null;
 let activeLayerMode='satellite';
 let lastTapTime = 0;
-let deviceHeading = 0;
 
 let _tt=null;
 function showToast(msg,type='ok'){
@@ -655,30 +628,6 @@ function findNearestPost(lat, lon){
   return closest;
 }
 
-function calculateBearing(lat1, lon1, lat2, lon2) {
-  const toRad = deg => deg * Math.PI / 180;
-  const toDeg = rad => rad * 180 / Math.PI;
-  const dLon = toRad(lon2 - lon1);
-  const y = Math.sin(dLon) * Math.cos(toRad(lat2));
-  const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
-  let brng = toDeg(Math.atan2(y, x));
-  return (brng + 360) % 360;
-}
-
-function setupDeviceOrientation() {
-  if (window.DeviceOrientationEvent) {
-    window.addEventListener('deviceorientation', (event) => {
-      let heading = event.alpha;
-      if (event.webkitCompassHeading !== undefined) {
-        heading = event.webkitCompassHeading;
-      }
-      if (heading !== null && !isNaN(heading)) {
-        deviceHeading = heading;
-      }
-    }, true);
-  }
-}
-
 async function loadSystemData(){
   try{
     let t=await fetchCSV(['dados.csv','Dados_Completos_Grupo_2_all.csv']);
@@ -712,7 +661,6 @@ async function loadSystemData(){
 
   }catch(e){}
 
-  setupDeviceOrientation();
   initApoioDirect();
 }
 
@@ -759,13 +707,9 @@ async function updateKm(){
   
   const s=document.getElementById('kmSource');
   if(s){
-    s.textContent=`Ref: ${best.name} (Δ ~${Math.round(best.res.d)}m)`;
+    const distFormatted = formatDistance(best.res.d);
+    s.textContent = `Rodovia: ${best.name} | Distância até o eixo: ${distFormatted}`;
   }
-
-  const bearing = calculateBearing(pos.lat, pos.lon, best.res.lat, best.res.lon);
-  const relativeAngle = bearing - deviceHeading;
-  const arrowEl = document.getElementById('mainCompassArrow');
-  if(arrowEl) arrowEl.style.transform = `rotate(${relativeAngle}deg)`;
 }
 
 function findPostExactKm(post){
@@ -859,10 +803,12 @@ function initLeafletMap(initLat, initLon){
     
     let html = '';
     if(closestPost){
-      html += `<p style="color:#fff;font-weight:900;margin-bottom:2px;">ID: <span style="color:var(--accent)">${closestPost.id}</span> (~${Math.round(closestPost.d)}m)</p>`;
+      const distStr = formatDistance(closestPost.d);
+      html += `<p style="color:#fff;font-weight:900;margin-bottom:2px;">ID: <span style="color:var(--accent)">${closestPost.id}</span> (Distância: ${distStr})</p>`;
     }
     if(foundRodovia){
-      html += `<p style="color:var(--green2);font-weight:900;">${foundRodovia.name} · KM ${(Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',')}</p>`;
+      const distRodStr = formatDistance(foundRodovia.res.d);
+      html += `<p style="color:var(--green2);font-weight:900;">${foundRodovia.name} · KM ${(Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',')} (Eixo a ${distRodStr})</p>`;
     }
 
     if(!html) html = `<p style="color:var(--muted)">Nenhum ID próximo</p>`;
@@ -950,7 +896,8 @@ function searchManualCoord(){
   const closestPost = findNearestPost(lat, lon);
   msg.style.display='flex';
   if(closestPost){
-    msg.innerHTML = `<span style="color:#fff">ID: <strong style="color:var(--accent)">${closestPost.id}</strong> (~${Math.round(closestPost.d)}m)</span>`;
+    const distStr = formatDistance(closestPost.d);
+    msg.innerHTML = `<span style="color:#fff">ID: <strong style="color:var(--accent)">${closestPost.id}</strong> (Distância: ${distStr})</span>`;
   } else {
     msg.innerHTML = `<span style="color:var(--muted)">Nenhum ID próximo</span>`;
   }
@@ -1003,7 +950,7 @@ function updateSearchDist(){
   if(!searchItem||!pos)return;
   const el=document.getElementById('srch-dist');
   const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
-  if(el)el.textContent='Distância: '+range(dist,pos.acc);
+  if(el)el.textContent=`Distância da sua posição: ${formatDistance(dist)}`;
   checkLock();
 }
 
@@ -1013,7 +960,7 @@ function renderSearch(){
   let dt='Aguardando GPS...';
   if(pos){
     const dist=hav(pos.lat,pos.lon,searchItem.lat,searchItem.lon);
-    dt='Distância: '+range(dist,pos.acc);
+    dt=`Distância da sua posição: ${formatDistance(dist)}`;
     checkLock();
   }
   const exactKmObj = findPostExactKm(searchItem);
@@ -1146,7 +1093,8 @@ function updateSearchKmDist(){
   if(!searchKmItems.length||!pos)return;
   searchKmItems.forEach((item, idx)=>{
     const el=document.getElementById('srch-km-dist-'+idx);
-    if(el)el.textContent='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
+    const dist=hav(pos.lat,pos.lon,item.lat,item.lon);
+    if(el)el.textContent=`Distância da sua posição: ${formatDistance(dist)}`;
   });
 }
 
@@ -1161,7 +1109,7 @@ function renderSearchKm(label){
     const item = searchKmItems[idx];
     let dt='Aguardando GPS...';
     if(pos){
-      dt='Distância: '+range(hav(pos.lat,pos.lon,item.lat,item.lon),pos.acc);
+      dt=`Distância da sua posição: ${formatDistance(hav(pos.lat,pos.lon,item.lat,item.lon))}`;
     }
     const exactKmObj = findPostExactKm(item);
     htmlContent += `
@@ -1231,16 +1179,9 @@ async function renderApoio(){
       const o = items[i];
       const el=document.getElementById('dist-'+i);
       const kmEl=document.getElementById('km-exato-'+i);
-      const arrowEl=document.getElementById('arrow-'+i);
-      if(el)el.textContent='Distância: '+range(o.d,pos.acc);
+      if(el)el.textContent=`Distância: ${formatDistance(o.d)}`;
       const exactObj = findPostExactKm(o);
       if(kmEl)kmEl.textContent='KM: '+exactObj.kmStr;
-      
-      if(arrowEl){
-        const bearing = calculateBearing(pos.lat, pos.lon, o.lat, o.lon);
-        const relAngle = bearing - deviceHeading;
-        arrowEl.style.transform = `rotate(${relAngle}deg)`;
-      }
     }
     document.getElementById('btnSend').disabled=false;
     return;
@@ -1252,24 +1193,15 @@ async function renderApoio(){
   for(let i=0; i<items.length; i++){
     const o = items[i];
     const exactObj = findPostExactKm(o);
-    const bearing = calculateBearing(pos.lat, pos.lon, o.lat, o.lon);
-    const relAngle = bearing - deviceHeading;
 
     const div=document.createElement('div');
     div.className='post'+(i===0?' near':'');
     div.innerHTML=`<div class="post-top">
       <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
       <div class="post-info" style="flex:1;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <p class="post-id" style="margin:0;">ID: <span>${o.id}</span></p>
-          <div class="compass-badge" style="padding:2px 5px;margin-left:auto;">
-            <div class="compass-arrow" style="width:16px;height:16px;" id="arrow-${i}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:9px;height:9px;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-            </div>
-          </div>
-        </div>
+        <p class="post-id" style="margin:0;">ID: <span>${o.id}</span></p>
         <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM: ${exactObj.kmStr}</p>
-        <p class="post-dist" id="dist-${i}">Distância: ${range(o.d,pos.acc)}</p>
+        <p class="post-dist" id="dist-${i}">Distância: ${formatDistance(o.d)}</p>
       </div>
       <button class="post-wa-btn" onclick="sendSingleWhatsApp('${o.id}', ${o.lat}, ${o.lon})" title="Enviar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
@@ -1280,8 +1212,6 @@ async function renderApoio(){
     </div>`;
     
     fragment.appendChild(div);
-    const arrowEl = div.querySelector('#arrow-'+i);
-    if(arrowEl) arrowEl.style.transform = `rotate(${relAngle}deg)`;
   }
 
   list.innerHTML='';
