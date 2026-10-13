@@ -459,7 +459,7 @@ const nowBR=()=>new Date().toLocaleString('pt-BR').toUpperCase();
 function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(norm(c));if(i>=0)return i}return-1}
 
 let posts=[], postIndex=new Map();
-let kmDB_SP=[], kmDB_RJ=[], kmDB_BR101_SP=[], kmDB_BR101_RJ=[];
+let kmDB_SP=[], kmDB_RJ=[];
 let pos=null, searchItem=null, searchKmItems=[], renderedKey='';
 let mapInstance=null, mapMarker=null, mapLayerObj=null, popupInstance=null;
 let activePane = null;
@@ -540,17 +540,13 @@ async function loadSystemData(){
       posts.forEach(p=>postIndex.set(p.id, p));
     }
 
-    let [tSP, tRJ, t101SP, t101RJ] = await Promise.all([
+    let [tSP, tRJ] = await Promise.all([
       fetchCSV(['SNVBR116SPRJ.csv','br116sp.csv','BR116_SP.csv']),
-      fetchCSV(['SNVBR116RJ.csv','br116rj.csv','BR116_RJ.csv']),
-      fetchCSV(['br101sp.csv','BR101_SP.csv']),
-      fetchCSV(['br101rj.csv','BR101_RJ.csv'])
+      fetchCSV(['SNVBR116RJ.csv','br116rj.csv','BR116_RJ.csv'])
     ]);
 
     kmDB_SP = await parseKmFile(tSP);
     kmDB_RJ = await parseKmFile(tRJ);
-    kmDB_BR101_SP = await parseKmFile(t101SP);
-    kmDB_BR101_RJ = await parseKmFile(t101RJ);
   }catch(e){}
 
   initMap(-22.8512, -43.7744);
@@ -583,9 +579,7 @@ async function parseKmFile(text){
 function findNearestInAnyDB(lat, lon){
   let candidates=[
     {name:'BR116/SP', db:kmDB_SP},
-    {name:'BR116/RJ', db:kmDB_RJ},
-    {name:'BR101/SP', db:kmDB_BR101_SP},
-    {name:'BR101/RJ', db:kmDB_BR101_RJ}
+    {name:'BR116/RJ', db:kmDB_RJ}
   ].map(c=>{
     let best=null, bd=Infinity;
     for(let p of c.db){
@@ -613,7 +607,7 @@ async function updateKm(){
 }
 
 function findPostExactKm(post){
-  let dbs=[{name:'SP', db:kmDB_SP},{name:'RJ', db:kmDB_RJ},{name:'BR101-SP', db:kmDB_BR101_SP},{name:'BR101-RJ', db:kmDB_BR101_RJ}];
+  let dbs=[{name:'SP', db:kmDB_SP},{name:'RJ', db:kmDB_RJ}];
   for(let dbObj of dbs){
     if(dbObj.db.length){
       let best=null, bd=Infinity;
@@ -787,6 +781,16 @@ async function renderSearch(){
   </div>`;
 }
 
+function getDbRange(db){
+  if(!db || !db.length) return {min: Infinity, max: -Infinity};
+  let min = Infinity, max = -Infinity;
+  for(let pt of db){
+    if(pt.km < min) min = pt.km;
+    if(pt.km > max) max = pt.km;
+  }
+  return {min, max};
+}
+
 function executeSearchKm(db, label){
   let rawVal=document.getElementById('inputKm').value;
   let targetKm=parsePt(rawVal);
@@ -794,14 +798,23 @@ function executeSearchKm(db, label){
   let modal=document.getElementById('searchKmModal');
   modal.style.display='none';
 
+  let rangeInfo = getDbRange(db);
+  // Permitimos uma margem de tolerância de 3 KM para mais ou para menos no range
+  if(targetKm < (rangeInfo.min - 3) || targetKm > (rangeInfo.max + 3)){
+    msg.style.display='flex';
+    msg.textContent='pesquisa fora do range de localização';
+    searchKmItems=[];res.style.display='none';return;
+  }
+
   let bestPt=null, minDiff=Infinity;
   for(let pt of db){
     let diff=Math.abs(pt.km - targetKm);
     if(diff<minDiff){minDiff=diff;bestPt=pt;}
   }
 
-  if(!bestPt){
-    msg.style.display='flex';msg.textContent='KM não encontrado';
+  if(!bestPt || minDiff > 5.0){
+    msg.style.display='flex';
+    msg.textContent='pesquisa fora do range de localização';
     searchKmItems=[];res.style.display='none';return;
   }
 
@@ -825,10 +838,22 @@ function searchKm(){
     msg.style.display='flex';msg.textContent='Aguardando bases';return;
   }
 
-  let existsSP = kmDB_SP.some(pt => Math.abs(pt.km - targetKm) < 1.0);
-  let existsRJ = kmDB_RJ.some(pt => Math.abs(pt.km - targetKm) < 1.0);
+  let rangeSP = getDbRange(kmDB_SP);
+  let rangeRJ = getDbRange(kmDB_RJ);
 
-  if(existsSP && existsRJ){
+  let inSP = (targetKm >= rangeSP.min - 3 && targetKm <= rangeSP.max + 3);
+  let inRJ = (targetKm >= rangeRJ.min - 3 && targetKm <= rangeRJ.max + 3);
+
+  if(!inSP && !inRJ){
+    msg.style.display='flex';
+    msg.textContent='pesquisa fora do range de localização';
+    res.style.display='none';
+    modal.style.display='none';
+    searchKmItems=[];
+    return;
+  }
+
+  if(inSP && inRJ){
     msg.style.display='none';
     res.style.display='none';
     modal.style.display='block';
@@ -843,13 +868,10 @@ function searchKm(){
   }
 
   modal.style.display='none';
-  if(existsSP){
+  if(inSP){
     executeSearchKm(kmDB_SP, 'BR116-SP');
-  }else if(existsRJ){
-    executeSearchKm(kmDB_RJ, 'BR116-RJ');
   }else{
-    let db = kmDB_SP.length ? kmDB_SP : kmDB_RJ;
-    executeSearchKm(db, kmDB_SP.length ? 'BR116-SP' : 'BR116-RJ');
+    executeSearchKm(kmDB_RJ, 'BR116-RJ');
   }
 }
 
@@ -938,7 +960,7 @@ async function renderApoio(){
         <p class="post-id">ID: ${o.id}</p>
         <p class="post-dist" style="color:var(--accent);font-weight:900;text-transform:uppercase;">${cityName}</p>
         <p class="post-dist" style="color:var(--green2);text-transform:uppercase;">KM: ${findPostExactKm(o)}</p>
-        <p class="post-dist" id="dist-${i}">distância até o local: ${formatDist(o.d)}</p>
+        <p class="post-dist" id="dist-${i}">distância até o local: '+formatDist(o.d)+'</p>
       </div>
       <button class="post-wa" onclick="sendWhatsApp('${o.id}', ${o.lat}, ${o.lon})">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
@@ -951,7 +973,7 @@ async function renderApoio(){
   list.innerHTML='';
   list.appendChild(frag);
   document.getElementById('btnSend').disabled=false;
-};
+}
 
 document.getElementById('btnSend').onclick=()=>{
   if(!pos)return;
