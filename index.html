@@ -85,6 +85,10 @@ input,select{font-family:var(--font);outline:none}
   box-shadow:0 8px 32px rgba(0,0,0,.4);
 }
 
+.section-divider{
+  height:1px;background:var(--border2);margin:4px 0;width:100%;
+}
+
 .km-hero{
   border-radius:var(--r-sm);
   border:1px solid rgba(59,130,246,.35);
@@ -192,15 +196,11 @@ input,select{font-family:var(--font);outline:none}
   width:100%;border-radius:var(--r-xs);border:1px solid var(--border2);
   background:rgba(7,9,19,.9);padding:8px;font-size:11px;font-weight:800;color:#fff;text-align:center;
 }
-.coord-btn-toggle{
-  background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);
-  color:var(--text);font-size:8px;font-weight:900;padding:3px 8px;border-radius:4px;
-  text-transform:uppercase;cursor:pointer;letter-spacing:.08em;
-}
 
 .map-box{
   border-radius:var(--r-xs);border:1px solid var(--border2);
-  overflow:hidden;position:relative;height:260px;background:#020617;
+  overflow:hidden;position:relative;height:240px;background:#020617;
+  margin-top:6px;
 }
 .map-box.fullscreen{
   position:fixed !important;inset:0 !important;width:100vw !important;
@@ -248,15 +248,16 @@ input,select{font-family:var(--font);outline:none}
 
 .post-map{height:120px;width:100%;border:0;filter:grayscale(15%) contrast(1.05)}
 
+/* Botão de WhatsApp compacto e discreto */
 .ctrl-send{
-  width:100%;min-height:38px;border-radius:var(--r-xs);
-  background:linear-gradient(135deg,var(--green),#059669);color:#fff;font-size:10px;font-weight:900;
+  width:auto;min-width:140px;padding:6px 12px;border-radius:var(--r-xs);
+  background:linear-gradient(135deg,var(--green),#059669);color:#fff;font-size:9px;font-weight:900;
   text-transform:uppercase;letter-spacing:.08em;
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  box-shadow:0 4px 15px rgba(16,185,129,.3);
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  box-shadow:0 2px 8px rgba(16,185,129,.2);
 }
 .ctrl-send:disabled{background:var(--dim);color:var(--muted);box-shadow:none}
-.ctrl-send svg{width:14px;height:14px}
+.ctrl-send svg{width:12px;height:12px}
 
 .ctrl-row{
   display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;
@@ -293,7 +294,9 @@ input,select{font-family:var(--font);outline:none}
 
 <div class="wrap">
 
+  <!-- 4 OPÇÕES INICIAIS LOGO DE CARA -->
   <div class="section-block">
+    <!-- 1. Pesquisa de ID -->
     <div class="card card-accent">
       <div class="search-row">
         <div class="search-wrap">
@@ -306,6 +309,7 @@ input,select{font-family:var(--font);outline:none}
       <div id="searchResult" style="display:none;margin-top:8px"></div>
     </div>
 
+    <!-- 2. Pesquisa de KM -->
     <div class="card card-accent">
       <div class="search-row">
         <div class="search-wrap">
@@ -318,8 +322,40 @@ input,select{font-family:var(--font);outline:none}
       <div id="searchKmModal" style="display:none"></div>
       <div id="searchKmResult" style="display:none;margin-top:8px"></div>
     </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 3. Pesquisa por Coordenada -->
+    <div class="card">
+      <div style="font-size:9px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:6px;">Inserir Coordenada</div>
+      <div class="coord-inputs">
+        <input class="coord-input" id="inputLat" placeholder="LAT" autocomplete="off" spellcheck="false">
+        <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
+      </div>
+      <div style="display:flex;gap:4px;margin-top:6px;">
+        <button class="btn-icon go" style="flex:1;height:32px;border-radius:var(--r-xs);font-size:9px;" onclick="searchManualCoord()">Calcular Coordenada</button>
+        <button class="btn-icon clr" onclick="clearCoordFields()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+    </div>
+
+    <!-- 4. Pesquisa pelo Mapa / Interativo -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:9px;font-weight:900;text-transform:uppercase;color:var(--accent)">Explorar via Mapa</span>
+        <button class="ctrl-select" style="padding:2px 8px;font-size:8px;cursor:pointer;" onclick="useCurrentGps()">Usar GPS Atual</button>
+      </div>
+      <div class="map-box" id="mapBox">
+        <div class="map-ctrls">
+          <button class="map-btn active" id="btnLayerSat" onclick="setMapLayer('sat')">Sat</button>
+          <button class="map-btn" id="btnLayerNorm" onclick="setMapLayer('norm')">Norm</button>
+          <button class="map-btn" onclick="toggleFullscreen()">Full</button>
+        </div>
+        <div id="leafletMap" style="width:100%;height:100%;"></div>
+      </div>
+    </div>
   </div>
 
+  <!-- KM EM TEMPO REAL E OUTRAS CORES/DADOS -->
   <div class="section-block">
     <div class="km-hero">
       <div class="km-value" id="kmVal">—</div>
@@ -330,50 +366,24 @@ input,select{font-family:var(--font);outline:none}
     <div id="gpsStatus" class="gps bad">GPS · BUSCANDO SINAL</div>
 
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-        <span style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--muted)">Mapa Operacional</span>
-        <button class="coord-btn-toggle" onclick="toggleCoordSearch()">Coordenadas</button>
-      </div>
-
-      <div id="coordSearchBox" class="coord-container" style="display:none;">
-        <div class="coord-inputs">
-          <input class="coord-input" id="inputLat" placeholder="LAT" autocomplete="off" spellcheck="false">
-          <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
-        </div>
-        <div style="display:flex;gap:4px;">
-          <button class="ctrl-send" style="min-height:30px;font-size:9px;" onclick="searchManualCoord()">Calcular</button>
-          <button class="btn-icon clr" onclick="clearCoordFields()" style="width:30px;height:30px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-        </div>
-        
-        <div class="map-box" id="mapBox">
-          <div class="map-ctrls">
-            <button class="map-btn active" id="btnLayerSat" onclick="setMapLayer('sat')">Sat</button>
-            <button class="map-btn" id="btnLayerNorm" onclick="setMapLayer('norm')">Norm</button>
-            <button class="map-btn" onclick="toggleFullscreen()">Full</button>
-          </div>
-          <div id="leafletMap" style="width:100%;height:100%;"></div>
-        </div>
-        <button class="ctrl-send" style="min-height:30px;font-size:9px;background:var(--accent);" onclick="useCurrentGps()">Usar GPS Atual</button>
-      </div>
-
-      <button id="btnSend" class="ctrl-send" disabled style="margin-top:8px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-        Enviar WhatsApp
-      </button>
-
-      <div class="ctrl-row">
-        <label class="ctrl-label">
-          Qtd:
+      <div class="ctrl-row" style="margin-top:0;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <label class="ctrl-label">Qtd:</label>
           <select class="ctrl-select" id="qty">
             <option value="1">1</option>
             <option value="5">5</option>
             <option value="10" selected>10</option>
             <option value="20">20</option>
           </select>
-        </label>
-        <label class="ctrl-label">
-          <input type="checkbox" class="ctrl-chk" id="chkMaps" checked> Maps
-        </label>
+          <label class="ctrl-label" style="margin-left:6px;">
+            <input type="checkbox" class="ctrl-chk" id="chkMaps" checked> Maps
+          </label>
+        </div>
+        <!-- BOTÃO WHATSAPP DISCRETO E COMPACTO -->
+        <button id="btnSend" class="ctrl-send" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          Enviar WhatsApp
+        </button>
       </div>
     </div>
 
@@ -557,7 +567,7 @@ function initMap(lat, lon){
   mapInstance.on('click', async e=>{
     let l = e.latlng;
     document.getElementById('inputLat').value = l.lat.toFixed(6);
-    document.getElementById('inputLon').value = l.lon.toFixed(6);
+    document.getElementById('inputLon').value = l.lng.toFixed(6);
     mapMarker.setLatLng([l.lat, l.lng]);
 
     const cityName = await fetchCityName(l.lat, l.lng);
@@ -614,19 +624,13 @@ function toggleFullscreen(){
   if(mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
 }
 
-function toggleCoordSearch(){
-  let box = document.getElementById('coordSearchBox');
-  let isH = box.style.display==='none';
-  box.style.display = isH ? 'flex' : 'none';
-  if(isH && mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
-}
-
 function useCurrentGps(){
   if(!pos){showToast('GPS sem sinal','err');return;}
   document.getElementById('inputLat').value = pos.lat.toFixed(6);
   document.getElementById('inputLon').value = pos.lon.toFixed(6);
   mapInstance.setView([pos.lat, pos.lon], 16);
   mapMarker.setLatLng([pos.lat, pos.lon]);
+  showToast('GPS Posicionado');
 }
 
 function clearCoordFields(){
