@@ -431,7 +431,7 @@ img{display:block;max-width:100%}
       <p class="card-label">Pesquisa por KM</p>
       <div class="search-row">
         <div class="search-wrap">
-          <input class="search-input" id="inputKm" placeholder="EX: 98, 99, 115" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
+          <input class="search-input" id="inputKm" placeholder="EX: 0, 98, 115" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         </div>
         <button class="btn-icon go" onclick="searchKm()"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
@@ -1070,7 +1070,24 @@ function searchKm(){
   const existsSP = inRangeSP && kmDB_SP.some(pt => Math.abs(pt.km - targetKm) < 1.0);
   const existsRJ = inRangeRJ && kmDB_RJ.some(pt => Math.abs(pt.km - targetKm) < 1.0);
 
+  // AUTOMAÇÃO INTELIGENTE POR GPS / PROXIMIDADE
   if(existsSP && existsRJ){
+    if(pos){
+      const nearestInSP = kmDB_SP.map(p=>({d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d)[0];
+      const nearestInRJ = kmDB_RJ.map(p=>({d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d)[0];
+      
+      if(nearestInRJ && nearestInSP && nearestInRJ.d < nearestInSP.d){
+        modal.style.display='none';
+        executeSearchKm(kmDB_RJ, 'RJ');
+        return;
+      } else if(nearestInSP && nearestInRJ && nearestInSP.d < nearestInRJ.d){
+        modal.style.display='none';
+        executeSearchKm(kmDB_SP, 'SP');
+        return;
+      }
+    }
+
+    // Se não tiver GPS ativo para desambiguar, aí sim exibe o seletor
     msg.style.display='none';
     res.style.display='none';
     modal.style.display='block';
