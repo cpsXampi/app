@@ -799,10 +799,52 @@ async function searchManualCoord(){
   showToast('Resultados carregados');
 }
 
+// Conversor universal avançado para qualquer formato de coordenada decifrado pelo OCR
+function parseUniversalCoordinate(text) {
+  // Remove espaços extras e normaliza pontos/vírgulas
+  let cleanText = text.replace(/[^\d.,\-°'"NSEWnsew\s]/g, ' ').replace(/\s+/g, ' ').trim();
+
+  // Tenta encontrar pares de números decimais (com ou sem sinal, com ponto ou vírgula)
+  let regexDec = /(-?\d{1,2}[.,]\d{4,})/g;
+  let matches = cleanText.match(regexDec);
+
+  if (matches && matches.length >= 2) {
+    let lat = parsePt(matches[0]);
+    let lon = parsePt(matches[1]);
+
+    // Aplicação inteligente de sinais para o Brasil (Sudeste) caso venham positivos
+    if (lat > 0 && (cleanText.includes('S') || lat < 30)) lat = -lat;
+    if (lon > 0 && (cleanText.includes('W') || lon > 30)) lon = -lon;
+    if (lat > 0 && lat < 30 && !cleanText.includes('N')) lat = -lat;
+    if (lon > 0 && lon > 30 && !cleanText.includes('E')) lon = -lon;
+
+    if (Number.isFinite(lat) && Number.isFinite(lon) && lat < -10 && lon < -30) {
+      return { lat, lon };
+    }
+  }
+
+  // Tenta extrair qualquer sequência numérica longa caso o regex decimal direto falhe
+  let allNums = cleanText.match(/-?\d+[.,]?\d*/g);
+  if (allNums && allNums.length >= 2) {
+    let nums = allNums.map(n => parsePt(n)).filter(n => Number.isFinite(n));
+    for (let i = 0; i < nums.length - 1; i++) {
+      let l1 = nums[i];
+      let l2 = nums[i + 1];
+      if (l1 > 0 && l1 < 35) l1 = -l1;
+      if (l2 > 0 && l2 > 30) l2 = -l2;
+      if (l1 < -10 && l2 < -30) {
+        return { lat: l1, lon: l2 };
+      }
+    }
+  }
+
+  return null;
+}
+
 async function handleOcrUpload(event) {
   const file = event.target.files[0];
   if(!file) return;
-  showToast('Processando OCR local...');
+  showToast('Decodificando coordenadas...');
 
   try {
     const result = await Tesseract.recognize(file, 'eng', {
@@ -810,26 +852,18 @@ async function handleOcrUpload(event) {
     });
 
     const text = result.data.text || '';
-    const numbers = text.match(/-?\d{1,2}[.,]\d{4,}/g);
+    const coord = parseUniversalCoordinate(text);
     
-    if(numbers && numbers.length >= 2){
-      let lat = parsePt(numbers[0]);
-      let lon = parsePt(numbers[1]);
-
-      if(lat > 0) lat = -lat;
-      if(lon > 0) lon = -lon;
-
-      if(Number.isFinite(lat) && Number.isFinite(lon) && lat < -10 && lon < -30){
-        document.getElementById('inputLat').value = lat.toFixed(6);
-        document.getElementById('inputLon').value = lon.toFixed(6);
-        showToast('Coordenadas lidas!');
-        searchManualCoord();
-        event.target.value = '';
-        return;
-      }
+    if(coord){
+      document.getElementById('inputLat').value = coord.lat.toFixed(6);
+      document.getElementById('inputLon').value = coord.lon.toFixed(6);
+      showToast('Coordenada decodificada com sucesso!');
+      searchManualCoord();
+      event.target.value = '';
+      return;
     }
 
-    showToast('Não achou coordenadas claras. Tente outra foto.', 'err');
+    showToast('Não foi possível decodificar. Tente uma foto mais nítida.', 'err');
   } catch(e) {
     showToast('Erro ao ler imagem', 'err');
   } finally {
