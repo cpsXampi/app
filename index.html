@@ -644,53 +644,6 @@ async function fetchCSV(files){
   return null;
 }
 
-const MUNICIPIOS_POLIGONOS = [
-  {name: 'Taubaté - SP', minLat: -23.18, maxLat: -22.92, minLon: -45.75, maxLon: -45.38},
-  {name: 'Pindamonhangaba - SP', minLat: -23.08, maxLat: -22.72, minLon: -45.65, maxLon: -45.32},
-  {name: 'Roseira - SP', minLat: -22.95, maxLat: -22.82, minLon: -45.38, maxLon: -45.22},
-  {name: 'Aparecida - SP', minLat: -22.90, maxLat: -22.78, minLon: -45.28, maxLon: -45.18},
-  {name: 'Guaratinguetá - SP', minLat: -22.92, maxLat: -22.65, minLon: -45.32, maxLon: -45.08},
-  {name: 'Canas - SP', minLat: -22.72, maxLat: -22.60, minLon: -45.08, maxLon: -44.95},
-  {name: 'Lorena - SP', minLat: -22.85, maxLat: -22.65, minLon: -45.22, maxLon: -45.02},
-  {name: 'Guarulhos - SP', minLat: -23.515, maxLat: -23.340, minLon: -46.570, maxLon: -46.350},
-  {name: 'São Paulo - SP', minLat: -24.050, maxLat: -23.515, minLon: -46.850, maxLon: -46.380},
-  {name: 'Arujá - SP', minLat: -23.440, maxLat: -23.300, minLon: -46.360, maxLon: -46.220},
-  {name: 'São José dos Campos - SP', minLat: -23.35, maxLat: -23.02, minLon: -46.10, maxLon: -45.72},
-  {name: 'Caçapava - SP', minLat: -23.22, maxLat: -23.00, minLon: -45.85, maxLon: -45.58},
-  {name: 'Jacareí - SP', minLat: -23.42, maxLat: -23.12, minLon: -46.10, maxLon: -45.88},
-  {name: 'Itaguaí - RJ', minLat: -23.02, maxLat: -22.78, minLon: -43.98, maxLon: -43.72},
-  {name: 'Seropédica - RJ', minLat: -22.84, maxLat: -22.70, minLon: -43.80, maxLon: -43.64},
-  {name: 'Rio de Janeiro - RJ', minLat: -23.08, maxLat: -22.72, minLon: -43.75, maxLon: -43.10},
-  {name: 'Volta Redonda - RJ', minLat: -22.56, maxLat: -22.47, minLon: -44.14, maxLon: -44.04},
-  {name: 'Resende - RJ', minLat: -22.52, maxLat: -22.38, minLon: -44.50, maxLon: -44.38}
-];
-
-async function fetchMunicipio(lat, lon){
-  for(const poly of MUNICIPIOS_POLIGONOS){
-    if(lat >= poly.minLat && lat <= poly.maxLat && lon >= poly.minLon && lon <= poly.maxLon){
-      return poly.name;
-    }
-  }
-  try{
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`, {headers: {'Accept-Language': 'pt-BR'}});
-    if(r.ok){
-      const data = await r.json();
-      const addr = data.address || {};
-      const resMuni = addr.city || addr.town || addr.municipality || addr.village || addr.county || '';
-      const resState = addr.state || '';
-      if(resMuni){
-        let formatted = resMuni;
-        if(resState && !formatted.includes(resState)){
-          const stateAbbr = resState.includes('São Paulo') ? 'SP' : (resState.includes('Rio de Janeiro') ? 'RJ' : '');
-          if(stateAbbr) formatted += ` - ${stateAbbr}`;
-        }
-        return formatted;
-      }
-    }
-  }catch(e){}
-  return 'Indefinido';
-}
-
 function findNearestPost(lat, lon){
   if(!posts.length) return null;
   let closest = null, minD = Infinity;
@@ -888,7 +841,7 @@ function initLeafletMap(initLat, initLon){
   setMapLayer('satellite');
   mapMarker = L.marker([initLat, initLon]).addTo(mapInstance);
 
-  mapInstance.on('click', async function(e){
+  mapInstance.on('click', function(e){
     handleDoubleTapFullscreen();
     const lat = e.latlng.lat;
     const lon = e.latlng.lng;
@@ -898,22 +851,21 @@ function initLeafletMap(initLat, initLon){
     
     mapMarker.setLatLng([lat, lon]);
     
-    const muniName = await fetchMunicipio(lat, lon);
     const closestPost = findNearestPost(lat, lon);
     const foundRodovia = findNearestInAnyDB(lat, lon);
 
     const overlayCard = document.getElementById('mapOverlayCard');
     const overlayContent = document.getElementById('mapOverlayContent');
     
-    let html = `<p style="color:var(--accent);font-weight:900;margin-bottom:2px;">Município: ${muniName}</p>`;
-    
+    let html = '';
     if(closestPost){
-      html += `<p style="color:#fff;font-weight:900;margin-bottom:2px;">ID Mais Próximo: <span style="color:var(--accent)">${closestPost.id}</span> (~${Math.round(closestPost.d)}m)</p>`;
+      html += `<p style="color:#fff;font-weight:900;margin-bottom:2px;">ID: <span style="color:var(--accent)">${closestPost.id}</span> (~${Math.round(closestPost.d)}m)</p>`;
     }
-    
     if(foundRodovia){
       html += `<p style="color:var(--green2);font-weight:900;">${foundRodovia.name} · KM ${(Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',')}</p>`;
     }
+
+    if(!html) html = `<p style="color:var(--muted)">Nenhum ID próximo</p>`;
 
     overlayContent.innerHTML = html;
     overlayCard.style.display = 'block';
@@ -975,7 +927,7 @@ function clearCoordFields(){
   closeMapOverlay();
 }
 
-async function searchManualCoord(){
+function searchManualCoord(){
   const latStr = document.getElementById('inputLat').value.trim();
   const lonStr = document.getElementById('inputLon').value.trim();
   const msg = document.getElementById('coordSearchMsg');
@@ -995,15 +947,13 @@ async function searchManualCoord(){
     mapMarker.setLatLng([lat, lon]);
   }
 
-  const muniName = await fetchMunicipio(lat, lon);
   const closestPost = findNearestPost(lat, lon);
-
   msg.style.display='flex';
-  let txt = `<span style="color:var(--accent)">Município: ${muniName}</span>`;
   if(closestPost){
-    txt += ` · <span style="color:#fff">ID: ${closestPost.id} (~${Math.round(closestPost.d)}m)</span>`;
+    msg.innerHTML = `<span style="color:#fff">ID: <strong style="color:var(--accent)">${closestPost.id}</strong> (~${Math.round(closestPost.d)}m)</span>`;
+  } else {
+    msg.innerHTML = `<span style="color:var(--muted)">Nenhum ID próximo</span>`;
   }
-  msg.innerHTML = txt;
   showToast('Ponto analisado');
 }
 
