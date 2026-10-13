@@ -213,7 +213,6 @@ input,select{font-family:var(--font);outline:none}
   margin-top:4px;
 }
 
-/* Otimização de Tela Cheia robusta para Desktop e Mobile */
 .map-box.fullscreen{
   position:fixed !important;
   inset:0 !important;
@@ -237,12 +236,14 @@ input,select{font-family:var(--font);outline:none}
 .map-btn.active{background:var(--accent);color:#fff}
 
 .fs-close-btn{
-  display:none;position:fixed;top:16px;left:16px;z-index:1000000;
-  background:rgba(239,68,68,.95);color:#fff;padding:8px 14px;
-  border-radius:var(--r-xs);font-size:9px;font-weight:900;text-transform:uppercase;
-  box-shadow:0 4px 16px rgba(0,0,0,.6);cursor:pointer;border:1px solid rgba(255,255,255,.3);
+  display:none;
+  position:fixed;top:16px;left:16px;z-index:10000000;
+  background:rgba(239,68,68,.95);color:#fff;padding:10px 18px;
+  border-radius:var(--r-xs);font-size:10px;font-weight:900;text-transform:uppercase;
+  box-shadow:0 6px 20px rgba(0,0,0,.7);cursor:pointer;border:1px solid rgba(255,255,255,.4);
+  align-items:center;gap:6px;
 }
-.map-box.fullscreen ~ .fs-close-btn{display:inline-flex;align-items:center;gap:4px;}
+.map-box.fullscreen ~ .fs-close-btn{display:inline-flex;}
 
 .post{
   border-radius:var(--r-sm);overflow:hidden;
@@ -412,7 +413,7 @@ input,select{font-family:var(--font);outline:none}
     </div>
   </div>
 
-  <button class="fs-close-btn" onclick="toggleFullscreen()">✕ Fechar Tela Cheia</button>
+  <button class="fs-close-btn" onclick="toggleFullscreen()">✕ Fechar Tela Cheia (ESC / Duplo Clique)</button>
 
   <div class="section-block">
     <div class="km-hero-compact">
@@ -551,6 +552,16 @@ function initSystemStartup(){
   updateKm();
   setTimeout(loadSystemDataAsync, 50);
   requestGpsPermission();
+
+  // Atalho global ESC para sair da tela cheia
+  window.addEventListener('keydown', e => {
+    if(e.key === 'Escape'){
+      let box = document.getElementById('mapBox');
+      if(box.classList.contains('fullscreen')){
+        toggleFullscreen();
+      }
+    }
+  });
 }
 
 function requestGpsPermission(){
@@ -686,6 +697,14 @@ function initMap(lat, lon){
   setMapLayer('sat');
   mapMarker = L.marker([lat, lon]).addTo(mapInstance);
   
+  // Duplo clique no mapa fecha a tela cheia se estiver ativa
+  mapInstance.on('dblclick', e => {
+    let box = document.getElementById('mapBox');
+    if(box.classList.contains('fullscreen')){
+      toggleFullscreen();
+    }
+  });
+
   mapInstance.on('click', async e=>{
     let l = e.latlng;
     document.getElementById('inputLat').value = l.lat.toFixed(6);
@@ -742,7 +761,7 @@ function setMapLayer(mode){
 
 function toggleFullscreen(){
   let box = document.getElementById('mapBox');
-  let isFS = box.classList.toggle('fullscreen');
+  box.classList.toggle('fullscreen');
   if(mapInstance) {
     setTimeout(()=>mapInstance.invalidateSize(), 50);
   }
