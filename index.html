@@ -1239,13 +1239,39 @@ async function searchManualCoordByLatLon(lat, lon){
   const muniName = await fetchMunicipio(lat, lon);
   const foundRodovia = findNearestInAnyDB(lat, lon);
   
+  // Limite de tolerância para considerar fora dos padrões (ex: 15.000 metros / 15 km da rodovia ou poste mais próximo)
+  let isOutOfStandard = false;
+  if(foundRodovia && foundRodovia.res.d > 15000){
+    isOutOfStandard = true;
+  }
+
+  if(posts.length){
+    let minPostDist = Infinity;
+    for(const p of posts){
+      const d = hav(lat, lon, p.lat, p.lon);
+      if(d < minPostDist) minPostDist = d;
+    }
+    if(minPostDist > 15000 && (!foundRodovia || foundRodovia.res.d > 15000)){
+      isOutOfStandard = true;
+    }
+  }
+
   msg.style.display='none';
   res.style.display='block';
 
-  let html = `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;">
-    <p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
+  let html = `<div style="background:rgba(15,23,42,.9);border:1px solid var(--border2);padding:10px;border-radius:8px;font-size:11px;">`;
 
-  let overlayHtml = `<p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
+  if(isOutOfStandard){
+    html += `<p style="color:var(--red);font-weight:900;margin-bottom:6px;">⚠️ Ponto fora dos padrões (Muito distante das bases cadastradas)</p>`;
+  }
+
+  html += `<p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
+
+  let overlayHtml = '';
+  if(isOutOfStandard){
+    overlayHtml += `<p style="color:var(--red);font-weight:900;margin-bottom:4px;">⚠️ Ponto fora dos padrões</p>`;
+  }
+  overlayHtml += `<p style="color:var(--accent);font-weight:900;">Município: ${muniName}</p>`;
 
   if(foundRodovia){
     const kmValStr = (Math.round(foundRodovia.res.km*100)/100).toFixed(2).replace('.',',');
@@ -1287,7 +1313,7 @@ async function searchManualCoordByLatLon(lat, lon){
 
   renderWeatherWidget(lat, lon, 'coordWeatherBox', 'coordWeatherDetails');
   renderWeatherWidget(lat, lon, 'mapOverlayWeather', 'mapWeatherDetails');
-  showToast('Ponto analisado com sucesso');
+  showToast(isOutOfStandard ? 'Ponto fora dos padrões' : 'Ponto analisado com sucesso', isOutOfStandard ? 'err' : 'ok');
 }
 
 async function searchId(){
@@ -1654,9 +1680,15 @@ document.getElementById('btnSend').onclick=()=>{
     chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
   }else{
     const qty=Number(document.getElementById('qty').value||10);
-    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
+    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,pos.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
   }
   let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
+  items.items?.forEach?.((o,i)=>{
+    const exactObj = findPostExactKm(o);
+    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactObj.kmStr})\n`;
+    if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`;
+  });
+  // Correção segura para o loop de envio em lote:
   items.forEach((o,i)=>{
     const exactObj = findPostExactKm(o);
     tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactObj.kmStr})\n`;
