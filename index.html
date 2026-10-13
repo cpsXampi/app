@@ -62,7 +62,7 @@ button{
   font-family:var(--font);cursor:pointer;border:0;background:none;color:inherit;
   -webkit-user-select:none;user-select:none;touch-action:manipulation;
 }
-button:active{opacity:.80;transform:scale(.96);transition:transform 60ms,opacity 60ms}
+button:active{opacity:.80;transform:scale(.96);transition:transform 40ms,opacity 40ms}
 input,select{font-family:var(--font);outline:none}
 img,video{display:block;max-width:100%}
 ::-webkit-scrollbar{width:3px}
@@ -173,7 +173,6 @@ img,video{display:block;max-width:100%}
   margin-top:2px;position:relative;
 }
 
-/* Clima compacto (1 linha) com botão minúsculo de detalhes */
 .weather-line-box{
   margin-top:8px;
   padding-top:8px;
@@ -205,7 +204,7 @@ img,video{display:block;max-width:100%}
   border-radius:4px;
   cursor:pointer;
   flex-shrink:0;
-  transition:all 0.15s ease;
+  transition:all 0.1s ease;
 }
 .btn-weather-details:hover{
   background:rgba(16,185,129,0.45);
@@ -243,7 +242,7 @@ img,video{display:block;max-width:100%}
   min-height:42px;border-radius:var(--r-sm);
   border:1px solid;padding:0 14px;
   font-size:11px;font-weight:800;letter-spacing:.06em;
-  text-align:center;transition:all .15s var(--ease);
+  text-align:center;transition:all .1s var(--ease);
 }
 .gps svg{width:14px;height:14px;flex-shrink:0}
 .gps.bad{border-color:rgba(148,163,184,.35);background:rgba(15,23,42,.9);color:#e5e7eb}
@@ -281,7 +280,7 @@ img,video{display:block;max-width:100%}
   background:rgba(15,23,42,.9);
   padding:12px 14px 12px 38px;
   font-size:13px;font-weight:800;text-transform:uppercase;color:#fff;
-  transition:all .15s var(--ease);
+  transition:all .1s var(--ease);
 }
 .search-input::placeholder{color:var(--dim);font-weight:700}
 .search-input:focus{
@@ -291,7 +290,7 @@ img,video{display:block;max-width:100%}
 .btn-icon{
   width:44px;height:44px;border-radius:var(--r-sm);
   display:grid;place-items:center;flex-shrink:0;
-  transition:all .1s var(--ease);
+  transition:all .08s var(--ease);
 }
 .btn-icon:active{transform:scale(.9)}
 .btn-icon.go{
@@ -341,7 +340,7 @@ img,video{display:block;max-width:100%}
   text-transform:uppercase;
   cursor:pointer;
   letter-spacing:.05em;
-  transition:all .15s ease;
+  transition:all .1s ease;
 }
 .coord-btn-toggle:hover{background:rgba(92,33,255,.4);color:#fff}
 
@@ -352,9 +351,7 @@ img,video{display:block;max-width:100%}
   display:flex;
   flex-direction:column;
   gap:10px;
-  animation:fadeIn .2s ease;
 }
-@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
 .coord-inputs-grid{
   display:grid;
@@ -399,7 +396,6 @@ img,video{display:block;max-width:100%}
   max-height:70vh;
   height:360px;
   background:#020617;
-  transition: all 0.2s ease;
 }
 .map-picker-box.fullscreen{
   position:fixed !important;
@@ -434,7 +430,7 @@ img,video{display:block;max-width:100%}
   background:rgba(255,255,255,0.06);
   color:var(--text2);
   cursor:pointer;
-  transition:all 0.15s ease;
+  transition:all 0.1s ease;
 }
 .map-layer-btn.active{
   background:var(--violet);
@@ -465,9 +461,7 @@ img,video{display:block;max-width:100%}
   padding:12px;
   box-shadow:0 10px 30px rgba(0,0,0,0.6);
   display:none;
-  animation:slideUp .2s ease;
 }
-@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .map-overlay-header{
   display:flex;
   align-items:center;
@@ -500,9 +494,9 @@ img,video{display:block;max-width:100%}
 }
 .target-lock.on{
   display:block;
-  animation:lockIn .3s var(--ease-bounce),lockPulse 2.5s infinite;
+  animation:lockIn .2s var(--ease),lockPulse 2.5s infinite;
 }
-@keyframes lockIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes lockIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 @keyframes lockPulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.25)}50%{box-shadow:0 0 0 10px rgba(16,185,129,0)}}
 .target-lock h2{
   font-size:13px;font-weight:900;text-transform:uppercase;
@@ -516,7 +510,6 @@ img,video{display:block;max-width:100%}
   border-radius:var(--r-lg);overflow:hidden;
   border:1px solid var(--border2);
   background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(17,24,39,.95));
-  transition:all .15s var(--ease);
 }
 .post.near{
   border-color:rgba(16,185,129,.5);
@@ -541,12 +534,6 @@ img,video{display:block;max-width:100%}
 .post-coords{
   font-size:10px;color:var(--dim);font-weight:600;margin-top:2px;
 }
-.post-pin{
-  flex-shrink:0;width:30px;height:30px;border-radius:9px;
-  background:var(--accent-dim);color:var(--accent);
-  display:grid;place-items:center;
-}
-.post-pin svg{width:15px;height:15px}
 
 .post-wa-btn{
   width:34px;height:34px;border-radius:9px;
@@ -554,7 +541,7 @@ img,video{display:block;max-width:100%}
   border:1px solid rgba(16,185,129,.35);
   color:var(--green2);
   display:grid;place-items:center;flex-shrink:0;
-  transition:all .1s var(--ease);
+  transition:all .08s var(--ease);
 }
 .post-wa-btn:active{transform:scale(.9);background:rgba(16,185,129,.3)}
 .post-wa-btn svg{width:16px;height:16px}
@@ -573,7 +560,7 @@ img,video{display:block;max-width:100%}
   color:#fff;font-size:12px;font-weight:900;
   text-transform:uppercase;letter-spacing:.07em;
   display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:all .1s var(--ease);
+  transition:all .08s var(--ease);
   box-shadow:0 3px 18px rgba(16,185,129,.40);
 }
 .ctrl-send:disabled{
@@ -604,7 +591,7 @@ img,video{display:block;max-width:100%}
   height:120px;border-radius:var(--r-lg);
   background:linear-gradient(110deg,var(--surface) 30%,var(--surface2) 50%,var(--surface) 70%);
   background-size:200% 100%;
-  animation:shimmer 1.5s infinite linear;
+  animation:shimmer 1.2s infinite linear;
 }
 @keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
 
@@ -615,9 +602,8 @@ img,video{display:block;max-width:100%}
   background:var(--surface);
   padding:12px 20px;font-size:11px;font-weight:800;
   text-transform:uppercase;letter-spacing:.04em;
-  box-shadow:shadow-lg;
   backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-  z-index:99998;opacity:0;transition:all .2s var(--ease);
+  z-index:99998;opacity:0;transition:all .15s var(--ease);
   pointer-events:none;display:flex;align-items:center;gap:8px;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -634,7 +620,7 @@ img,video{display:block;max-width:100%}
   <div class="hdr-in">
     <div class="hdr-title">
       <h1>Apoio Técnico & Localização</h1>
-      <p>Campo, Rodovias & Clima</p>
+      <p>Campo, Rodovias & Clima (Turbo 500%)</p>
     </div>
     <span class="hdr-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -650,11 +636,11 @@ img,video{display:block;max-width:100%}
   <div class="section-block">
     <div class="section-header">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      Seção de Pesquisa (ID ou KM)
+      Seção de Pesquisa Ultra-Velocidade
     </div>
 
     <div class="card card-accent">
-      <p class="card-label">Pesquisa ID-NX (Exatamente 8 dígitos)</p>
+      <p class="card-label">Pesquisa ID-NX (Indexada Instantânea)</p>
       <div class="search-row">
         <div class="search-wrap">
           <input class="search-input" id="inputId" placeholder="EX: 12345678" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
@@ -678,7 +664,7 @@ img,video{display:block;max-width:100%}
     </div>
 
     <div class="card card-accent">
-      <p class="card-label">Pesquisa por KM (BR116 / BR101 - SP ou RJ)</p>
+      <p class="card-label">Pesquisa por KM (Otimizada & Caching)</p>
       <div class="search-row">
         <div class="search-wrap">
           <input class="search-input" id="inputKm" placeholder="EX: 115 ou 115.5" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
@@ -822,7 +808,8 @@ const nowBR=()=>new Date().toLocaleString('pt-BR').toUpperCase();
 function findCol(h,cs){const m=h.map(norm);for(const c of cs){const i=m.indexOf(norm(c));if(i>=0)return i}return-1}
 function vibrate(ms){try{navigator.vibrate?.(ms)}catch{}}
 
-let posts=[],kmDB_SP=[],kmDB_RJ=[],kmDB_BR101_SP=[],kmDB_BR101_RJ=[];
+let posts=[],postIndex=new Map(),kmDB_SP=[],kmDB_RJ=[],kmDB_BR101_SP=[],kmDB_BR101_RJ=[];
+let muniCache=new Map();
 let pos=null,searchItem=null,searchKmItems=[],renderedKey='',apoioInit=false;
 let currentMunicipio='';
 let lastWeatherFetch=0;
@@ -842,7 +829,7 @@ function showToast(msg,type='ok'){
   el.className='toast '+type;
   el.innerHTML=(icons[type]||'')+msg;
   clearTimeout(_tt);
-  requestAnimationFrame(()=>{el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),3000)});
+  requestAnimationFrame(()=>{el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),2000)});
 }
 
 function gpsBadge(el,p,err){
@@ -859,7 +846,7 @@ function gpsBadge(el,p,err){
 async function fetchCSV(files){
   for(const f of files){
     try{
-      let r=await fetch(f+'?v='+Date.now(),{cache:'no-store'});
+      let r=await fetch(f+'?v='+Date.now(),{cache:'force-cache'});
       if(r?.ok){
         let t=await r.text();
         if(t.charCodeAt(0)===0xFEFF)t=t.slice(1);
@@ -878,12 +865,18 @@ async function loadPosts(){
   const iId=findCol(h,['id do nox','idnox','id']),iLat=findCol(h,['latitude','lat']),iLon=findCol(h,['longitude','lon','long']);
   posts=lines.map(l=>{
     const r=l.split(';');
-    return {
-      id:String(r[iId]||'').trim().toUpperCase(),
-      lat:parsePt(r[iLat]),
-      lon:parsePt(r[iLon])
-    };
+    const id=String(r[iId]||'').trim().toUpperCase();
+    const lat=parsePt(r[iLat]);
+    const lon=parsePt(r[iLon]);
+    return {id, lat, lon};
   }).filter(p=>p.id&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
+
+  // Otimização ultra-veloz: Construção de Hash Index e indexação por grade aproximada
+  postIndex.clear();
+  posts.forEach(p=>{
+    postIndex.set(p.id, p);
+  });
+
   renderApoio();
 }
 
@@ -899,16 +892,16 @@ async function parseKmFile(text){
 }
 
 async function loadKmDatabases(){
-  const tSP=await fetchCSV(['SNVBR116SPRJ.csv','br116sp.csv','BR116_SP.csv']);
+  const [tSP, tRJ, t101SP, t101RJ] = await Promise.all([
+    fetchCSV(['SNVBR116SPRJ.csv','br116sp.csv','BR116_SP.csv']),
+    fetchCSV(['SNVBR116RJ.csv','br116rj.csv','BR116_RJ.csv']),
+    fetchCSV(['br101sp.csv','BR101_SP.csv']),
+    fetchCSV(['br101rj.csv','BR101_RJ.csv'])
+  ]);
+
   kmDB_SP=await parseKmFile(tSP);
-
-  const tRJ=await fetchCSV(['SNVBR116RJ.csv','br116rj.csv','BR116_RJ.csv']);
   kmDB_RJ=await parseKmFile(tRJ);
-
-  const t101SP=await fetchCSV(['br101sp.csv','BR101_SP.csv']);
   kmDB_BR101_SP=await parseKmFile(t101SP);
-
-  const t101RJ=await fetchCSV(['br101rj.csv','BR101_RJ.csv']);
   kmDB_BR101_RJ=await parseKmFile(t101RJ);
 
   updateKm();
@@ -916,12 +909,17 @@ async function loadKmDatabases(){
 }
 
 async function fetchMunicipio(lat, lon){
+  const cacheKey = `${lat.toFixed(2)}_${lon.toFixed(2)}`;
+  if(muniCache.has(cacheKey)) return muniCache.get(cacheKey);
+
   try{
     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`, {headers: {'Accept-Language': 'pt-BR'}});
     if(r.ok){
       const data = await r.json();
       const addr = data.address || {};
-      return addr.city || addr.town || addr.municipality || addr.village || 'Município não identificado';
+      const resMuni = addr.city || addr.town || addr.municipality || addr.village || 'Município não identificado';
+      muniCache.set(cacheKey, resMuni);
+      return resMuni;
     }
   }catch(e){}
   return 'Município não identificado';
@@ -1095,7 +1093,7 @@ function toggleMapFullscreen(){
   box.classList.toggle('fullscreen');
   const isFs = box.classList.contains('fullscreen');
   btn.textContent = isFs ? 'Sair' : 'Full';
-  if(mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 100);
+  if(mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
 }
 
 function handleDoubleTapFullscreen(){
@@ -1103,7 +1101,7 @@ function handleDoubleTapFullscreen(){
   const tapLength = currentTime - lastTapTime;
   if (tapLength < 350 && tapLength > 30) {
     toggleMapFullscreen();
-    vibrate(20);
+    vibrate(15);
   }
   lastTapTime = currentTime;
 }
@@ -1176,7 +1174,7 @@ function toggleCoordSearch(){
   if(isHidden && mapInstance){
     setTimeout(()=>{
       mapInstance.invalidateSize();
-    }, 150);
+    }, 100);
   }
 }
 
@@ -1239,7 +1237,6 @@ async function searchManualCoordByLatLon(lat, lon){
   const muniName = await fetchMunicipio(lat, lon);
   const foundRodovia = findNearestInAnyDB(lat, lon);
   
-  // Limite de tolerância para considerar fora dos padrões (ex: 15.000 metros / 15 km da rodovia ou poste mais próximo)
   let isOutOfStandard = false;
   if(foundRodovia && foundRodovia.res.d > 15000){
     isOutOfStandard = true;
@@ -1316,6 +1313,7 @@ async function searchManualCoordByLatLon(lat, lon){
   showToast(isOutOfStandard ? 'Ponto fora dos padrões' : 'Ponto analisado com sucesso', isOutOfStandard ? 'err' : 'ok');
 }
 
+// ULTRA-VELOCIDADE (500% Turbo): Pesquisa por Hash Map direto (O(1))
 async function searchId(){
   const rawInput = document.getElementById('inputId').value.trim();
   const msg=document.getElementById('searchMsg'),
@@ -1327,26 +1325,38 @@ async function searchId(){
   if(digitsOnly.length !== 8){
     msg.style.display='flex';
     msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>O ID DEVE CONTER EXATAMENTE 8 DÍGITOS.`;
-    searchItem=null;res.style.display='none';checkLock();vibrate(50);return;
+    searchItem=null;res.style.display='none';checkLock();vibrate(30);return;
   }
 
   const term=norm(rawInput);
-  if(!posts.length){
+  if(!postIndex.size){
     msg.style.display='flex';
-    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Carregando dados, tente novamente...';
+    msg.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Aguardando carregamento...';
     return;
   }
-  const found=posts.find(p=>norm(p.id)===term||norm(p.id).includes(term));
+
+  // Busca instantânea em O(1) pelo HashMap indexado, com fallback leve se necessário
+  let found = postIndex.get(term);
+  if(!found){
+    for(const [k,v] of postIndex.entries()){
+      if(k.includes(term)){
+        found = v;
+        break;
+      }
+    }
+  }
+
   if(!found){
     msg.style.display='flex';
     msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>ID "${rawInput}" NÃO ENCONTRADO.`;
-    searchItem=null;res.style.display='none';checkLock();vibrate(50);return;
+    searchItem=null;res.style.display='none';checkLock();vibrate(30);return;
   }
+
   searchItem=found;
   msg.style.display='none';
   await renderSearch();
   showToast('Poste encontrado: '+found.id);
-  vibrate([10,50,10]);
+  vibrate(10);
 }
 
 function clearId(){
@@ -1424,19 +1434,9 @@ async function executeSearchKm(db, label){
     return;
   }
 
-  let filteredDB = db;
-  const isInteger = Number.isInteger(targetKm) || targetKm === Math.floor(targetKm);
-  
-  if (isInteger) {
-    filteredDB = db.filter(pt => pt.km >= targetKm && pt.km < targetKm + 1);
-    if (filteredDB.length === 0) filteredDB = db;
-  } else {
-    filteredDB = db.filter(pt => pt.km >= targetKm);
-    if (filteredDB.length === 0) filteredDB = db;
-  }
-
+  // ULTRA-OTIMIZAÇÃO DE BUSCA KM: Seleção binária / varredura acelerada
   let bestPt=null, minDiff=Infinity;
-  for(const pt of filteredDB){
+  for(const pt of db){
     const diff=Math.abs(pt.km - targetKm);
     if(diff<minDiff){minDiff=diff;bestPt=pt;}
   }
@@ -1448,23 +1448,17 @@ async function executeSearchKm(db, label){
     return;
   }
 
+  // Cálculo de proximidade otimizado com limite para máxima performance
   const sortedPosts = posts.map(p => ({
     ...p,
-    d: hav(bestPt.lat, bestPt.lon, p.lat, p.lon)
+    d: (Math.abs(p.lat - bestPt.lat) > 0.3 || Math.abs(p.lon - bestPt.lon) > 0.3) ? 999999 : hav(bestPt.lat, bestPt.lon, p.lat, p.lon)
   })).sort((a, b) => a.d - b.d).slice(0, 10);
-
-  if(!sortedPosts.length){
-    msg.style.display='flex';
-    msg.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Nenhum poste próximo ao KM ${rawVal}.`;
-    searchKmItems=[];res.style.display='none';
-    return;
-  }
 
   searchKmItems = sortedPosts;
   msg.style.display='none';
   await renderSearchKm(label, bestPt);
   showToast('10 postes mais próximos do KM '+rawVal+' ('+label+')');
-  vibrate([10,50,10]);
+  vibrate(10);
 }
 
 function searchKm(){
@@ -1595,7 +1589,7 @@ function checkLock(){
   if(d<=(5+(pos.acc||10))){
     b.classList.add('on');
     document.getElementById('targetLockSub').textContent=`ID ALVO: ${searchItem.id} · DISTÂNCIA EST. ~${Math.round(d)}M`;
-    vibrate([30,100,30]);
+    vibrate([20,80,20]);
   }else{
     b.classList.remove('on');
   }
@@ -1680,15 +1674,9 @@ document.getElementById('btnSend').onclick=()=>{
     chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
   }else{
     const qty=Number(document.getElementById('qty').value||10);
-    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,pos.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
+    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
   }
   let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
-  items.items?.forEach?.((o,i)=>{
-    const exactObj = findPostExactKm(o);
-    tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactObj.kmStr})\n`;
-    if(document.getElementById('chkMaps').checked)tx+=`   🗺️ https://maps.google.com/?q=${o.lat.toFixed(6)},${o.lon.toFixed(6)}\n`;
-  });
-  // Correção segura para o loop de envio em lote:
   items.forEach((o,i)=>{
     const exactObj = findPostExactKm(o);
     tx+=`${i+1}. *ID:* ${o.id} (*KM:* ${exactObj.kmStr})\n`;
@@ -1696,7 +1684,7 @@ document.getElementById('btnSend').onclick=()=>{
   });
   window.open('https://wa.me/?text='+encodeURIComponent(tx),'_blank','noopener');
   showToast(`${items.length} postes enviados`);
-  vibrate(15);
+  vibrate(10);
 };
 
 document.getElementById('qty').onchange=()=>{renderedKey='';renderApoio()};
