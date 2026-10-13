@@ -89,6 +89,23 @@ input,select{font-family:var(--font);outline:none}
   height:1px;background:var(--border2);margin:2px 0;width:100%;
 }
 
+/* Botão do Menu Oculto */
+.menu-toggle-btn{
+  width:100%;padding:8px;border-radius:var(--r-sm);
+  background:linear-gradient(135deg,var(--surface2),var(--surface));
+  border:1px solid var(--border2);color:var(--accent);
+  font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;
+}
+.menu-toggle-btn svg{width:12px;height:12px;transition:transform .2s ease;}
+.menu-toggle-btn.open svg{transform:rotate(180deg);}
+
+.collapsible-menu{
+  display:none;flex-direction:column;gap:8px;margin-top:4px;
+}
+.collapsible-menu.show{display:flex;}
+
 /* KM em tempo real compacto */
 .km-hero-compact{
   display:flex;align-items:center;justify-content:space-between;
@@ -284,77 +301,83 @@ input,select{font-family:var(--font);outline:none}
 <header class="hdr">
   <div class="hdr-in">
     <div class="hdr-title">Apoio Técnico</div>
-    <!-- KM em tempo real visível na barra de cabeçalho / topo -->
     <div style="font-size:9px;font-weight:900;color:var(--accent);" id="topKmLive">—</div>
   </div>
 </header>
 
 <div class="wrap">
 
-  <!-- 4 OPÇÕES INICIAIS LOGO DE CARA -->
+  <!-- MENU OCULTO COM AS 4 OPÇÕES (FECHADO POR PADRÃO) -->
   <div class="section-block">
-    <!-- 1. Pesquisa de ID (Exige 8 dígitos) -->
-    <div class="card card-accent">
-      <div class="search-row">
-        <div class="search-wrap">
-          <input class="search-input" id="inputId" placeholder="ID (8 DÍGITOS)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
-        </div>
-        <button class="btn-icon go" onclick="searchId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
-        <button class="btn-icon clr" onclick="clearId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
-      </div>
-      <div id="searchMsg" class="search-msg" style="display:none"></div>
-      <div id="searchResult" style="display:none;margin-top:6px"></div>
-    </div>
+    <button class="menu-toggle-btn" id="menuToggleBtn" onclick="toggleAdvancedMenu()">
+      <span>⚙️ Menu de Pesquisas Avançadas (ID, KM, Coordenadas, Mapa)</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
 
-    <!-- 2. Pesquisa de KM -->
-    <div class="card card-accent">
-      <div class="search-row">
-        <div class="search-wrap">
-          <input class="search-input" id="inputKm" placeholder="KM (EX: 115)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
+    <div class="collapsible-menu" id="collapsibleMenu">
+      <!-- 1. Pesquisa de ID -->
+      <div class="card card-accent">
+        <div class="search-row">
+          <div class="search-wrap">
+            <input class="search-input" id="inputId" placeholder="ID (8 DÍGITOS)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchId()">
+          </div>
+          <button class="btn-icon go" onclick="searchId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+          <button class="btn-icon clr" onclick="clearId()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
-        <button class="btn-icon go" onclick="searchKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
-        <button class="btn-icon clr" onclick="clearKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <div id="searchMsg" class="search-msg" style="display:none"></div>
+        <div id="searchResult" style="display:none;margin-top:6px"></div>
       </div>
-      <div id="searchKmMsg" class="search-msg" style="display:none"></div>
-      <div id="searchKmModal" style="display:none"></div>
-      <div id="searchKmResult" style="display:none;margin-top:6px"></div>
-    </div>
 
-    <div class="section-divider"></div>
-
-    <!-- 3. Pesquisa por Coordenada -->
-    <div class="card">
-      <div style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Coordenada Manual</div>
-      <div class="coord-container">
-        <div class="coord-inputs">
-          <input class="coord-input" id="inputLat" placeholder="LAT" autocomplete="off" spellcheck="false">
-          <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
+      <!-- 2. Pesquisa de KM -->
+      <div class="card card-accent">
+        <div class="search-row">
+          <div class="search-wrap">
+            <input class="search-input" id="inputKm" placeholder="KM (EX: 115)" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchKm()">
+          </div>
+          <button class="btn-icon go" onclick="searchKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></button>
+          <button class="btn-icon clr" onclick="clearKm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
-        <div style="display:flex;gap:3px;">
-          <button class="btn-icon go" style="flex:1;height:28px;border-radius:var(--r-xs);font-size:8px;" onclick="searchManualCoord()">Calcular</button>
-          <button class="btn-icon clr" onclick="clearCoordFields()" style="width:28px;height:28px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <div id="searchKmMsg" class="search-msg" style="display:none"></div>
+        <div id="searchKmModal" style="display:none"></div>
+        <div id="searchKmResult" style="display:none;margin-top:6px"></div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- 3. Pesquisa por Coordenada -->
+      <div class="card">
+        <div style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Coordenada Manual</div>
+        <div class="coord-container">
+          <div class="coord-inputs">
+            <input class="coord-input" id="inputLat" placeholder="LAT" autocomplete="off" spellcheck="false">
+            <input class="coord-input" id="inputLon" placeholder="LON" autocomplete="off" spellcheck="false">
+          </div>
+          <div style="display:flex;gap:3px;">
+            <button class="btn-icon go" style="flex:1;height:28px;border-radius:var(--r-xs);font-size:8px;" onclick="searchManualCoord()">Calcular</button>
+            <button class="btn-icon clr" onclick="clearCoordFields()" style="width:28px;height:28px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- 4. Pesquisa pelo Mapa Interativo -->
-    <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
-        <span style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent)">Mapa Interativo</span>
-        <button class="ctrl-select" style="padding:2px 6px;font-size:7px;cursor:pointer;" onclick="useCurrentGps()">GPS Atual</button>
-      </div>
-      <div class="map-box" id="mapBox">
-        <div class="map-ctrls">
-          <button class="map-btn active" id="btnLayerSat" onclick="setMapLayer('sat')">Sat</button>
-          <button class="map-btn" id="btnLayerNorm" onclick="setMapLayer('norm')">Norm</button>
-          <button class="map-btn" onclick="toggleFullscreen()">Full</button>
+      <!-- 4. Pesquisa pelo Mapa Interativo -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+          <span style="font-size:8px;font-weight:900;text-transform:uppercase;color:var(--accent)">Mapa Interativo</span>
+          <button class="ctrl-select" style="padding:2px 6px;font-size:7px;cursor:pointer;" onclick="useCurrentGps()">GPS Atual</button>
         </div>
-        <div id="leafletMap" style="width:100%;height:100%;"></div>
+        <div class="map-box" id="mapBox">
+          <div class="map-ctrls">
+            <button class="map-btn active" id="btnLayerSat" onclick="setMapLayer('sat')">Sat</button>
+            <button class="map-btn" id="btnLayerNorm" onclick="setMapLayer('norm')">Norm</button>
+            <button class="map-btn" onclick="toggleFullscreen()">Full</button>
+          </div>
+          <div id="leafletMap" style="width:100%;height:100%;"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- KM EM TEMPO REAL E LISTA -->
+  <!-- TELA PRINCIPAL: KM EM TEMPO REAL E OS MAIS PRÓXIMOS (PADRÃO 5) -->
   <div class="section-block">
     <div class="km-hero-compact">
       <div>
@@ -373,16 +396,16 @@ input,select{font-family:var(--font);outline:none}
         <div style="display:flex;align-items:center;gap:4px;">
           <label class="ctrl-label">Qtd:</label>
           <select class="ctrl-select" id="qty">
-            <option value="1">1</option>
-            <option value="5">5</option>
-            <option value="10" selected>10</option>
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
             <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
           </select>
           <label class="ctrl-label" style="margin-left:4px;">
             <input type="checkbox" class="ctrl-chk" id="chkMaps" checked> Maps
           </label>
         </div>
-        <!-- BOTÃO WHATSAPP DISCRETO E COMPACTO -->
         <button id="btnSend" class="ctrl-send" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
           Enviar WhatsApp
@@ -418,6 +441,14 @@ function showToast(msg,type='ok'){
   const el=document.getElementById('toast');
   el.className='toast '+type;el.textContent=msg;
   requestAnimationFrame(()=>{el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500)});
+}
+
+function toggleAdvancedMenu(){
+  let menu = document.getElementById('collapsibleMenu');
+  let btn = document.getElementById('menuToggleBtn');
+  let isOpen = menu.classList.toggle('show');
+  btn.classList.toggle('open', isOpen);
+  if(isOpen && mapInstance) setTimeout(()=>mapInstance.invalidateSize(), 50);
 }
 
 function gpsBadge(el,p,err){
@@ -569,7 +600,6 @@ function initMap(lat, lon){
   setMapLayer('sat');
   mapMarker = L.marker([lat, lon]).addTo(mapInstance);
   
-  // POP-UP DO MAPA EXTREMAMENTE DISCRETO E MINIMALISTA
   mapInstance.on('click', async e=>{
     let l = e.latlng;
     document.getElementById('inputLat').value = l.lat.toFixed(6);
@@ -652,7 +682,6 @@ function searchManualCoord(){
   showToast('Posicionado');
 }
 
-// PESQUISA DE ID EXIGINDO EXATAMENTE 8 DÍGITOS
 function searchId(){
   let raw = document.getElementById('inputId').value.trim();
   let msg = document.getElementById('searchMsg'), res = document.getElementById('searchResult');
@@ -839,7 +868,7 @@ function sendWhatsApp(id, lat, lon){
 
 async function renderApoio(){
   if(!pos||!posts.length)return;
-  let qty=Number(document.getElementById('qty').value||10);
+  let qty=Number(document.getElementById('qty').value||5);
   let items=posts.map(p=>{
     if(Math.abs(p.lat - pos.lat) > 0.3 || Math.abs(p.lon - pos.lon) > 0.3) return null;
     return {id:p.id, lat:p.lat, lon:p.lon, d:hav(pos.lat,pos.lon,p.lat,p.lon)};
@@ -893,7 +922,7 @@ document.getElementById('btnSend').onclick=()=>{
   if(chks.length){
     chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
   }else{
-    let qty=Number(document.getElementById('qty').value||10);
+    let qty=Number(document.getElementById('qty').value||5);
     items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty);
   }
   let tx=`📍 *LISTA*\nData: ${nowBR()}\n\n`;
