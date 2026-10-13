@@ -748,12 +748,12 @@ img,video{display:block;max-width:100%}
           <input type="checkbox" class="ctrl-chk" id="chkFindNearestPost" checked> Localizar KM, Município e Nox mais próximo
         </label>
 
-        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Mapa Interativo (Dois toques para Full / Sair do Full):</div>
+        <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:4px;">Mapa Interativo (Satélite padrão · 2 toques para Full):</div>
         
         <div class="map-picker-box" id="mapPickerBox">
           <div class="map-controls-bar">
-            <button class="map-layer-btn active" id="btnLayerNormal" onclick="setMapLayer('normal')">Normal</button>
-            <button class="map-layer-btn" id="btnLayerSatellite" onclick="setMapLayer('satellite')">Satélite</button>
+            <button class="map-layer-btn" id="btnLayerNormal" onclick="setMapLayer('normal')">Normal</button>
+            <button class="map-layer-btn active" id="btnLayerSatellite" onclick="setMapLayer('satellite')">Satélite</button>
             <button class="map-layer-btn" id="btnLayerHybrid" onclick="setMapLayer('hybrid')">Híbrido</button>
             <button class="map-fs-btn" id="btnMapFs" onclick="toggleMapFullscreen()">Full</button>
           </div>
@@ -829,7 +829,7 @@ let lastWeatherFetch=0;
 let mapInstance=null, mapMarker=null, mapInitialized=false;
 let gpsInitializedOnce=false;
 let currentTileLayer=null;
-let activeLayerMode='normal';
+let activeLayerMode='satellite';
 let lastTapTime = 0;
 
 let _tt=null;
@@ -1121,7 +1121,7 @@ function initLeafletMap(initLat, initLon){
     attributionControl: false
   }).setView([initLat, initLon], 13);
 
-  setMapLayer('normal');
+  setMapLayer('satellite');
 
   mapMarker = L.marker([initLat, initLon]).addTo(mapInstance);
 
@@ -1262,8 +1262,19 @@ async function searchManualCoordByLatLon(lat, lon){
       if(d < minD){minD = d; closestPost = p;}
     }
     if(closestPost){
-      html += `<p style="color:#fff;font-weight:800;margin-top:4px;">Nox / Poste mais próximo: <span>${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
-      overlayHtml += `<p style="color:#fff;font-weight:800;margin-top:2px;">Poste: <span style="color:var(--accent);">${closestPost.id}</span> (~${Math.round(minD)}m)</p>`;
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+        <p style="color:#fff;font-weight:800;">Nox / Poste mais próximo: <span style="color:var(--accent);">${closestPost.id}</span> (~${Math.round(minD)}m)</p>
+        <button class="post-wa-btn" onclick="sendSingleWhatsApp('${closestPost.id}', ${closestPost.lat}, ${closestPost.lon})" title="Enviar este item por WhatsApp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </button>
+      </div>`;
+      
+      overlayHtml += `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+        <p style="color:#fff;font-weight:800;">Poste: <span style="color:var(--accent);">${closestPost.id}</span> (~${Math.round(minD)}m)</p>
+        <button class="post-wa-btn" onclick="sendSingleWhatsApp('${closestPost.id}', ${closestPost.lat}, ${closestPost.lon})" title="Enviar este item por WhatsApp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </button>
+      </div>`;
     }
   }
 
@@ -1343,7 +1354,7 @@ async function renderSearch(){
   res.style.display='block';
   res.innerHTML=`<div class="post searched">
     <div class="post-top">
-      <div class="post-info">
+      <div class="post-info" style="flex:1;">
         <p class="post-id">OS / ID: <span>${searchItem.id}</span></p>
         <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${muniName}</p>
         <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Referência: ${exactKmObj.kmStr}</p>
@@ -1351,7 +1362,9 @@ async function renderSearch(){
         <p class="post-coords">Coordenadas: ${searchItem.lat.toFixed(6)}, ${searchItem.lon.toFixed(6)}</p>
         <div id="searchWeatherBox" class="weather-line-box" style="margin-top:8px;"></div>
       </div>
-      <span class="post-pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+      <button class="post-wa-btn" onclick="sendSingleWhatsApp('${searchItem.id}', ${searchItem.lat}, ${searchItem.lon})" title="Enviar este item por WhatsApp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </button>
     </div>
     <div class="post-map-container">
       <iframe class="post-map" src="https://maps.google.com/maps?q=${searchItem.lat},${searchItem.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
@@ -1525,14 +1538,16 @@ async function renderSearchKm(label, bestPt){
     htmlContent += `
       <div class="post searched">
         <div class="post-top">
-          <div class="post-info">
+          <div class="post-info" style="flex:1;">
             <p class="post-id">#${idx+1} - ID: <span>${item.id}</span></p>
             <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${itemMuni}</p>
             <p class="post-dist" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactKmObj.kmStr}</p>
             <p class="post-dist" id="srch-km-dist-${idx}">${dt}</p>
             <p class="post-coords">Coordenadas: ${item.lat.toFixed(6)}, ${item.lon.toFixed(6)}</p>
           </div>
-          <span class="post-pin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <button class="post-wa-btn" onclick="sendSingleWhatsApp('${item.id}', ${item.lat}, ${item.lon})" title="Enviar este item por WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </button>
         </div>
         <div class="post-map-container">
           <iframe class="post-map" src="https://maps.google.com/maps?q=${item.lat},${item.lon}&t=k&z=19&ie=UTF8&iwloc=&output=embed" loading="lazy"></iframe>
@@ -1608,7 +1623,7 @@ async function renderApoio(){
     div.className='post'+(i===0?' near':'');
     div.innerHTML=`<div class="post-top">
       <input type="checkbox" class="post-chk" value="${o.id}" data-lat="${o.lat}" data-lon="${o.lon}" checked>
-      <div class="post-info">
+      <div class="post-info" style="flex:1;">
         <p class="post-id">Poste: <span>${o.id}</span></p>
         <p class="post-dist" style="color:var(--accent);font-weight:900;margin-top:2px;">Município: ${muniName}</p>
         <p class="post-dist" id="km-exato-${i}" style="color:var(--green2);font-weight:900;margin-top:2px;">KM Exato: ${exactObj.kmStr}</p>
@@ -1639,7 +1654,7 @@ document.getElementById('btnSend').onclick=()=>{
     chks.forEach(c=>items.push({id:c.value,lat:parseFloat(c.dataset.lat),lon:parseFloat(c.dataset.lon)}));
   }else{
     const qty=Number(document.getElementById('qty').value||10);
-    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,pos.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
+    items=posts.map(p=>({...p,d:hav(pos.lat,pos.lon,p.lat,p.lon)})).sort((a,b)=>a.d-b.d).slice(0,qty).map(o=>({id:o.id,lat:o.lat,lon:o.lon}));
   }
   let tx=`📍 *LISTA DE LOCALIZAÇÃO DE POSTES*\nData/Hora: ${nowBR()}\nGPS Atual: ${pos.lat.toFixed(6)}, ${pos.lon.toFixed(6)} (${fmtAcc(pos.acc)})\n\n`;
   items.forEach((o,i)=>{
